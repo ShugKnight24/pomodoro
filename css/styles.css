@@ -8,7 +8,8 @@ body {
   background-size: 100%;
   background-attachment: fixed;
   color: #0add08;
-  font-family: HappyMonkey, cursive, sans-serif;;
+  font-family: HappyMonkey, cursive, sans-serif;
+	margin: 250px;
 }
 
 h2{
