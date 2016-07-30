@@ -5,7 +5,8 @@
 
 body {
   background-image: url(../images/tomato.jpg);
-  background-size: 100%;
+	background-size: cover;
+	background-repeat: no-repeat;
   background-attachment: fixed;
   color: #0add08;
   font-family: HappyMonkey, cursive, sans-serif;

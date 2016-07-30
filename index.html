@@ -7,14 +7,16 @@
   <link rel="stylesheet" href="css/bootstrap.min.css" charset="utf-8">
   <link rel="stylesheet" href="css/styles.css" charset="utf-8">
   <audio id="buzzer" src="audio/buzzer.mp3" type="audio/mpeg"></audio>
-  <title>Pomodoro Clock App</title>
+  <title>Pomodoro Clock</title>
 </head>
 <body>
   <div class="text-center">
-    <h1>Pomodoro Clock</h1>
-    <h2>Conquer time or it will conquer you. </h2>
-    <h3>The clock to help you stay on task.</h3>
-    <p>Do you find yourself procrastinating? Breaking up your tasks into smaller more manageable chunks can allow you to work more productively.</p>
+    <div id="description">
+      <h1>Pomodoro Clock</h1>
+      <h2>Conquer time or time will conquer you.</h2>
+      <h3>The clock to help you stay on task.</h3>
+      <p>Do you find yourself procrastinating? Breaking up your tasks into smaller more manageable chunks can allow you to work more productively.</p>
+    </div>
     <div id="timeDiv">
       <h1 id="sessionHeader">Session Time</h1>
       <a href="#" class="btn btn-primary" id="minus5Clock">-</a>
@@ -29,7 +31,7 @@
       <h2 id="breakTime">5</h2>
       <a href="#" class="btn btn-primary" id="add5Break">+</a>
     </div>
-    <a href="#" class="btn btn-primary" id="startButton">Start</a>
+    <a href="#" class="btn btn-primary" id="startButton">Start Your Session</a>
   </div>
 <script src="js/jquery-3.0.0.min.js" charset="utf-8"></script>
 <script src="js/bootstrap.min.js" charset="utf-8"></script>

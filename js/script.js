@@ -1,30 +1,29 @@
 $(document).ready(function(){
   var buzzer = $("#buzzer")[0];
   var session = parseInt($("#sessionTime").html());
-  var count = parseInt($("#sessionTime").html());
   var breakT = parseInt($("#breakTime").html());
 
   $("#reset").hide();
 
   $("#startButton").on("click", function(){
     var counter = setInterval(timer, 1000);
-    count*=60;
+    session*=60;
     function timer (){
       // Hide all the different titles and buttons
-      $("#startButton, #minus5Clock, #add5Clock, #minus5Break, #add5Break, #breakTime, #sessionHeader, #breakHeader").hide();
+      $("#startButton, #minus5Clock, #add5Clock, #minus5Break, #add5Break, #breakTime, #sessionHeader, #breakHeader, #description").hide();
       $("#timeType").show();
       $("#timeType").html("Session Time: ");
-      count-=1;
-      if(count===0){
+      session-=1;
+      if(session===0){
         buzzer.play();
         clearInterval(counter);
         var startBreak = setInterval (breakTimer, 1000);
         $("#sessionTime").hide();
       }
-      if(count%60>=10){
-        $("#sessionTime").html(Math.floor(count/60)+":"+count%60);
+      if(session%60>=10){
+        $("#sessionTime").html(Math.floor(session/60)+":"+session%60);
       } else {
-        $("#sessionTime").html(Math.floor(count/60)+":"+"0"+count%60);
+        $("#sessionTime").html(Math.floor(session/60)+":"+"0"+session%60);
       }
       function breakTimer(){
         $("#timeType").html("Break Time: ");
@@ -52,7 +51,7 @@ $(document).ready(function(){
     breakT=5;
     $("#sessionTime").html(session);
     $("#breakTime").html(breakT);
-    $("#startButton, #minus5Clock, #add5Clock, #minus5Break, #add5Break, #sessionTime, #breakTime, #sessionHeader, #breakHeader").show();
+    $("#startButton, #minus5Clock, #add5Clock, #minus5Break, #add5Break, #sessionTime, #breakTime, #sessionHeader, #breakHeader, #description").show();
     $("#reset, #timeType").hide();
   });
 
