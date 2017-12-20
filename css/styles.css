@@ -1,15 +1,10 @@
-@font-face {
-	font-family: "HappyMonkey";
-	src: url(../fonts/HappyMonkey-Regular.ttf);
-}
-
 body {
   background-image: url(../images/tomato.jpg);
 	background-size: cover;
 	background-repeat: no-repeat;
   background-attachment: fixed;
   color: #0add08;
-  font-family: HappyMonkey, cursive, sans-serif;
+  font-family: 'Happy Monkey', cursive;
 	margin: 250px;
 }
 
