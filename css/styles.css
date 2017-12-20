@@ -1,14 +1,9 @@
 body {
-	background-image: url(../images/tomato.jpg);
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-attachment: fixed;
 	color: #0add08;
 	font-family: 'Happy Monkey', cursive;
-	margin: 250px;
 }
 
-h2{
+h2 {
 	display: inline;
 }
 
