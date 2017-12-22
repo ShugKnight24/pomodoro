@@ -3,6 +3,9 @@ $(document).ready(function(){
 	var session = parseInt($("#sessionTime").html());
 	var breakT = parseInt($("#breakTime").html());
 
+	'use strict';
+	
+
 	$('#reset').hide();
 
 	$('#startButton').on('click', function(){
