@@ -1,14 +1,14 @@
 $(document).ready(function(){
-	var buzzer = $("#buzzer")[0];
-	var session = parseInt($("#sessionTime").html());
-	var breakT = parseInt($("#breakTime").html());
 
 	'use strict';
-	
+
+	var buzzer = $('#buzzer')[0];
+	var session = parseInt($('#session-time').html());
+	var breakT = parseInt($('#break-time').html());
 
 	$('#reset').hide();
 
-	$('#startButton').on('click', function(){
+	$('#start-button').on('click', function(){
 
 		var counter = setInterval(timer, 1000);
 
@@ -16,38 +16,44 @@ $(document).ready(function(){
 
 		function timer (){
 			// Hide all the different titles and buttons
-			$('#startButton, #minus5Clock, #add5Clock, #minus5Break, #add5Break, #breakTime, #sessionHeader, #breakHeader, #description').hide();
-			$('#timeType').show();
-			$('#timeType').html('Session Time: ');
+			$('#start-button, #minus-5-clock, #add-5-clock, #minus-5-break, #add-5-break, #break-time, #session-header, #break-header, #description').hide();
+			$('#time-type').show();
+			$('#time-type').html('Session Time: ');
 
 			session -= 1;
-			if(session === 0){
+
+			if (session === 0){
 				buzzer.play();
 				clearInterval(counter);
-				var startBreak = setInterval (breakTimer, 1000);
-				$('#sessionTime').hide();
+				var startBreak = setInterval(breakTimer, 1000);
+				$('#session-time').hide();
 			}
-			if(session % 60 >= 10){
-				$('#sessionTime').html(Math.floor(session / 60) + ':' + session % 60);
+
+			if (session % 60 >= 10){
+				$('#session-time').html(Math.floor(session / 60) + ':' + session % 60);
 			} else {
-				$('#sessionTime').html(Math.floor(session / 60) + ':' + '0' + session %  60);
+				$('#session-time').html(Math.floor(session / 60) + ':' + '0' + session %  60);
 			}
+
 			function breakTimer(){
-				$('#timeType').html('Break Time: ');
-				$('#breakTime').show();
+
+				$('#time-type').html('Break Time: ');
+				$('#break-time').show();
 				breakT *= 60;
-				$('#timeType').show();
+				$('#time-type').show();
 				breakT -= 1;
-				if(breakT === 0){
+
+				if (breakT === 0){
 					clearInterval(startBreak);
 					buzzer.play();
 					$('#reset').show();
-					$('#breakTime, #timeType').hide();
+					$('#break-time, #time-type').hide();
 				}
-				if(breakT % 60 >= 10){
-					$('#breakTime').html(Math.floor(breakT / 60) + ':' + breakT % 60);
+
+				if (breakT % 60 >= 10){
+					$('#break-time').html(Math.floor(breakT / 60) + ':' + breakT % 60);
 				} else {
-					$('#breakTime').html(Math.floor(breakT / 60) + ':' + '0' + breakT % 60);
+					$('#break-time').html(Math.floor(breakT / 60) + ':' + '0' + breakT % 60);
 				}
 			}
 		}
@@ -56,30 +62,33 @@ $(document).ready(function(){
 	$('#reset').on('click', function(){
 		session = 25;
 		breakT = 5;
-		$('#sessionTime').html(session);
-		$('#breakTime').html(breakT);
-		$('#startButton, #minus5Clock, #add5Clock, #minus5Break, #add5Break, #sessionTime, #breakTime, #sessionHeader, #breakHeader, #description').show();
-		$('#reset, #timeType').hide();
+		$('#session-time').html(session);
+		$('#break-time').html(breakT);
+		$('#start-button, #minus-5-clock, #add-5-clock, #minus-5-break, #add-5-break, #session-time, #break-time, #session-header, #break-header, #description').show();
+		$('#reset, #time-type').hide();
 	});
 
-	$('#minus5Clock').on('click',function(){
+	$('#minus-5-clock').on('click',function(){
 		if(session > 5){
 			session -= 5;
-			$('#sessionTime').html(session);
+			$('#session-time').html(session);
 		}
 	});
-	$('#add5Clock').on('click',function(){
+
+	$('#add-5-clock').on('click',function(){
 		session += 5;
-		$('#sessionTime').html(session);
+		$('#session-time').html(session);
 	});
-	$('#minus5Break').on('click',function(){
+
+	$('#minus-5-break').on('click',function(){
 		if(breakT > 5){
 			breakT -= 5;
-			$('#breakTime').html(breakT);
+			$('#break-time').html(breakT);
 		}
 	});
-	$('#add5Break').on('click',function(){
+
+	$('#add-5-break').on('click',function(){
 		breakT += 5;
-		$('#breakTime').html(breakT);
+		$('#break-time').html(breakT);
 		});
 });
