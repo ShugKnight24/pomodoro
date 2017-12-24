@@ -1,6 +1,23 @@
 body {
 	color: #0add08;
 	font-family: 'Happy Monkey', cursive;
+.button {
+	display: inline-block;
+	font-size: 16px;
+	padding: 15px 30px;
+	color: #FFF;
+}
+
+.button.add-time,
+#start-button {
+	background-color: #5DA423;
+	border: 1px solid #396516;
+}
+
+.button.remove-time {
+	background-color: #C60F13;
+	border: 1px solid #7F0A0C;
+}
 }
 
 h2 {
