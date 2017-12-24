@@ -2,15 +2,15 @@ $(document).ready(function(){
 
 	'use strict';
 
-	var buzzer = $('#buzzer')[0];
-	var session = parseInt($('#session-time').html());
-	var breakT = parseInt($('#break-time').html());
+	const buzzer = $('#buzzer')[0];
+	let session = parseInt($('#session-time').html());
+	let breakT = parseInt($('#break-time').html());
 
 	$('#reset').hide();
 
 	$('#start-button').on('click', function(){
 
-		var counter = setInterval(timer, 1000);
+		const counter = setInterval(timer, 1000);
 
 		session *= 60;
 
@@ -25,7 +25,6 @@ $(document).ready(function(){
 			if (session === 0){
 				buzzer.play();
 				clearInterval(counter);
-				var startBreak = setInterval(breakTimer, 1000);
 				$('#session-time').hide();
 			}
 
@@ -59,6 +58,7 @@ $(document).ready(function(){
 		}
 	});
 
+			const startBreak = setInterval(breakTimer, 1000);
 	$('#reset').on('click', function(){
 		session = 25;
 		breakT = 5;
