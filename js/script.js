@@ -14,7 +14,7 @@ $(document).ready(function(){
 
 		session *= 60;
 
-		function timer (){
+		function timer(){
 			// Hide all the different titles and buttons
 			$('#start-button, #minus-5-clock, #add-5-clock, #minus-5-break, #add-5-break, #break-time, #session-header, #break-header, #description').hide();
 			$('#time-type').show();
@@ -25,9 +25,31 @@ $(document).ready(function(){
 			if (session === 0){
 				buzzer.play();
 				clearInterval(counter);
+				const startBreak = setInterval(breakTimer, 1000);
+				breakT *= 60;
 				$('#session-time').hide();
+
+				function breakTimer(){
+
+					$('#time-type').empty().append('Break Time: ');
+					$('#break-time').show();
+					$('#time-type').show();
+					breakT -= 1;
+
+					if (breakT === 0){
+						clearInterval(startBreak);
+						buzzer.play();
+						$('#reset').show();
+						$('#break-time, #time-type').hide();
+					}
+
+					if (breakT % 60 >= 10){
 						$('#break-time').empty().append(Math.floor(breakT / 60) + ':' + breakT % 60);
+					} else {
 						$('#break-time').empty().append(Math.floor(breakT / 60) + ':' + '0' + breakT % 60);
+					}
+				}
+				
 			}
 
 			if (session % 60 >= 10){
@@ -36,29 +58,10 @@ $(document).ready(function(){
 				$('#session-time').empty().append(Math.floor(session / 60) + ':' + '0' + session %  60);
 			}
 
-			function breakTimer(){
-
-				$('#time-type').html('Break Time: ');
-				$('#break-time').show();
-				breakT *= 60;
-				$('#time-type').show();
-				breakT -= 1;
-
-				if (breakT === 0){
-					clearInterval(startBreak);
-					buzzer.play();
-					$('#reset').show();
-					$('#break-time, #time-type').hide();
-				}
-
-				if (breakT % 60 >= 10){
-				} else {
-				}
-			}
 		}
+
 	});
 
-			const startBreak = setInterval(breakTimer, 1000);
 	$('#reset').on('click', function(){
 		session = 25;
 		breakT = 5;
