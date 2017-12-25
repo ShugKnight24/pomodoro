@@ -18,6 +18,11 @@ body {
 	background-color: #C60F13;
 	border: 1px solid #7F0A0C;
 }
+
+#reset {
+	background-color: #337ab7;
+	border-color: #2e6da4
+}
 }
 
 h2 {
