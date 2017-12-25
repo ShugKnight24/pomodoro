@@ -18,7 +18,7 @@ $(document).ready(function(){
 			// Hide all the different titles and buttons
 			$('#start-button, #minus-5-clock, #add-5-clock, #minus-5-break, #add-5-break, #break-time, #session-header, #break-header, #description').hide();
 			$('#time-type').show();
-			$('#time-type').html('Session Time: ');
+			$('#time-type').empty().append('Session Time: ');
 
 			session -= 1;
 
@@ -26,12 +26,14 @@ $(document).ready(function(){
 				buzzer.play();
 				clearInterval(counter);
 				$('#session-time').hide();
+						$('#break-time').empty().append(Math.floor(breakT / 60) + ':' + breakT % 60);
+						$('#break-time').empty().append(Math.floor(breakT / 60) + ':' + '0' + breakT % 60);
 			}
 
 			if (session % 60 >= 10){
-				$('#session-time').html(Math.floor(session / 60) + ':' + session % 60);
+				$('#session-time').empty().append(Math.floor(session / 60) + ':' + session % 60);
 			} else {
-				$('#session-time').html(Math.floor(session / 60) + ':' + '0' + session %  60);
+				$('#session-time').empty().append(Math.floor(session / 60) + ':' + '0' + session %  60);
 			}
 
 			function breakTimer(){
@@ -50,9 +52,7 @@ $(document).ready(function(){
 				}
 
 				if (breakT % 60 >= 10){
-					$('#break-time').html(Math.floor(breakT / 60) + ':' + breakT % 60);
 				} else {
-					$('#break-time').html(Math.floor(breakT / 60) + ':' + '0' + breakT % 60);
 				}
 			}
 		}
@@ -62,8 +62,8 @@ $(document).ready(function(){
 	$('#reset').on('click', function(){
 		session = 25;
 		breakT = 5;
-		$('#session-time').html(session);
-		$('#break-time').html(breakT);
+		$('#session-time').empty().append(session);
+		$('#break-time').empty().append(breakT);
 		$('#start-button, #minus-5-clock, #add-5-clock, #minus-5-break, #add-5-break, #session-time, #break-time, #session-header, #break-header, #description').show();
 		$('#reset, #time-type').hide();
 	});
@@ -71,24 +71,24 @@ $(document).ready(function(){
 	$('#minus-5-clock').on('click',function(){
 		if(session > 5){
 			session -= 5;
-			$('#session-time').html(session);
+			$('#session-time').empty().append(session);
 		}
 	});
 
 	$('#add-5-clock').on('click',function(){
 		session += 5;
-		$('#session-time').html(session);
+		$('#session-time').empty().append(session);
 	});
 
 	$('#minus-5-break').on('click',function(){
 		if(breakT > 5){
 			breakT -= 5;
-			$('#break-time').html(breakT);
+			$('#break-time').empty().append(breakT);
 		}
 	});
 
 	$('#add-5-break').on('click',function(){
 		breakT += 5;
-		$('#break-time').html(breakT);
+		$('#break-time').empty().append(breakT);
 		});
 });
