@@ -6,7 +6,7 @@ $(document).ready(function(){
 	let session = parseInt($('#session-time').html());
 	let breakT = parseInt($('#break-time').html());
 
-	$('#start-button').on('click', function(){
+	$('#start').on('click', function(){
 
 		const counter = setInterval(timer, 1000);
 
@@ -14,7 +14,7 @@ $(document).ready(function(){
 
 		function timer(){
 			// Hide all the different titles and buttons
-			$('#start-button, #minus-5-clock, #add-5-clock, #minus-5-break, #add-5-break, #break-time, #session-header, #break-header, #description').addClass('hidden');
+			$('#start, #minus-5-clock, #add-5-clock, #minus-5-break, #add-5-break, #break-time, #session-header, #break-header, #description').addClass('hidden');
 
 			$('#time-type').empty().append('Session Time: ');
 

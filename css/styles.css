@@ -19,6 +19,9 @@ a:hover {
 }
 
 .button.remove-time {
+#start {
+	margin: 10px 0;
+}
 	background-color: #C60F13;
 	border: 1px solid #7F0A0C;
 }
