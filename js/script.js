@@ -47,7 +47,7 @@ $(document).ready(function(){
 						$('#break-time').empty().append(Math.floor(breakT / 60) + ':' + '0' + breakT % 60);
 					}
 				}
-				
+
 			}
 
 			if (session % 60 >= 10){
@@ -70,7 +70,7 @@ $(document).ready(function(){
 	});
 
 	$('#minus-5-clock').on('click',function(){
-		if(session > 5){
+		if (session > 5){
 			session -= 5;
 			$('#session-time').empty().append(session);
 		}
@@ -82,7 +82,7 @@ $(document).ready(function(){
 	});
 
 	$('#minus-5-break').on('click',function(){
-		if(breakT > 5){
+		if (breakT > 5){
 			breakT -= 5;
 			$('#break-time').empty().append(breakT);
 		}
