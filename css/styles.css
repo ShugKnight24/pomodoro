@@ -1,6 +1,17 @@
+* {
+	box-sizing: border-box;
+}
+
 body {
-	color: #0add08;
+	color: #396516;
 	font-family: 'Happy Monkey', cursive;
+	text-align: center;
+}
+
+h2 {
+	display: inline-block;
+}
+
 a:hover {
 	cursor: pointer;
 }
@@ -38,10 +49,6 @@ a:hover {
 	display: none;
 }
 
-h2 {
-	display: inline;
 }
 
-#start {
-	margin: 10px;
 }
