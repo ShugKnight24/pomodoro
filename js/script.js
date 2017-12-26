@@ -15,6 +15,7 @@ $(document).ready(function(){
 		function timer(){
 			// Hide all the different titles and buttons
 			$('#start, #minus-5-clock, #add-5-clock, #minus-5-break, #add-5-break, #break-time, #session-header, #break-header, #description').addClass('hidden');
+			$('#stop').removeClass('hidden');
 
 			$('#time-type').empty().append('Session Time: ');
 
@@ -59,13 +60,13 @@ $(document).ready(function(){
 
 	});
 
-	$('#reset').on('click', function(){
+	$('#reset, #stop').on('click', function(){
 		session = 25;
 		breakT = 5;
 		$('#session-time').empty().append(session);
 		$('#break-time').empty().append(breakT);
 		$('#start-button, #minus-5-clock, #add-5-clock, #minus-5-break, #add-5-break, #session-time, #break-time, #session-header, #break-header, #description').removeClass('hidden');
-		$('#reset, #time-type').addClass('hidden');
+		$('#reset, #time-type, #stop').addClass('hidden');
 	});
 
 	$('#minus-5-clock').on('click',function(){

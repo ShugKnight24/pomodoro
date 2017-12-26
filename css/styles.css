@@ -18,10 +18,12 @@ a:hover {
 	border: 1px solid #396516;
 }
 
-.button.remove-time {
 #start {
 	margin: 10px 0;
 }
+
+.button.remove-time,
+#stop {
 	background-color: #C60F13;
 	border: 1px solid #7F0A0C;
 }
