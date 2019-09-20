@@ -65,7 +65,7 @@ $(document).ready(function(){
 		breakT = 5;
 		$('#session-time').empty().append(session);
 		$('#break-time').empty().append(breakT);
-		$('#start-button, #minus-5-clock, #add-5-clock, #minus-5-break, #add-5-break, #session-time, #break-time, #session-header, #break-header, #description').removeClass('hidden');
+		$('#start, #minus-5-clock, #add-5-clock, #minus-5-break, #add-5-break, #session-time, #break-time, #session-header, #break-header, #description').removeClass('hidden');
 		$('#reset, #time-type, #stop').addClass('hidden');
 	});
 
