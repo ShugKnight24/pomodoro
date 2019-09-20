@@ -38,7 +38,7 @@ $(document).ready(function(){
 						clearInterval(startBreak);
 						buzzer.play();
 						$('#reset').removeClass('hidden');
-						$('#break-time, #time-type').addClass('hidden');
+						$('#break-time, #time-type, #stop').addClass('hidden');
 					}
 
 					if (breakT % 60 >= 10){
