@@ -2,6 +2,13 @@ $(document).ready(function(){
 
 	'use strict';
 
+	$('.accordion-heading').on('click', function(event){
+		event.stopPropagation();
+		var $this = $(this);
+		$this.parent('.accordion').toggleClass('accordion-active');
+		$this.parent('.accordion').siblings('.accordion-body').slideToggle('fast').toggleClass('accordion-active');
+	});
+
 	const buzzer = $('#buzzer')[0];
 	let session = parseInt($('#session-time').html());
 	let breakT = parseInt($('#break-time').html());
