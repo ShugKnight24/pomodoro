@@ -21,7 +21,7 @@ $(document).ready(function(){
 
 		function timer(){
 			// Hide all the different titles and buttons
-			$('#start, #minus-5-clock, #add-5-clock, #minus-5-break, #add-5-break, #break-time, #session-header, #break-header, #description').addClass('hidden');
+			$('#start, #minus-5-clock, #add-5-clock, .break-div, #minus-5-break, #add-5-break').addClass('hidden');
 			$('#stop').removeClass('hidden');
 
 			$('#time-type').empty().append('Session Time: ');
@@ -33,12 +33,12 @@ $(document).ready(function(){
 				clearInterval(counter);
 				const startBreak = setInterval(breakTimer, 1000);
 				breakT *= 60;
-				$('#session-time').addClass('hidden');
+				$('.time-div').addClass('hidden');
 
 				function breakTimer(){
 
 					$('#time-type').empty().append('Break Time: ');
-					$('#break-time, #time-type').removeClass('hidden');
+					$('.break-div, #time-type').removeClass('hidden');
 					breakT -= 1;
 
 					if (breakT === 0){
@@ -72,7 +72,7 @@ $(document).ready(function(){
 		breakT = 5;
 		$('#session-time').empty().append(session);
 		$('#break-time').empty().append(breakT);
-		$('#start, #minus-5-clock, #add-5-clock, #minus-5-break, #add-5-break, #session-time, #break-time, #session-header, #break-header, #description').removeClass('hidden');
+		$('.time-div, #start, #minus-5-clock, #add-5-clock, #minus-5-break, #add-5-break, #session-time, #break-time, #session-header, #break-header').removeClass('hidden');
 		$('#reset, #time-type, #stop').addClass('hidden');
 	});
 

@@ -94,6 +94,29 @@ a:hover {
 .accordion-wrapper > .accordion {
 	border: 1px solid #ddd;
 }
+
+.time-div,
+.break-div {
+	display: inline-block;
+	padding: 0 25px;
+}
+
+.time-div h2,
+.break-div h2 {
+	margin: 10px;
+}
+
+.time-div h3,
+.break-div h3 {
+	padding: 5px;
+}
+
+.time-type,
+#session-time,
+#break-time {
+	display: inline-block;
+}
+
 .button {
 	display: inline-block;
 	font-size: 16px;
