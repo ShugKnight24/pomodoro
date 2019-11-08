@@ -1,4 +1,7 @@
-* {
+/* General Styles */
+*,
+*::after,
+*::before {
 	box-sizing: border-box;
 }
 
@@ -8,12 +11,33 @@ body {
 	text-align: center;
 }
 
-h2 {
-	display: inline-block;
+a {
+	text-decoration: none;
+}
+
+a:link,
+a:visited {
+	color: #FF6347;
+	-webkit-transition: all 0.7s;
+	transition: all 0.7s;
 }
 
 a:hover {
 	cursor: pointer;
+	color: #D1523B;
+	font-weight: bold;
+}
+
+/* Pomodoro Styles */
+#tomato-container {
+	width: 100%;
+	max-width: 1400px;
+	margin: 0 auto;
+	position: relative;
+}
+
+h1 {
+	margin: 10px 0;
 }
 
 /* Accordion element */
@@ -122,12 +146,24 @@ a:hover {
 	font-size: 16px;
 	padding: 15px 30px;
 	color: #FFF;
+	box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+	-webkit-transition: all 0.7s;
+	transition: all 0.7s;
 }
 
 .button.add-time,
 #start {
 	background-color: #5DA423;
 	border: 1px solid #396516;
+}
+
+.button.add-time:hover,
+#start:hover {
+	cursor: pointer;
+	background-color: #4D871D;
+	border-color: #2F5313;
+	color: white;
+	box-shadow: 0 5px 18px #4D871D;
 }
 
 #start {
@@ -140,9 +176,26 @@ a:hover {
 	border: 1px solid #7F0A0C;
 }
 
+.button.remove-time:hover,
+#stop:hover {
+	cursor: pointer;
+	background-color: #A30D10;
+	border-color: #68090A;
+	color: white;
+	box-shadow: 0 5px 18px #A30D10;
+}
+
 #reset {
 	background-color: #337ab7;
-	border-color: #2e6da4
+	border: 1px solid #2E6DA4;
+}
+
+#reset:hover {
+	background-color: #2A6496;
+	border-color: #265A87;
+	cursor: pointer;
+	color: white;
+	box-shadow: 0 5px 18px #2A6496;
 }
 
 /* Helper Classes */
