@@ -86,6 +86,7 @@ h1 {
 	border-bottom-right-radius: 5px;
 	padding: 10px;
 	opacity: 0;
+	-webkit-transition: opacity 0.5s linear;
 	transition: opacity 0.5s linear;
 	border: 1px solid #ddd;
 	border-top: none;
@@ -103,8 +104,7 @@ h1 {
 
 .accordion-icon {
 	font-weight: bold;
-	transition: 0.3s -webkit-transform;
-	transition: 0.3s transform;
+	-webkit-transition: 0.3s transform, 0.3s -webkit-transform;
 	transition: 0.3s transform, 0.3s -webkit-transform;
 	position: absolute;
 	right: 25px;
@@ -222,8 +222,8 @@ h1 {
 }
 
 .open-settings i {
-	transition: 0.7s -webkit-transform;
-	transition: 0.7s transform;
+	-webkit-transition: 0.7s transform, 0.7s -webkit-transform;
+	transition: 0.7s transform, 0.7s -webkit-transform;
 }
 
 .open-settings:hover {
@@ -251,6 +251,7 @@ h1 {
 	background-color: #2F5313;
 	overflow-x: hidden;
 	padding-top: 30px;
+	-webkit-transition: 0.7s;
 	transition: 0.7s;
 }
 
