@@ -202,3 +202,73 @@ h1 {
 .hidden {
 	display: none;
 }
+
+/* Settings */
+.settings-container {
+	text-align: right;
+	padding-top: 25px;
+	padding-right: 25px;
+}
+
+.open-settings,
+.close-settings {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.open-settings {
+	color: #396516;
+	font-size: 24px;
+	display: inline-block;
+}
+
+.open-settings i {
+	transition: 0.7s -webkit-transform;
+	transition: 0.7s transform;
+}
+
+.open-settings:hover {
+	cursor: pointer;
+	color: #2F5313;
+	font-weight: bold;
+}
+
+.open-settings:hover i {
+	-webkit-transform: rotate(180deg);
+	transform: rotate(180deg);
+}
+
+.side-settings {
+	font-size: 24px;
+	text-align: left;
+	height: 100%;
+	height: 100vh;
+	width: 0;
+	position: absolute;
+	z-index: 1;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #2F5313;
+	overflow-x: hidden;
+	padding-top: 30px;
+	transition: 0.7s;
+}
+
+.side-settings.open {
+	width: 300px;
+	border-left: 1px solid transparent;
+}
+
+.side-settings .close-settings {
+	color: #C60F13;
+	position: absolute;
+	top: 25px;
+	right: 25px;
+	font-size: 24px;
+}
+
+.side-settings .close-settings:hover {
+	color: #A30D10;
+	cursor: pointer;
+	font-weight: bold;
+}

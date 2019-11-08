@@ -100,3 +100,17 @@ $(document).ready(function(){
 		$('#break-time').empty().append(breakT);
 		});
 });
+
+function openSettings() {
+	$('.side-settings').addClass('open');
+}
+
+const $openSettingsButton = $('.open-settings');
+$openSettingsButton.on('click', openSettings);
+
+function closeSettings() {
+	$('.side-settings').removeClass('open');
+}
+
+const $closeSettingsButton = $('.close-settings');
+$closeSettingsButton.on('click', closeSettings);
