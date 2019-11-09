@@ -5,6 +5,7 @@ Currently refactoring... Will likely create a React version in the future
 
 ### Improvements / To-Do:
 - [ ] Improve UI - *Cringe* 😬
+  - [X] Fix mobile responsiveness - *Cringe Intensifies*
   - [X] Moved description to accordion
   - [X] Add accordion for how to use Pomodoro
   - [X] Add accordion for additional info
