@@ -229,6 +229,14 @@ h1 {
 	box-shadow: 0 5px 18px #2A6496;
 }
 
+/* Footer */
+
+.tomato-footer {
+	padding: 20px;
+	max-width: 1400px;
+	margin: 0 auto;
+}
+
 /* Helper Classes */
 .hidden {
 	display: none;

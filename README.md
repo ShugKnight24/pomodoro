@@ -17,6 +17,8 @@ Currently refactoring... Will likely create a React version in the future
 	- [ ] Additional sounds
 - [ ] Clean up timer logic
 - [ ] Don't run audio if user hits stop button
+- [X] Pomodoro trademark / copyright
+  - [X] Illustrate site is not affiliated with Francesco Cirillo
 
 ### Future Ideas
 - [ ] Allow user to turn on ticking / metronome noise per second
