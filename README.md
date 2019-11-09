@@ -9,6 +9,9 @@ Currently refactoring... Will likely create a React version in the future
   - [X] Moved description to accordion
   - [X] Add accordion for how to use Pomodoro
   - [X] Add accordion for additional info
+  - [ ] Better styles for Setting menu
+    - [ ] Add all needed fields
+  - [ ] Animations / etc...
 - [ ] Build a tomato with css
 - [ ] Add a settings modal for additional options
   - [X] Add modal
@@ -28,6 +31,16 @@ Currently refactoring... Will likely create a React version in the future
   - [ ] Kitchen timer
   - [ ] Tomato timer
 - [ ] Access browser notifications...?
+  - [ ] Informational modal if no notifications
+    - [ ] Image illustrating notification reset
+- [ ] Add user accounts
+  - [ ] Authentication
+  - [ ] Store user progress
+    - [ ] Daily Pomodoros hit
+      - [ ] Average
+    - [ ] Daily, weekly, monthly, etc...
+  - [ ] Task tracking / BasicTask Management
+    - [ ] Progress over time (i.e. number of Pomodoros invested)
 
 ### Implementations
 
