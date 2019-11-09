@@ -119,6 +119,9 @@ h1 {
 	border: 1px solid #ddd;
 }
 
+.how-to-accordion + .accordion-body ol {
+	text-align: left;
+}
 .time-div,
 .break-div {
 	display: inline-block;
