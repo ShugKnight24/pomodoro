@@ -6,8 +6,8 @@ Currently refactoring... Will likely create a React version in the future
 ### Improvements / To-Do:
 - [ ] Improve UI - *Cringe* 😬
   - [X] Moved description to accordion
-  - [ ] Add another accordion for additional info
   - [X] Add accordion for how to use Pomodoro
+  - [X] Add accordion for additional info
 - [ ] Build a tomato with css
 - [ ] Add a settings modal for additional options
   - [X] Add modal
