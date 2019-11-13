@@ -312,3 +312,20 @@ h1 {
 	cursor: pointer;
 	font-weight: bold;
 }
+
+.settings-heading {
+	color: white;
+	text-align: center;
+	text-decoration: underline;
+}
+
+.volume-container {
+	color: white;
+	text-align: center;
+}
+
+.volume-heading {
+	margin-block-start: 0;
+	margin-block-end: 0;
+}
+

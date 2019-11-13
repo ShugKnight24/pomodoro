@@ -114,3 +114,31 @@ function closeSettings() {
 
 const $closeSettingsButton = $('.close-settings');
 $closeSettingsButton.on('click', closeSettings);
+
+const $buzzer = $('#buzzer')[0];
+// Adjust Volume Input
+function updateVolume(){
+	$buzzer.volume = (this.value / 100);
+}
+
+const $updateVolumeInput = $('#update-volume');
+
+$updateVolumeInput.on('change', updateVolume)
+	.on('mousemove', updateVolume);
+
+// Decrease Volume
+const $volumeMinusIcon = $('.volume-container .fa-minus');
+
+$volumeMinusIcon.on('click', function(){
+	$updateVolumeInput[0].stepDown(10);
+	$buzzer.volume = ($updateVolumeInput[0].value / 100);
+});
+
+// Increase Volume
+const $volumePlusIcon = $('.volume-container .fa-plus');
+
+$volumePlusIcon.on('click', function(){
+	$updateVolumeInput[0].stepUp(10);
+	$buzzer.volume = ($updateVolumeInput[0].value / 100);
+});
+
