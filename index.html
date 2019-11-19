@@ -79,26 +79,78 @@
 				</div>
 			</div>
 		</div>
-		<div class="container">
-			<div class="time-div">
-				<h2 id="session-header">Session Time</h2>
-				<a class="button remove-time" id="minus-5-clock">-</a>
-				<h3 class="time-type"></h3>
-				<h3 id="session-time">25</h3>
-				<a class="button add-time" id="add-5-clock">+</a>
+		<div class="time-container">
+			<div class="container">
+				<div class="time-div">
+					<h2 id="session-header">Session Time</h2>
+					<a class="button remove-time" id="minus-5-clock">-</a>
+					<h3 class="time-type"></h3>
+					<h3 id="session-time">1</h3>
+					<a class="button add-time" id="add-5-clock">+</a>
+				</div>
+				<div class="break-div">
+					<h2 id="break-header">Break Time</h2>
+					<a class="button remove-time" id="minus-5-break">-</a>
+					<h3 class="time-type"></h3>
+					<h3 id="break-time">1</h3>
+					<a class="button add-time" id="add-5-break">+</a>
+				</div>
 			</div>
-			<div class="break-div">
-				<h2 id="break-header">Break Time</h2>
-				<a class="button remove-time" id="minus-5-break">-</a>
-				<h3 class="time-type"></h3>
-				<h3 id="break-time">5</h3>
-				<a class="button add-time" id="add-5-break">+</a>
+			<div id="pomodoro-actions">
+				<a class="button" id="start">Start</a>
+				<a class="button hidden" id="stop">Stop</a>
+				<a class="button hidden" id="reset">Reset</a>
 			</div>
 		</div>
-		<div id="pomodoro-actions">
-			<a class="button" id="start">Start</a>
-			<a class="button hidden" id="stop">Stop</a>
-			<a class="button hidden" id="reset">Reset</a>
+		<div class="todo-container">
+			<h2 class="title">Things to do!</h2>
+			<div class="all-tasks">
+				<h3 class="task-list-title">My Lists</h3>
+				<ul class="task-list" data-lists>
+				</ul>
+
+				<form data-new-list-form>
+					<input
+						data-new-list-input
+						class="new-input list"
+						type="text"
+						placeholder="new list name"
+						aria-label="new list name"
+					>
+					<button
+						class="button create"
+						aria-label="create new list">+</button>
+				</form>
+			</div>
+			<div class="todo-list" data-list-display-container>
+				<div class="todo-header">
+					<h2 class="todo-title" data-list-title>Update Me Bruv!</h2>
+					<p class="task-count" data-list-count># of Tasks remaining</p>
+				</div>
+				<div class="todo-body">
+					<div class="tasks" data-tasks>
+
+					</div>
+					<div class="new-task-creator">
+						<form data-new-task-form>
+							<input
+								data-new-task-input
+								class="new-input task"
+								type="text"
+								placeholder="new task name"
+								aria-label="new task name"
+							>
+							<button
+								class="button create"
+								aria-label="create new task">+</button>
+						</form>
+					</div>
+					<div class="delete-list">
+						<button class="button delete" data-clear-completed-tasks>Clear Completed Tasks</button>
+						<button class="button delete" data-delete-list-button>Delete Current List</button>
+					</div>
+				</div>
+			</div>
 		</div>
 		<div class="tomato-footer">
 			Pomodoro® and Pomodoro Technique® are registered trademarks of Francesco Cirillo. This site is not affiliated with Francesco Cirillo.

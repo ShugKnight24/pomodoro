@@ -321,11 +321,299 @@ h1 {
 
 .volume-container {
 	color: white;
-	text-align: center;
+/* Todo List Styles */
+.todo-container {
+	--primary-color: #396516;
+	--light-color: #F4F4F4;
+	--dark-color: #333;
+	--warning-color: #C60F13;
+
+	margin: 0;
+	padding-bottom: 60px;
+	font-family: "Work Sans", sans-serif;
+	font-weight: 300;
+	font-size: 1.5rem;
+	background-color: var(--primary-color);
+	color: var(--light-color);
+	display: grid;
+	grid:
+		"header header header header" auto
+		"...... lists  active ......" auto /
+		1fr minmax(100px, 250px) minmax(250px, 450px) 1fr;
 }
 
-.volume-heading {
+.title {
+	grid-area: header;
+	text-align: center;
+	font-size: calc(5vw + 2rem);
+	font-weight: 900;
 	margin-block-start: 0;
 	margin-block-end: 0;
+	margin: 20px auto;
+	color: rgba(0, 0, 0, 0.6);
+	letter-spacing: 2px;
+	font-style: italic;
 }
 
+.all-tasks {
+	grid-area: lists;
+}
+
+.task-list-title {
+	margin-block-start: 0;
+	margin-block-end: 0;
+	text-decoration: underline;
+}
+
+.task-list {
+	font-size: 1.2rem;
+	line-height: 1.5;
+	list-style: circle;
+	padding-left: 1.2rem;
+}
+
+.list-name {
+	cursor: pointer;
+}
+
+.list-item:hover {
+	opacity: 0.7;
+}
+
+.task-list li {
+	text-align: left;
+}
+
+form {
+	display: flex;
+}
+
+.todo-container .button {
+	cursor: pointer;
+	background: 0;
+	border: 0;
+	padding: 0;
+	color: inherit;
+	font-size: 1rem;
+}
+
+.todo-container .button.create {
+	font-size: 1.5rem;
+	font-weight: 900;
+	margin-right: 0.25rem;
+	-webkit-transition: opacity 250ms ease-in;
+	transition: opacity 250ms ease-in;
+	box-shadow: none;
+}
+
+.button.create:hover {
+	opacity: 0.7;
+}
+
+.new-input {
+	background: transparent;
+	border: 0;
+	color: inherit;
+	border-bottom: 1px solid currentColor;
+	font-size: inherit;
+	outline: none;
+	-webkit-transition: border-bottom 150ms ease-in;
+	transition: border-bottom 150ms ease-in;
+	order: 2;
+	padding: 0.25rem;
+}
+
+.new-input:focus {
+	border-bottom-width: 3px;
+}
+
+.new-input::placeholder {
+	color: var(--light-color);
+	opacity: 0.6;
+}
+
+.new-input.task::placeholder {
+	color: var(--dark-color);
+}
+
+.new-input:focus::placeholder {
+	opacity: 0.3;
+}
+
+.new-input.list {
+	font-size: 1.1rem;
+}
+
+.new-input.task {
+	margin: 0;
+}
+
+.active-list {
+	font-weight: bold;
+}
+
+.todo-list {
+	--spacer: 2rem;
+
+	grid-area: active;
+	background: #ECE63D;
+	color: var(--dark-color);
+}
+
+.todo-header {
+	padding: var(--spacer);
+	background: var(--dark-color);
+	color: #F4F4F4;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.todo-title {
+	margin: 0;
+	margin-right: 1rem;
+	text-decoration: underline;
+}
+
+.task-count {
+	margin: 0;
+	font-size: 1rem;
+}
+
+.todo-body {
+	margin: 0 0 0 var(--spacer);
+	padding: calc(var(--spacer) * 2) 0 var(--spacer);
+	text-align: left;
+	position: relative;
+	border-left: 10px double #ED1C24;
+}
+
+.tasks {
+	padding: var(--spacer);
+	padding-bottom: 0;
+}
+
+.tasks:first-child {
+	border-top: 3px solid blue;
+}
+
+.new-task-creator {
+	padding: 0 var(--spacer);
+}
+
+.new-task-creator .create {
+	color: var(--primary-color);
+}
+
+.check[type="checkbox"] {
+	width: 100%;
+	height: 100%;
+	opacity: 0;
+	position: absolute;
+}
+
+.task {
+	cursor: pointer;
+	position: relative;
+	margin-bottom: 1.25em;
+}
+
+.task label {
+	display: inline-flex;
+	align-items: center;
+	position: relative;
+	cursor: pointer;
+}
+
+.task::after {
+	content: '';
+	position: absolute;
+	right: 0;
+	left: 0;
+	bottom: -0.5rem;
+	height: 2px;
+	background: currentColor;
+	opacity: 0.6;
+}
+
+.custom-checkbox {
+	--size: 0.75rem;
+
+	display: inline-block;
+	width: var(--size);
+	height: var(--size);
+	margin-right: var(--size);
+	cursor: pointer;
+	border: 2px solid currentColor;
+	border-radius: 50%;
+	-webkit-transform: scale(1);
+	transform: scale(1);
+	-webkit-transition: transform 250ms ease-in-out;
+	transition: transform 250ms ease-in-out;
+}
+
+.task:hover .custom-checkbox,
+.check[type="checkbox"]:focus + label .custom-checkbox {
+	-webkit-transform: scale(1.5);
+	transform: scale(1.5);
+	color: var(--primary-color);
+}
+
+.check[type="checkbox"]:checked + label .custom-checkbox {
+	background: var(--primary-color);
+	border-color: var(--primary-color);
+	box-shadow: inset 0 0 0 2px white;
+}
+
+.check[type="checkbox"]:checked + label {
+	opacity: 0.5;
+}
+
+.task label::after {
+	content: '';
+	position: absolute;
+	left: 2rem;
+	right: 0;
+	top: 50%;
+	height: 3px;
+	background: currentColor;
+	-webkit-transform: scaleX(0);
+	transform: scaleX(0);
+	-webkit-transform-origin: right;
+	transform-origin: right;
+	-webkit-transition: transform 150ms ease-in-out;
+	transition: transform 150ms ease-in-out;
+}
+
+.check[type="checkbox"]:checked + label::after {
+	-webkit-transform: scaleX(1);
+	transform: scaleX(1);
+	-webkit-transform-origin: left;
+	transform-origin: left;
+}
+
+.delete-list {
+	display: flex;
+	justify-content: space-evenly;
+	box-shadow: none;
+	position: absolute;
+	width: 100%;
+	left: 0;
+	bottom: -35px;
+	color: var(--light-color);
+}
+
+.button.delete {
+	font-size: 1rem;
+	font-weight: 700;
+	letter-spacing: 1px;
+	box-shadow: none;
+	opacity: 0.7;
+	-webkit-transition: color 150ms;
+	transition: color 150ms;
+}
+
+.button.delete:hover {
+	color: var(--warning-color);
+	opacity: 1.0;
+}

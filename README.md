@@ -41,6 +41,42 @@ Currently refactoring... Will likely create a React version in the future
     - [ ] Daily, weekly, monthly, etc...
   - [ ] Task tracking / BasicTask Management
     - [ ] Progress over time (i.e. number of Pomodoros invested)
+- [ ] Add todo functionality
+  - [ ] Basic ToDo functionality
+    - [X] Store todos
+      - [X] Lists
+      - [X] Tasks
+    - [X] Display todos
+      - [X] Lists
+      - [X] Tasks
+    - [X] Add todos
+      - [X] Lists
+	    - [X] Set active list on add of new list
+	  - [X] Tasks
+    - [ ] Update todos
+      - [ ] Lists
+      - [ ] Tasks
+    - [ ] Delete todos
+      - [ ] Lists
+	    - [ ] From lists list 😂
+		- [X] Button below selected list
+		- [ ] Add confirmation popup
+	  - [ ] Tasks
+	    - [ ] Add confirmation popup
+  - [ ] Track completed todos in one list
+    - [ ] Push to list on clear completed
+	- [ ] Store completed in local storage
+  - [ ] Track number of Pomodoros per todo
+  - [ ] Improve styles - UI/UX
+    - [ ] Create starter list(s) and tasks as a tutorial
+    - [ ] Ways to deal with long list and task names aside from overflow hidden
+	  - [ ] Shift to new line?
+	- [ ] Side by side w/ timer on Desktop large screens?
+	- [ ] Appearance on mobile
+	  - [ ] Current design breaking due to some overflows
+	  - [ ] Improve element stacking for a cleaner flow
+  - [ ] Delete All
+    - [ ] Add button to remove all tasks and lists and clear local storage
 
 ### Implementations
 
