@@ -13,15 +13,18 @@ Currently refactoring... Will likely create a React version in the future
     - [ ] Add all needed fields
   - [ ] Animations / etc...
 - [ ] Build a tomato with css
-- [ ] Add a settings modal for additional options
-  - [X] Add modal
+- [ ] Add a settings menu for additional options
+  - [X] Add the menu
     - [ ] Inputs for custom time setting
-    - [ ] Volume bar
+    - [X] Volume bar
 	- [ ] Additional sounds
+	- [ ] Browser notification controls
 - [ ] Clean up timer logic
 - [ ] Don't run audio if user hits stop button
 - [X] Pomodoro trademark / copyright
   - [X] Illustrate site is not affiliated with Francesco Cirillo
+- [ ] Add current time to the title element
+- [ ] Remove reliance on jQuery
 
 ### Future Ideas
 - [ ] Allow user to turn on ticking / metronome noise per second
