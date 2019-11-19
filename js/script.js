@@ -102,6 +102,7 @@ $('.accordion-heading').on('click', function(event){
 	$this.parent('.accordion').siblings('.accordion-body').slideToggle('fast').toggleClass('accordion-active');
 });
 
+// Handle Settings Menu
 function openSettings() {
 	$('.side-settings').addClass('open');
 }
