@@ -186,7 +186,7 @@ listsContainer.addEventListener('click', event => {
 		selectedListId = parseInt(event.target.dataset.listId);
 		saveAndRender();
 	}
-})
+});
 
 newListForm.addEventListener('submit', event => {
 	event.preventDefault();
@@ -218,7 +218,7 @@ clearCompletedTasks.addEventListener('click', event => {
 	const selectedList = lists.find(list => list.id === selectedListId);
 	selectedList.tasks = selectedList.tasks.filter(task => !task.completed);
 	saveAndRender();
-})
+});
 
 deleteListButton.addEventListener('click', event => {
 	deleteCurrentList();
@@ -239,7 +239,7 @@ tasksContainer.addEventListener('click', event => {
 		save();
 		renderTaskCount(selectedList);
 	}
-})
+});
 
 newTaskForm.addEventListener('submit', event => {
 	event.preventDefault();
@@ -254,7 +254,7 @@ newTaskForm.addEventListener('submit', event => {
 	newTaskInput.value = '';
 	const selectedList = lists.find(list => list.id === selectedListId);
 	selectedList.tasks.push(task);
-	saveAndRender()
+	saveAndRender();
 });
 
 function createTask(name){
@@ -321,7 +321,7 @@ function renderTaskCount(selectedList){
 function renderTasks(selectedList){
 	selectedList.tasks.forEach(task => {
 		buidTaskHTML(task);
-	})
+	});
 }
 
 function buidTaskHTML(task){
