@@ -36,10 +36,12 @@ $(document).ready(function(){
 
 		}
 
-		if (sessionTime % 60 >= 10){
-			$('#session-time').empty().append(Math.floor(sessionTime / 60) + ':' + sessionTime % 60);
+		let sessionRemainder = sessionTime % 60;
+
+		if (sessionRemainder >= 10){
+			$('#session-time').empty().append(Math.floor(sessionTime / 60) + ':' + sessionRemainder);
 		} else {
-			$('#session-time').empty().append(Math.floor(sessionTime / 60) + ':' + '0' + sessionTime %  60);
+			$('#session-time').empty().append(Math.floor(sessionTime / 60) + ':' + '0' + sessionRemainder);
 		}
 
 	}
@@ -56,10 +58,12 @@ $(document).ready(function(){
 			$('#break-time, #stop').addClass('hidden');
 		}
 
-		if (breakTime % 60 >= 10){
-			$('#break-time').empty().append(Math.floor(breakTime / 60) + ':' + breakTime % 60);
+		let breakRemainder = breakTime % 60;
+
+		if (breakRemainder >= 10){
+			$('#break-time').empty().append(Math.floor(breakTime / 60) + ':' + breakRemainder);
 		} else {
-			$('#break-time').empty().append(Math.floor(breakTime / 60) + ':' + '0' + breakTime % 60);
+			$('#break-time').empty().append(Math.floor(breakTime / 60) + ':' + '0' + breakRemainder);
 		}
 	}
 
