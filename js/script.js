@@ -6,6 +6,7 @@ $(document).ready(function(){
 	let sessionTime = parseInt($('#session-time').html());
 	let breakTime = parseInt($('#break-time').html());
 	let startSessionTimer;
+	let startBreakTimer;
 
 	$('#start').on('click', function(){
 
@@ -29,29 +30,11 @@ $(document).ready(function(){
 		if (sessionTime === 0){
 			buzzer.play();
 			clearInterval(startSessionTimer);
-			const startBreak = setInterval(breakTimer, 1000);
+			startBreakTimer = setInterval(breakTimer, 1000);
 			breakTime *= 60;
 			$('.time-div').addClass('hidden');
 
-			function breakTimer(){
-
-				$('#time-type').empty().append('Break Time: ');
-				$('.break-div, #time-type').removeClass('hidden');
-				breakTime -= 1;
-
-				if (breakTime === 0){
-					clearInterval(startBreak);
-					buzzer.play();
-					$('#reset').removeClass('hidden');
-					$('#break-time, #time-type, #stop').addClass('hidden');
-				}
-
-				if (breakTime % 60 >= 10){
-					$('#break-time').empty().append(Math.floor(breakTime / 60) + ':' + breakTime % 60);
-				} else {
-					$('#break-time').empty().append(Math.floor(breakTime / 60) + ':' + '0' + breakTime % 60);
-				}
-			}
+			breakTimer();
 
 		}
 
@@ -61,6 +44,26 @@ $(document).ready(function(){
 			$('#session-time').empty().append(Math.floor(sessionTime / 60) + ':' + '0' + sessionTime %  60);
 		}
 
+	}
+
+	function breakTimer(){
+
+		$('#time-type').empty().append('Break Time: ');
+		$('.break-div, #time-type').removeClass('hidden');
+		breakTime -= 1;
+
+		if (breakTime === 0){
+			clearInterval(startBreakTimer);
+			buzzer.play();
+			$('#reset').removeClass('hidden');
+			$('#break-time, #time-type, #stop').addClass('hidden');
+		}
+
+		if (breakTime % 60 >= 10){
+			$('#break-time').empty().append(Math.floor(breakTime / 60) + ':' + breakTime % 60);
+		} else {
+			$('#break-time').empty().append(Math.floor(breakTime / 60) + ':' + '0' + breakTime % 60);
+		}
 	}
 
 	$('#reset, #stop').on('click', function(){
