@@ -77,28 +77,51 @@ $(document).ready(function(){
 	}
 
 	$('#minus-5-clock').on('click',function(){
-		if (sessionTime > 5){
-			sessionTime -= 5;
-			$('#session-time').empty().append(sessionTime);
-		}
+		updateTimerValues('session', 'subtract');
 	});
 
 	$('#add-5-clock').on('click',function(){
-		sessionTime += 5;
-		$('#session-time').empty().append(sessionTime);
+		updateTimerValues('session', 'add');
 	});
 
 	$('#minus-5-break').on('click',function(){
-		if (breakTime > 5){
-			breakTime -= 5;
-			$('#break-time').empty().append(breakTime);
-		}
+		updateTimerValues('break', 'subtract');
 	});
 
 	$('#add-5-break').on('click',function(){
-		breakTime += 5;
-		$('#break-time').empty().append(breakTime);
-		});
+		updateTimerValues('break', 'add');
+	});
+
+	function updateTimerValues(timeType, operation){
+		let $sessionTime = $('#session-time'),
+			$breakTime = $('#break-time');
+
+		if (timeType === 'session'){
+			if (operation === 'add'){
+				sessionTime += 5;
+				$sessionTime.empty().append(sessionTime);
+			}
+			if (operation === 'subtract'){
+				if (sessionTime > 5){
+					sessionTime -= 5;
+					$sessionTime.empty().append(sessionTime);
+				}
+			}
+		}
+
+		if (timeType === 'break'){
+			if (operation === 'add'){
+				breakTime += 5;
+				$breakTime.empty().append(breakTime);
+			}
+			if (operation === 'subtract'){
+				if (breakTime > 5){
+					breakTime -= 5;
+					$breakTime.empty().append(breakTime);
+				}
+			}
+		}
+	}
 });
 
 // Toggle accordion
