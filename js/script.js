@@ -13,53 +13,55 @@ $(document).ready(function(){
 
 		sessionTime *= 60;
 
-		function timer(){
-			// Hide all the different titles and buttons
-			$('#start, #minus-5-clock, #add-5-clock, .break-div, #minus-5-break, #add-5-break').addClass('hidden');
-			$('#stop').removeClass('hidden');
+		timer();
 
-			$('#time-type').empty().append('session Time: ');
+	});
 
-			sessionTime -= 1;
+	function timer(){
+		// Hide all the different titles and buttons
+		$('#start, #minus-5-clock, #add-5-clock, .break-div, #minus-5-break, #add-5-break').addClass('hidden');
+		$('#stop').removeClass('hidden');
 
-			if (sessionTime === 0){
-				buzzer.play();
-				clearInterval(startSessionTimer);
-				const startBreak = setInterval(breakTimer, 1000);
-				breakTime *= 60;
-				$('.time-div').addClass('hidden');
+		$('#time-type').empty().append('session Time: ');
 
-				function breakTimer(){
+		sessionTime -= 1;
 
-					$('#time-type').empty().append('Break Time: ');
-					$('.break-div, #time-type').removeClass('hidden');
-					breakTime -= 1;
+		if (sessionTime === 0){
+			buzzer.play();
+			clearInterval(startSessionTimer);
+			const startBreak = setInterval(breakTimer, 1000);
+			breakTime *= 60;
+			$('.time-div').addClass('hidden');
 
-					if (breakTime === 0){
-						clearInterval(startBreak);
-						buzzer.play();
-						$('#reset').removeClass('hidden');
-						$('#break-time, #time-type, #stop').addClass('hidden');
-					}
+			function breakTimer(){
 
-					if (breakTime % 60 >= 10){
-						$('#break-time').empty().append(Math.floor(breakTime / 60) + ':' + breakTime % 60);
-					} else {
-						$('#break-time').empty().append(Math.floor(breakTime / 60) + ':' + '0' + breakTime % 60);
-					}
+				$('#time-type').empty().append('Break Time: ');
+				$('.break-div, #time-type').removeClass('hidden');
+				breakTime -= 1;
+
+				if (breakTime === 0){
+					clearInterval(startBreak);
+					buzzer.play();
+					$('#reset').removeClass('hidden');
+					$('#break-time, #time-type, #stop').addClass('hidden');
 				}
 
-			}
-
-			if (sessionTime % 60 >= 10){
-				$('#session-time').empty().append(Math.floor(sessionTime / 60) + ':' + sessionTime % 60);
-			} else {
-				$('#session-time').empty().append(Math.floor(sessionTime / 60) + ':' + '0' + sessionTime %  60);
+				if (breakTime % 60 >= 10){
+					$('#break-time').empty().append(Math.floor(breakTime / 60) + ':' + breakTime % 60);
+				} else {
+					$('#break-time').empty().append(Math.floor(breakTime / 60) + ':' + '0' + breakTime % 60);
+				}
 			}
 
 		}
 
-	});
+		if (sessionTime % 60 >= 10){
+			$('#session-time').empty().append(Math.floor(sessionTime / 60) + ':' + sessionTime % 60);
+		} else {
+			$('#session-time').empty().append(Math.floor(sessionTime / 60) + ':' + '0' + sessionTime %  60);
+		}
+
+	}
 
 	$('#reset, #stop').on('click', function(){
 		sessionTime = 25;
