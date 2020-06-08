@@ -23,8 +23,6 @@ $(document).ready(function(){
 		$('#start, #minus-5-clock, #add-5-clock, .break-div, #minus-5-break, #add-5-break').addClass('hidden');
 		$('#stop').removeClass('hidden');
 
-		$('#time-type').empty().append('session Time: ');
-
 		sessionTime -= 1;
 
 		if (sessionTime === 0){
@@ -48,15 +46,14 @@ $(document).ready(function(){
 
 	function breakTimer(){
 
-		$('#time-type').empty().append('Break Time: ');
-		$('.break-div, #time-type').removeClass('hidden');
+		$('.break-div').removeClass('hidden');
 		breakTime -= 1;
 
 		if (breakTime === 0){
 			clearInterval(startBreakTimer);
 			buzzer.play();
 			$('#reset').removeClass('hidden');
-			$('#break-time, #time-type, #stop').addClass('hidden');
+			$('#break-time, #stop').addClass('hidden');
 		}
 
 		if (breakTime % 60 >= 10){
@@ -76,7 +73,7 @@ $(document).ready(function(){
 
 	function resetPomodoro(){
 		$('.time-div, #start, #minus-5-clock, #add-5-clock, #minus-5-break, #add-5-break, #session-time, #break-time, #session-header, #break-header').removeClass('hidden');
-		$('#reset, #time-type, #stop').addClass('hidden');
+		$('#reset, #stop').addClass('hidden');
 	}
 
 	$('#minus-5-clock').on('click',function(){
