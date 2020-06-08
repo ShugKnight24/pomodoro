@@ -69,7 +69,7 @@ $(document).ready(function(){
 	$('#reset, #stop').on('click', function(){
 		sessionTime = 25;
 		breakTime = 5;
-		$('#sessionTime-time').empty().append(sessionTime);
+		$('#session-time').empty().append(sessionTime);
 		$('#break-time').empty().append(breakTime);
 		$('.time-div, #start, #minus-5-clock, #add-5-clock, #minus-5-break, #add-5-break, #session-time, #break-time, #session-header, #break-header').removeClass('hidden');
 		$('#reset, #time-type, #stop').addClass('hidden');
