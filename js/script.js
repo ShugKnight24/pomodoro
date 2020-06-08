@@ -9,13 +9,9 @@ $(document).ready(function(){
 		startBreakTimer;
 
 	$('#start').on('click', function(){
-
 		startSessionTimer = setInterval(timer, 1000);
-
 		sessionTime *= 60;
-
 		timer();
-
 	});
 
 	function timer(){
@@ -31,9 +27,7 @@ $(document).ready(function(){
 			startBreakTimer = setInterval(breakTimer, 1000);
 			breakTime *= 60;
 			$('.time-div').addClass('hidden');
-
 			breakTimer();
-
 		}
 
 		let sessionRemainder = sessionTime % 60;
