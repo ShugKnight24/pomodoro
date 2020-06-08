@@ -5,10 +5,11 @@ $(document).ready(function(){
 	const buzzer = $('#buzzer')[0];
 	let sessionTime = parseInt($('#session-time').html());
 	let breakTime = parseInt($('#break-time').html());
+	let startSessionTimer;
 
 	$('#start').on('click', function(){
 
-		const counter = setInterval(timer, 1000);
+		startSessionTimer = setInterval(timer, 1000);
 
 		sessionTime *= 60;
 
@@ -23,7 +24,7 @@ $(document).ready(function(){
 
 			if (sessionTime === 0){
 				buzzer.play();
-				clearInterval(counter);
+				clearInterval(startSessionTimer);
 				const startBreak = setInterval(breakTimer, 1000);
 				breakTime *= 60;
 				$('.time-div').addClass('hidden');
@@ -352,4 +353,3 @@ function buidTaskHTML(task){
 function clearElement(element){
 	element.innerHTML = '';
 }
-
