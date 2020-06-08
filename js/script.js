@@ -3,10 +3,10 @@ $(document).ready(function(){
 	'use strict';
 
 	const buzzer = $('#buzzer')[0];
-	let sessionTime = parseInt($('#session-time').html());
-	let breakTime = parseInt($('#break-time').html());
-	let startSessionTimer;
-	let startBreakTimer;
+	let sessionTime = parseInt($('#session-time').html()),
+		breakTime = parseInt($('#break-time').html()),
+		startSessionTimer,
+		startBreakTimer;
 
 	$('#start').on('click', function(){
 
