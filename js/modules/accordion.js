@@ -1,8 +1,8 @@
 "use strict";
 
-export function initAccordion() {
-  const accordionHeadings = document.querySelectorAll(".accordion-heading");
+const accordionHeadings = document.querySelectorAll(".accordion-heading");
 
+export function initAccordion() {
   accordionHeadings.forEach((heading) => {
     heading.addEventListener("click", handleAccordionClick);
   });
