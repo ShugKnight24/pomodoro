@@ -283,89 +283,101 @@ h1 {
   margin-top: var(--spacing-lg);
 }
 
-/* Settings */
+/* Settings Panel */
 .settings-container {
   text-align: right;
-  padding-top: 25px;
-  padding-right: 25px;
-}
-
-.open-settings,
-.close-settings {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  padding: var(--spacing-md) var(--spacing-md) 0;
 }
 
 .open-settings {
-  color: #396516;
-  font-size: 24px;
-  display: inline-block;
-}
-
-.open-settings i {
-  -webkit-transition: 0.7s transform, 0.7s -webkit-transform;
-  transition: 0.7s transform, 0.7s -webkit-transform;
+  color: var(--color-primary);
+  font-size: 1.2rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  transition: all var(--transition-base);
+  cursor: pointer;
 }
 
 .open-settings:hover {
-  cursor: pointer;
-  color: #2f5313;
-  font-weight: bold;
+  background: var(--color-gray-300);
+  color: var(--color-primary-dark);
+}
+
+.open-settings i {
+  transition: transform var(--transition-slow);
 }
 
 .open-settings:hover i {
-  -webkit-transform: rotate(180deg);
   transform: rotate(180deg);
 }
 
 .side-settings {
-  font-size: 24px;
-  text-align: left;
-  height: 100%;
   height: 100vh;
   width: 0;
-  position: absolute;
+  position: fixed;
   z-index: 1;
   top: 0;
   right: 0;
-  bottom: 0;
-  background-color: #2f5313;
+  background: linear-gradient(
+    180deg,
+    var(--color-primary-dark) 0%,
+    var(--color-primary) 100%
+  );
   overflow-x: hidden;
-  padding-top: 30px;
-  -webkit-transition: 0.7s;
-  transition: 0.7s;
-  text-align: center;
-  color: white;
+  padding-top: var(--spacing-2xl);
+  transition: width var(--transition-slow);
+  color: var(--color-white);
 }
 
 .side-settings.open {
-  width: 300px;
-  border-left: 1px solid transparent;
+  width: 360px;
 }
 
-.side-settings .close-settings {
-  color: #c60f13;
+.close-settings {
+  color: var(--color-accent);
   position: absolute;
-  top: 25px;
-  right: 25px;
-  font-size: 24px;
+  top: var(--spacing-lg);
+  right: var(--spacing-lg);
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-base);
 }
 
-.side-settings .close-settings:hover {
-  color: #a30d10;
-  cursor: pointer;
-  font-weight: bold;
+.close-settings:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-accent-dark);
 }
 
 .settings-heading {
-  color: white;
+  color: var(--color-white);
   text-align: center;
-  text-decoration: underline;
+  margin: var(--spacing-md) 0;
+  font-size: 1.8rem;
+  font-weight: 700;
 }
 
-.side-settings h5 {
-  margin-block-start: 0;
-  margin-block-end: 0;
-  color: white;
+.volume-container {
+  padding: var(--spacing-md);
+}
+
+.volume-heading {
+  margin: 0 0 var(--spacing-sm) 0;
+  color: var(--color-white);
+  font-size: 1.25rem;
+  text-align: center;
+}
+
+#update-volume {
+  width: 85%;
+  margin: var(--spacing-sm) 0;
 }
 /* Todo List Styles */
 .todo-container {
