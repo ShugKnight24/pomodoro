@@ -98,10 +98,12 @@ h1 {
   border-bottom-right-radius: 5px;
   padding: 10px;
   opacity: 0;
-  -webkit-transition: opacity 0.5s linear;
-  transition: opacity 0.5s linear;
   border: 1px solid #ddd;
   border-top: none;
+  overflow: hidden;
+  max-height: 0;
+  -webkit-transition: max-height 0.3s ease-out, opacity 0.3s linear;
+  transition: max-height 0.3s ease-out, opacity 0.3s linear;
 }
 
 .accordion-body.accordion-active {

@@ -131,18 +131,6 @@ $(document).ready(function () {
   }
 });
 
-// Toggle accordion
-$(".accordion-heading").on("click", function (event) {
-  event.stopPropagation();
-  var $this = $(this);
-  $this.parent(".accordion").toggleClass("accordion-active");
-  $this
-    .parent(".accordion")
-    .siblings(".accordion-body")
-    .slideToggle("fast")
-    .toggleClass("accordion-active");
-});
-
 // Handle Settings Menu
 function openSettings() {
   $(".side-settings").addClass("open");
