@@ -131,21 +131,6 @@ $(document).ready(function () {
   }
 });
 
-// Handle Settings Menu
-function openSettings() {
-  $(".side-settings").addClass("open");
-}
-
-const $openSettingsButton = $(".open-settings");
-$openSettingsButton.on("click", openSettings);
-
-function closeSettings() {
-  $(".side-settings").removeClass("open");
-}
-
-const $closeSettingsButton = $(".close-settings");
-$closeSettingsButton.on("click", closeSettings);
-
 const $buzzer = $("#buzzer")[0];
 // Adjust Volume Input
 function updateVolume() {
