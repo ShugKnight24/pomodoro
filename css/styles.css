@@ -176,8 +176,9 @@ h1 {
 .time-container {
   background: var(--color-gray-200);
   border-radius: var(--radius-lg);
-  padding: var(--spacing-lg) var(--spacing-md);
-  margin-top: var(--spacing-xl);
+  padding: var(--spacing-lg);
+  width: fit-content;
+  margin: var(--spacing-xl) auto var(--spacing-md);
 }
 
 .container {
@@ -189,7 +190,7 @@ h1 {
   margin-bottom: var(--spacing-xl);
 }
 
-.time-div,
+.session-div,
 .break-div {
   background: var(--color-white);
   padding: var(--spacing-md);
@@ -199,7 +200,7 @@ h1 {
   text-align: center;
 }
 
-.time-div h2,
+.session-div h2,
 .break-div h2 {
   margin: 0 0 var(--spacing-md) 0;
   color: var(--color-primary);
@@ -207,7 +208,7 @@ h1 {
   font-weight: 600;
 }
 
-.time-div h3,
+.session-div h3,
 .break-div h3 {
   font-size: 2.5rem;
   font-weight: 700;
@@ -736,7 +737,7 @@ form {
 }
 
 @media screen and (max-width: 480px) {
-  .time-div,
+  .session-div,
   .break-div {
     width: 100%;
   }
