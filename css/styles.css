@@ -93,6 +93,7 @@ h1 {
   color: var(--color-primary-dark);
   transition: background var(--transition-base);
   user-select: none;
+  border: none;
 }
 
 .accordion-heading:hover {
@@ -296,23 +297,21 @@ h1 {
   font-weight: 600;
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-md);
+  gap: var(--spacing-xs);
+  padding: 0;
   transition: all var(--transition-base);
   cursor: pointer;
+  margin-bottom: var(--spacing-sm);
+  transition: transform var(--transition-slow);
+  background-color: transparent;
+  box-shadow: none;
 }
 
 .open-settings:hover {
   background: var(--color-gray-300);
   color: var(--color-primary-dark);
-}
-
-.open-settings i {
-  transition: transform var(--transition-slow);
-}
-
-.open-settings:hover i {
   transform: rotate(180deg);
+  box-shadow: none;
 }
 
 .side-settings {
@@ -350,11 +349,16 @@ h1 {
   padding: var(--spacing-sm);
   border-radius: var(--radius-md);
   transition: all var(--transition-base);
+  background-color: transparent;
+  box-shadow: none;
 }
 
 .close-settings:hover {
   background: rgba(255, 255, 255, 0.1);
   color: var(--color-accent-dark);
+  background-color: transparent;
+  box-shadow: none;
+  transform: scale(1.2);
 }
 
 .settings-heading {
@@ -377,8 +381,26 @@ h1 {
 }
 
 #update-volume {
-  width: 85%;
+  width: 75%;
   margin: var(--spacing-sm) 0;
+}
+
+.button.fa-plus {
+  padding: var(--spacing-sm);
+  background: linear-gradient(135deg, var(--color-success) 0%, #05b88a 100%);
+}
+
+.button.fa-plus:hover {
+  background: linear-gradient(135deg, #05b88a 0%, var(--color-success) 100%);
+}
+
+.button.fa-minus {
+  padding: var(--spacing-sm);
+  background: linear-gradient(135deg, var(--color-warning) 0%, #d62828 100%);
+}
+
+.button.fa-minus:hover {
+  background: linear-gradient(135deg, #d62828 0%, var(--color-warning) 100%);
 }
 
 /* Todo List */

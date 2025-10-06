@@ -34,16 +34,26 @@
   <body>
     <div id="tomato-container">
       <div class="settings-container">
-        <div class="open-settings"><i class="fas fa-cog"></i> Settings</div>
+        <button
+          aria-label="Toggle settings panel"
+          class="button open-settings fas fa-cog"
+        ></button>
       </div>
       <div class="side-settings">
-        <span class="close-settings"><i class="fas fa-times"></i> Close</span>
+        <button
+          aria-label="close settings panel"
+          class="button close-settings fas fa-times"
+        ></button>
         <h2 class="settings-heading">Settings</h2>
         <div class="volume-container">
-          <h5 class="volume-heading">Volume</h5>
-          <i class="fas fa-minus"></i>
+          <h3 class="volume-heading">Volume</h3>
+          <button
+            aria-label="decrease buzzer volume by 10%"
+            class="button fas fa-minus"
+          ></button>
           <input
             id="update-volume"
+            aria-label="update buzzer volume"
             type="range"
             name="volume"
             min="0"
@@ -51,17 +61,23 @@
             step="10"
             value="100"
           />
-          <i class="fas fa-plus"></i>
+          <button
+            aria-label="increase buzzer volume by 10%"
+            class="button fas fa-plus"
+          ></button>
         </div>
       </div>
       <main class="timer-body">
         <h1>Pomodoro Clock</h1>
         <div class="accordion-wrapper">
           <div class="accordion description-accordion">
-            <div class="accordion-heading">
+            <button
+              aria-label="open description accordion"
+              class="accordion-heading"
+            >
               What is the Pomodoro Technique?
               <span class="accordion-icon">+</span>
-            </div>
+            </button>
           </div>
           <div class="accordion-body">
             <p>
@@ -91,10 +107,13 @@
         </div>
         <div class="accordion-wrapper">
           <div class="accordion how-to-accordion">
-            <div class="accordion-heading">
+            <button
+              aria-label="open how to accordion"
+              class="accordion-heading"
+            >
               How to Use the Pomodoro Technique?
               <span class="accordion-icon">+</span>
-            </div>
+            </button>
           </div>
           <div class="accordion-body">
             <p>
@@ -128,10 +147,13 @@
         </div>
         <div class="accordion-wrapper">
           <div class="accordion additional-info-accordion">
-            <div class="accordion-heading">
+            <button
+              aria-label="open additional information accordion"
+              class="accordion-heading"
+            >
               Additional Information
               <span class="accordion-icon">+</span>
-            </div>
+            </button>
           </div>
           <div class="accordion-body">
             <p>
@@ -170,15 +192,15 @@
           <div class="container">
             <div class="session-div">
               <h2 id="session-header">Session Time</h2>
-              <a class="button remove-time" id="minus-5-clock">-</a>
+              <button class="button remove-time" id="minus-5-clock">-</button>
               <h3 id="session-time">25</h3>
-              <a class="button add-time" id="add-5-clock">+</a>
+              <button class="button add-time" id="add-5-clock">+</button>
             </div>
             <div class="break-div">
               <h2 id="break-header">Break Time</h2>
-              <a class="button remove-time" id="minus-5-break">-</a>
+              <button class="button remove-time" id="minus-5-break">-</button>
               <h3 id="break-time">5</h3>
-              <a class="button add-time" id="add-5-break">+</a>
+              <button class="button add-time" id="add-5-break">+</button>
             </div>
           </div>
           <div id="pomodoro-actions">
@@ -229,10 +251,18 @@
               </form>
             </div>
             <div class="delete-list">
-              <button class="button delete" data-clear-completed-tasks>
+              <button
+                aria-label="clear completed tasks"
+                class="button delete"
+                data-clear-completed-tasks
+              >
                 Clear Completed Tasks
               </button>
-              <button class="button delete" data-delete-list-button>
+              <button
+                aria-label="delete current list"
+                class="button delete"
+                data-delete-list-button
+              >
                 Delete Current List
               </button>
             </div>
