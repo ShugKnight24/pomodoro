@@ -217,7 +217,10 @@
       <div class="todo-container">
         <h2 class="title">Things to do!</h2>
         <div class="all-tasks">
-          <h3 class="task-list-title">My Lists</h3>
+          <div class="task-list-header">
+            <h3 class="task-list-title">My Lists</h3>
+            <p class="task-list-count" data-list-count></p>
+          </div>
           <ul class="task-list" data-lists></ul>
 
           <form data-new-list-form>
@@ -236,7 +239,7 @@
         <div class="todo-list" data-list-display-container>
           <div class="todo-header">
             <h2 class="todo-title" data-list-title>Update Me Bruv!</h2>
-            <p class="task-count" data-list-count># of Tasks remaining</p>
+            <p class="task-count" data-task-count># of Tasks remaining</p>
           </div>
           <div class="todo-body">
             <div class="tasks" data-tasks></div>
@@ -278,7 +281,6 @@
         Cirillo. This site is not affiliated with Francesco Cirillo.
       </div>
     </div>
-    <script src="js/script.js" charset="utf-8"></script>
-    <script type="module" src="js/pomodoro.js"></script>
+    <script type="module" src="./js/app.js"></script>
   </body>
 </html>

@@ -450,7 +450,14 @@ h1 {
   height: fit-content;
 }
 
-.task-list-title {
+.task-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.task-list-title,
+.task-list-count {
   margin: 0 0 var(--spacing-sm) 0;
   font-size: 1.5rem;
   font-weight: 700;
@@ -458,6 +465,10 @@ h1 {
   text-decoration: underline;
   text-decoration-color: var(--color-primary-light);
   text-decoration-thickness: 2px;
+}
+
+.task-list-count {
+  font-size: 1.2rem;
 }
 
 .task-list {
