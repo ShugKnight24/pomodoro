@@ -1,5 +1,7 @@
 "use strict";
 
+import { showSuccess, showError } from "./toast.js";
+
 // DOM Elements
 const elements = {
   clearCompletedTasks: null,
@@ -91,7 +93,8 @@ function newListSubmit(event) {
   const listName = elements.newListInput.value.trim();
 
   if (!listName) {
-    // TODO: create actual validation error that displays to html
+    // TODO: create a validation error for the input
+    showError("List name cannot be empty");
     return;
   }
 
@@ -100,6 +103,7 @@ function newListSubmit(event) {
   state.lists.push(list);
   state.selectedListId = list.id;
   saveAndRender();
+  showSuccess(`List "${listName}" created`);
 }
 
 function clearCompletedTasks() {
@@ -107,16 +111,22 @@ function clearCompletedTasks() {
     (list) => list.id === state.selectedListId
   );
   if (selectedList) {
+    const count = selectedList.tasks.filter((task) => task.completed).length;
     selectedList.tasks = selectedList.tasks.filter((task) => !task.completed);
     saveAndRender();
+    showSuccess(`${count} completed task${count === 1 ? "" : "s"} cleared`);
   }
 }
 
 function deleteCurrentList() {
   // TODO: Add delete confirmation popup
+  const listToDelete = state.lists.find(
+    (list) => list.id === state.selectedListId
+  );
   state.lists = state.lists.filter((list) => list.id !== state.selectedListId);
-  state.selectedListId = null;
+  state.selectedListId = state.lists.length ? state.lists[0].id : null;
   saveAndRender();
+  showSuccess(`List "${listToDelete.name}" deleted`);
 }
 
 function taskClick(event) {
@@ -138,7 +148,8 @@ function newTaskSubmit(event) {
   const taskName = elements.newTaskInput.value.trim();
 
   if (!taskName) {
-    // TODO: create actual validation error that displays to html
+    // TODO: create a validation error for the input
+    showError("Task name cannot be empty");
     return;
   }
 
@@ -149,6 +160,7 @@ function newTaskSubmit(event) {
   );
   selectedList.tasks.push(task);
   saveAndRender();
+  showSuccess(`Task "${taskName}" added`);
 }
 
 function createList(name) {
