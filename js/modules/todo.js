@@ -279,12 +279,12 @@ function renderTasks(selectedList) {
 function buildTaskHTML(task) {
   let completed = task.completed ? "checked" : "";
   const priority = task.priority || "medium";
-  const priorityLabelText = priorityLabel(task.priority);
+  const { icon, label } = getPriorityInfo(priority);
 
   let taskTemplate = `
     <div class="task task-priority-${priority}">
-      <span class="priority-indicator" title="${priorityLabelText} priority">
-        ${priorityIcon(task.priority)}
+      <span class="priority-indicator" title="${label} priority">
+        ${icon}
       </span>
       <input
         class="check"
@@ -307,22 +307,13 @@ function buildTaskHTML(task) {
   elements.tasksContainer.insertAdjacentHTML("beforeend", taskTemplate);
 }
 
-function priorityIcon(priority) {
-  const icons = {
-    high: "🔴",
-    medium: "🟡",
-    low: "🟢",
+function getPriorityInfo(priority) {
+  const priorityData = {
+    high: { icon: "🔴", label: "High" },
+    medium: { icon: "🟡", label: "Medium" },
+    low: { icon: "🟢", label: "Low" },
   };
-  return icons[priority] || icons.medium;
-}
-
-function priorityLabel(priority) {
-  const labels = {
-    high: "High",
-    medium: "Medium",
-    low: "Low",
-  };
-  return labels[priority] || labels.medium;
+  return priorityData[priority] || priorityData.medium;
 }
 
 function sortTasksByPriority(tasks) {
@@ -337,7 +328,6 @@ function sortTasksByPriority(tasks) {
 function toggleSortByPriority() {
   state.sortedByPriority = !state.sortedByPriority;
 
-  // Update button appearance
   if (state.sortedByPriority) {
     elements.taskPrioritySortButton.classList.add("active");
     showSuccess("Sorting by priority");

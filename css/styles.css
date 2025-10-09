@@ -525,7 +525,6 @@ h1 {
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: var(--spacing-sm);
 }
 
 .todo-title {
@@ -538,7 +537,7 @@ h1 {
 .todo-header-actions {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
+  gap: var(--spacing-sm);
   flex-wrap: wrap;
 }
 
@@ -547,10 +546,10 @@ h1 {
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
-  background: rgba(255, 255, 255, 0.15);
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.6);
   color: var(--color-white);
-  padding: var(--spacing-xs) var(--spacing-md);
+  padding: var(--spacing-xs) var(--spacing-sm);
   border-radius: var(--radius-md);
   cursor: pointer;
   font-size: 0.9rem;
@@ -560,15 +559,15 @@ h1 {
 }
 
 .sort-button:hover {
-  background: rgba(255, 255, 255, 0.25);
-  border-color: rgba(255, 255, 255, 0.5);
-  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.45);
+  border-color: rgba(255, 255, 255, 0.9);
+  transform: translateY(-3px);
 }
 
 .sort-button.active {
   background: var(--color-primary);
   border-color: var(--color-primary-light);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.45);
 }
 
 .sort-button.active .sort-icon {
@@ -576,15 +575,14 @@ h1 {
 }
 
 .sort-icon {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   transition: transform var(--transition-base);
   display: inline-block;
 }
 
 .sort-text {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .task-count {
@@ -594,6 +592,7 @@ h1 {
   background: rgba(255, 255, 255, 0.3);
   padding: var(--spacing-xs) var(--spacing-sm);
   border-radius: var(--radius-md);
+  border: 2px solid rgba(255, 255, 255, 0.6);
 }
 
 /* Legal pad body with lines */
@@ -607,19 +606,19 @@ h1 {
     var(--legal-pad-line) 32px
   );
   /* margin line */
-  border-left: 2px solid var(--legal-pad-margin);
+  border-left: 3px solid var(--legal-pad-margin);
   margin-left: var(--spacing-2xl);
 }
 
 .todo-body::before {
   content: "";
   position: absolute;
-  left: -2px;
+  left: -3px;
   top: 0;
   bottom: 0;
-  width: 2px;
+  width: 3px;
   background: var(--legal-pad-margin);
-  box-shadow: 2px 0 4px rgba(240, 128, 128, 0.3);
+  box-shadow: 2px 4px 8px rgba(240, 128, 128, 0.75);
 }
 
 .tasks {
