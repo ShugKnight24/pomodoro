@@ -14,6 +14,8 @@ const elements = {
   taskListContainer: null,
   taskListCount: null,
   taskListTitle: null,
+  taskPrioritySelect: null,
+  taskPrioritySortButton: null,
   tasksContainer: null,
 };
 
@@ -30,6 +32,7 @@ const state = {
   lists: [],
   selectedListId: null,
   listCounter: 0,
+  sortedByPriority: false,
   taskCounter: 0,
 };
 
@@ -57,6 +60,9 @@ function initializeElements() {
     "[data-list-display-container]"
   );
   elements.taskListTitle = document.querySelector("[data-list-title]");
+  elements.taskPrioritySelect = document.querySelector("[data-task-priority]");
+  elements.taskPrioritySortButton =
+    document.querySelector("[data-sort-toggle]");
   elements.tasksContainer = document.querySelector("[data-tasks]");
   elements.taskCount = document.querySelector("[data-task-count]");
 }
@@ -79,6 +85,10 @@ function setupEventListeners() {
   elements.newListForm.addEventListener("submit", newListSubmit);
   elements.newTaskForm.addEventListener("submit", newTaskSubmit);
   elements.tasksContainer.addEventListener("click", taskClick);
+  elements.taskPrioritySortButton.addEventListener(
+    "click",
+    toggleSortByPriority
+  );
 }
 
 function listItemClick(event) {
@@ -146,6 +156,7 @@ function taskClick(event) {
 function newTaskSubmit(event) {
   event.preventDefault();
   const taskName = elements.newTaskInput.value.trim();
+  const priority = elements.taskPrioritySelect.value;
 
   if (!taskName) {
     // TODO: create a validation error for the input
@@ -153,14 +164,16 @@ function newTaskSubmit(event) {
     return;
   }
 
-  const task = createTask(taskName);
+  const task = createTask(taskName, priority);
   elements.newTaskInput.value = "";
+  elements.taskPrioritySelect.value = "medium";
+
   const selectedList = state.lists.find(
     (list) => list.id === state.selectedListId
   );
   selectedList.tasks.push(task);
   saveAndRender();
-  showSuccess(`Task "${taskName}" added`);
+  showSuccess(`Task "${taskName}" added with "${priority}" priority`);
 }
 
 function createList(name) {
@@ -173,13 +186,14 @@ function createList(name) {
   };
 }
 
-function createTask(name) {
+function createTask(name, priority = "Medium") {
   state.taskCounter++;
 
   return {
+    completed: false,
     id: state.taskCounter, // TODO: Create a better unique id
     name: name,
-    completed: false,
+    priority: priority,
   };
 }
 
@@ -251,15 +265,27 @@ function renderTaskCount(selectedList) {
 }
 
 function renderTasks(selectedList) {
-  selectedList.tasks.forEach((task) => {
+  let tasksToRender = selectedList.tasks;
+
+  if (state.sortedByPriority) {
+    tasksToRender = sortTasksByPriority(selectedList.tasks);
+  }
+
+  tasksToRender.forEach((task) => {
     buildTaskHTML(task);
   });
 }
 
 function buildTaskHTML(task) {
   let completed = task.completed ? "checked" : "";
+  const priority = task.priority || "medium";
+  const priorityLabelText = priorityLabel(task.priority);
+
   let taskTemplate = `
-    <div class="task">
+    <div class="task task-priority-${priority}">
+      <span class="priority-indicator" title="${priorityLabelText} priority">
+        ${priorityIcon(task.priority)}
+      </span>
       <input
         class="check"
         type="checkbox"
@@ -279,6 +305,48 @@ function buildTaskHTML(task) {
   // TODO: Add Pomodoro tracker
 
   elements.tasksContainer.insertAdjacentHTML("beforeend", taskTemplate);
+}
+
+function priorityIcon(priority) {
+  const icons = {
+    high: "🔴",
+    medium: "🟡",
+    low: "🟢",
+  };
+  return icons[priority] || icons.medium;
+}
+
+function priorityLabel(priority) {
+  const labels = {
+    high: "High",
+    medium: "Medium",
+    low: "Low",
+  };
+  return labels[priority] || labels.medium;
+}
+
+function sortTasksByPriority(tasks) {
+  const priorityOrder = { high: 1, medium: 2, low: 3 };
+  return [...tasks].sort((a, b) => {
+    const aPriority = priorityOrder[a.priority || "medium"];
+    const bPriority = priorityOrder[b.priority || "medium"];
+    return aPriority - bPriority;
+  });
+}
+
+function toggleSortByPriority() {
+  state.sortedByPriority = !state.sortedByPriority;
+
+  // Update button appearance
+  if (state.sortedByPriority) {
+    elements.taskPrioritySortButton.classList.add("active");
+    showSuccess("Sorting by priority");
+  } else {
+    elements.taskPrioritySortButton.classList.remove("active");
+    showSuccess("Sorting by creation order");
+  }
+
+  render();
 }
 
 function clearElement(element) {

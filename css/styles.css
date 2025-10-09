@@ -525,6 +525,7 @@ h1 {
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
+  gap: var(--spacing-sm);
 }
 
 .todo-title {
@@ -532,6 +533,58 @@ h1 {
   font-size: 1.5rem;
   font-weight: 700;
   font-family: "Happy Monkey", cursive;
+}
+
+.todo-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+/* Sort Button */
+.sort-button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: var(--color-white);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all var(--transition-base);
+  font-family: inherit;
+}
+
+.sort-button:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.sort-button.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary-light);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.sort-button.active .sort-icon {
+  transform: rotate(180deg);
+}
+
+.sort-icon {
+  font-size: 1.1rem;
+  transition: transform var(--transition-base);
+  display: inline-block;
+}
+
+.sort-text {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .task-count {
@@ -648,6 +701,13 @@ form {
   align-items: stretch;
 }
 
+/* Task Input Group */
+.task-input-group {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex: 1;
+}
+
 .new-input {
   flex: 1;
   background: rgba(255, 255, 255, 0.8);
@@ -675,6 +735,59 @@ form {
 .new-input.list {
   font-family: "Courier New", Courier, monospace;
   font-size: 0.95rem;
+}
+
+/* TODO: Improve this - Make it more clear what this dropdown does */
+.priority-select {
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid var(--color-gray-400);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm);
+  font-size: 0.9rem;
+  font-family: "Courier New", Courier, monospace;
+  cursor: pointer;
+  outline: none;
+  transition: all var(--transition-base);
+  min-width: 100px;
+}
+
+.priority-select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.1);
+}
+
+/* Priority Indicator */
+.priority-indicator {
+  font-size: 1.2rem;
+  margin-right: var(--spacing-xs);
+  display: inline-flex;
+  align-items: center;
+  padding-left: var(--spacing-sm);
+}
+
+/* Priority styling */
+.task-priority-high {
+  border-left: 3px solid #ef4444;
+}
+
+.task-priority-medium {
+  border-left: 3px solid #f59e0b;
+}
+
+.task-priority-low {
+  border-left: 3px solid #10b981;
+}
+
+.task-priority-high:hover {
+  background: rgba(239, 68, 68, 0.75);
+}
+
+.task-priority-medium:hover {
+  background: rgba(245, 158, 11, 0.75);
+}
+
+.task-priority-low:hover {
+  background: rgba(16, 185, 129, 0.75);
 }
 
 .todo-container .button.create {
@@ -836,6 +949,15 @@ form {
 @media screen and (max-width: 768px) {
   .container {
     flex-direction: column;
+  }
+
+  .todo-header {
+    flex-direction: column;
+  }
+
+  .todo-header-actions {
+    width: 100%;
+    justify-content: space-between;
   }
 
   .accordion-wrapper {

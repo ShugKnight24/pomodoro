@@ -239,19 +239,42 @@
         <div class="todo-list" data-list-display-container>
           <div class="todo-header">
             <h2 class="todo-title" data-list-title>Update Me Bruv!</h2>
-            <p class="task-count" data-task-count># of Tasks remaining</p>
+            <div class="todo-header-actions">
+              <button
+                class="sort-button"
+                data-sort-toggle
+                aria-label="toggle sort by priority"
+                title="Sort by priority"
+              >
+                <span class="sort-icon">⬍</span>
+                <span class="sort-text">Sort by Priority</span>
+              </button>
+              <p class="task-count" data-task-count># of Tasks remaining</p>
+            </div>
           </div>
           <div class="todo-body">
             <div class="tasks" data-tasks></div>
             <div class="new-task-creator">
               <form data-new-task-form>
-                <input
-                  data-new-task-input
-                  class="new-input task"
-                  type="text"
-                  placeholder="new task name"
-                  aria-label="new task name"
-                />
+                <div class="task-input-group">
+                  <input
+                    data-new-task-input
+                    class="new-input task"
+                    type="text"
+                    placeholder="new task name"
+                    aria-label="new task name"
+                  />
+                  <!-- TODO: Improve this - Make it more clear what this dropdown does -->
+                  <select
+                    data-task-priority
+                    class="priority-select"
+                    aria-label="task priority"
+                  >
+                    <option value="low">Low</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="high">High</option>
+                  </select>
+                </div>
                 <button class="button create" aria-label="create new task">
                   +
                 </button>
