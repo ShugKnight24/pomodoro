@@ -1,5 +1,6 @@
 "use strict";
 
+import { confirmDelete } from "./modal.js";
 import { showSuccess, showError } from "./toast.js";
 
 // DOM Elements
@@ -92,9 +93,39 @@ function setupEventListeners() {
 }
 
 function listItemClick(event) {
-  if (event.target.tagName.toLowerCase() === "li") {
-    state.selectedListId = parseInt(event.target.dataset.listId);
-    saveAndRender();
+  // Find the button element (could be the button itself or an icon inside it)
+  const button = event.target.closest("button");
+
+  if (button) {
+    event.stopPropagation();
+
+    // Handle save button click
+    if (button.dataset.saveList) {
+      const listId = parseInt(button.dataset.saveList);
+      saveListName(listId);
+      return;
+    }
+
+    // Handle edit button click
+    if (button.dataset.editList) {
+      const listId = parseInt(button.dataset.editList);
+      editListName(listId);
+      return;
+    }
+  }
+
+  // Handle list selection (only if not clicking on input or button)
+  if (
+    event.target.tagName.toLowerCase() !== "input" &&
+    !button &&
+    (event.target.tagName.toLowerCase() === "li" ||
+      event.target.classList.contains("list-name-text"))
+  ) {
+    const listElement = event.target.closest("li");
+    if (listElement) {
+      state.selectedListId = parseInt(listElement.dataset.listId);
+      saveAndRender();
+    }
   }
 }
 
@@ -128,11 +159,14 @@ function clearCompletedTasks() {
   }
 }
 
-function deleteCurrentList() {
-  // TODO: Add delete confirmation popup
+async function deleteCurrentList() {
   const listToDelete = state.lists.find(
     (list) => list.id === state.selectedListId
   );
+
+  const confirmed = await confirmDelete(listToDelete.name, "list");
+  if (!confirmed) return;
+
   state.lists = state.lists.filter((list) => list.id !== state.selectedListId);
   state.selectedListId = state.lists.length ? state.lists[0].id : null;
   saveAndRender();
@@ -140,7 +174,11 @@ function deleteCurrentList() {
 }
 
 function taskClick(event) {
-  if (event.target.tagName.toLowerCase() === "input") {
+  // Handle checkbox toggle
+  if (
+    event.target.tagName.toLowerCase() === "input" &&
+    event.target.type === "checkbox"
+  ) {
     const selectedList = state.lists.find(
       (list) => list.id === state.selectedListId
     );
@@ -150,6 +188,32 @@ function taskClick(event) {
     selectedTask.completed = event.target.checked;
     save();
     renderTaskCount(selectedList);
+    return;
+  }
+
+  // Find the button element (could be the button itself or an icon inside it)
+  const button = event.target.closest("button");
+  if (!button) return;
+
+  // Handle save button click
+  if (button.dataset.saveTask) {
+    const taskId = parseInt(button.dataset.saveTask);
+    saveTaskName(taskId);
+    return;
+  }
+
+  // Handle delete button click
+  if (button.dataset.deleteTask) {
+    const taskId = parseInt(button.dataset.deleteTask);
+    deleteTask(taskId);
+    return;
+  }
+
+  // Handle edit button click
+  if (button.dataset.editTask) {
+    const taskId = parseInt(button.dataset.editTask);
+    editTaskName(taskId);
+    return;
   }
 }
 
@@ -240,11 +304,20 @@ function buildListHTML(list) {
   const isActive = list.id === state.selectedListId ? "active-list" : "";
   let listTemplate = `
     <li class="list-name ${isActive}" data-list-id="${list.id}">
-      ${list.name}
+      <span class="list-name-text" data-list-text="${list.id}">${list.name}</span>
+      <input
+        name="list-name-${list.id}"
+        class="list-name-input hidden" 
+        data-list-input="${list.id}" 
+        type="text" 
+        value="${list.name}"
+      />
+      <button class="list-action-btn edit-list-btn" data-edit-list="${list.id}" title="Edit list name" aria-label="Edit list name">
+        <i class="fas fa-pencil-alt"></i>
+      </button>
     </li>
   `;
 
-  // TODO: Add edit name list
   // TODO: Add delete list here as well?
 
   elements.listsContainer.insertAdjacentHTML("beforeend", listTemplate);
@@ -282,7 +355,7 @@ function buildTaskHTML(task) {
   const { icon, label } = getPriorityInfo(priority);
 
   let taskTemplate = `
-    <div class="task task-priority-${priority}">
+    <div class="task task-priority-${priority}" data-task-item="${task.id}">
       <span class="priority-indicator" title="${label} priority">
         ${icon}
       </span>
@@ -295,16 +368,198 @@ function buildTaskHTML(task) {
       >
       <label for="${task.id}">
         <span class="custom-checkbox"></span>
-        ${task.name}
+        <span class="task-name-text" data-task-text="${task.id}">${task.name}</span>
       </label>
+      <input 
+          class="task-name-input hidden" 
+          data-task-input="${task.id}" 
+          type="text" 
+          value="${task.name}"
+        />
+      <div class="task-actions">
+        <button class="task-action-btn edit-task-btn" data-edit-task="${task.id}" title="Edit task">
+          <i class="fas fa-pencil-alt"></i>
+        </button>
+        <button class="task-action-btn delete-task-btn" data-delete-task="${task.id}" title="Delete task">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
     </div>
   `;
 
-  // TODO: Add edit task name
-  // TODO: Add delete task
   // TODO: Add Pomodoro tracker
 
   elements.tasksContainer.insertAdjacentHTML("beforeend", taskTemplate);
+}
+
+async function deleteTask(taskId) {
+  const selectedList = state.lists.find(
+    (list) => list.id === state.selectedListId
+  );
+
+  const task = selectedList.tasks.find((t) => t.id === taskId);
+  if (!task) return;
+
+  const confirmed = await confirmDelete(task.name, "task");
+
+  if (confirmed) {
+    selectedList.tasks = selectedList.tasks.filter((t) => t.id !== taskId);
+    saveAndRender();
+    showSuccess(`Task "${task.name}" deleted`);
+  }
+}
+
+function editTaskName(taskId) {
+  const taskElement = document.querySelector(`[data-task-item="${taskId}"]`);
+  const textElement = taskElement.querySelector(`[data-task-text="${taskId}"]`);
+  const inputElement = taskElement.querySelector(
+    `[data-task-input="${taskId}"]`
+  );
+  const editBtn = taskElement.querySelector(`[data-edit-task="${taskId}"]`);
+
+  // Toggle to edit mode
+  textElement.classList.add("hidden");
+  inputElement.classList.remove("hidden");
+  inputElement.focus();
+  inputElement.select();
+
+  // Change edit button to save button
+  editBtn.innerHTML = '<i class="fas fa-check"></i>';
+  editBtn.title = "Save task";
+  editBtn.dataset.saveTask = taskId;
+  delete editBtn.dataset.editTask;
+
+  // Handle save on Enter key
+  const handleKeydown = (e) => {
+    if (e.key === "Enter") {
+      saveTaskName(taskId);
+    } else if (e.key === "Escape") {
+      cancelTaskEdit(taskId);
+    }
+  };
+
+  inputElement.addEventListener("keydown", handleKeydown);
+  inputElement.addEventListener("blur", () => saveTaskName(taskId), {
+    once: true,
+  });
+}
+
+function saveTaskName(taskId) {
+  const taskElement = document.querySelector(`[data-task-item="${taskId}"]`);
+  const inputElement = taskElement.querySelector(
+    `[data-task-input="${taskId}"]`
+  );
+  const newName = inputElement.value.trim();
+
+  if (!newName) {
+    showError("Task name cannot be empty");
+    cancelTaskEdit(taskId);
+    return;
+  }
+
+  const selectedList = state.lists.find(
+    (list) => list.id === state.selectedListId
+  );
+  const task = selectedList.tasks.find((t) => t.id === taskId);
+
+  if (task && newName !== task.name) {
+    task.name = newName;
+    saveAndRender();
+    showSuccess("Task name updated");
+  } else {
+    cancelTaskEdit(taskId);
+  }
+}
+
+function cancelTaskEdit(taskId) {
+  // TODO: Add a cancel button too?
+  const taskElement = document.querySelector(`[data-task-item="${taskId}"]`);
+  if (!taskElement) return;
+
+  const textElement = taskElement.querySelector(`[data-task-text="${taskId}"]`);
+  const inputElement = taskElement.querySelector(
+    `[data-task-input="${taskId}"]`
+  );
+
+  textElement.classList.remove("hidden");
+  inputElement.classList.add("hidden");
+
+  render();
+}
+
+function editListName(listId) {
+  const listElement = document.querySelector(`[data-list-id="${listId}"]`);
+  const textElement = listElement.querySelector(`[data-list-text="${listId}"]`);
+  const inputElement = listElement.querySelector(
+    `[data-list-input="${listId}"]`
+  );
+  const editBtn = listElement.querySelector(`[data-edit-list="${listId}"]`);
+
+  // Toggle to edit mode
+  textElement.classList.add("hidden");
+  inputElement.classList.remove("hidden");
+  inputElement.focus();
+  inputElement.select();
+
+  // Change edit button to save button
+  editBtn.innerHTML = '<i class="fas fa-check"></i>';
+  editBtn.title = "Save list";
+  editBtn.dataset.saveList = listId;
+  delete editBtn.dataset.editList;
+
+  // Handle save on Enter key
+  const handleKeydown = (e) => {
+    if (e.key === "Enter") {
+      saveListName(listId);
+    } else if (e.key === "Escape") {
+      cancelListEdit(listId);
+    }
+  };
+
+  inputElement.addEventListener("keydown", handleKeydown);
+  inputElement.addEventListener("blur", () => saveListName(listId), {
+    once: true,
+  });
+}
+
+function saveListName(listId) {
+  const listElement = document.querySelector(`[data-list-id="${listId}"]`);
+  const inputElement = listElement.querySelector(
+    `[data-list-input="${listId}"]`
+  );
+  const newName = inputElement.value.trim();
+
+  if (!newName) {
+    showError("List name cannot be empty");
+    cancelListEdit(listId);
+    return;
+  }
+
+  const list = state.lists.find((l) => l.id === listId);
+
+  if (list && newName !== list.name) {
+    list.name = newName;
+    saveAndRender();
+    showSuccess("List name updated");
+  } else {
+    cancelListEdit(listId);
+  }
+}
+
+function cancelListEdit(listId) {
+  // TODO: Add a cancel button too?
+  const listElement = document.querySelector(`[data-list-id="${listId}"]`);
+  if (!listElement) return;
+
+  const textElement = listElement.querySelector(`[data-list-text="${listId}"]`);
+  const inputElement = listElement.querySelector(
+    `[data-list-input="${listId}"]`
+  );
+
+  textElement.classList.remove("hidden");
+  inputElement.classList.add("hidden");
+
+  render();
 }
 
 function getPriorityInfo(priority) {

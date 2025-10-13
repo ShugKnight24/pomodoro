@@ -105,3 +105,16 @@ function closeModal(confirmed) {
   }
 }
 
+/**
+ * Convenience function for delete confirmations
+ */
+export function confirmDelete(itemName, itemType = "item") {
+  return showConfirmModal({
+    title: `Delete ${itemType}`,
+    message: `Are you sure you want to delete "${itemName}"? This action cannot be undone.`,
+    confirmText: "Delete",
+    cancelText: "Cancel",
+    type: "danger",
+  });
+}
+
