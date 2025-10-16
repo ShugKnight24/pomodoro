@@ -8,16 +8,17 @@ const elements = {
   clearCompletedTasks: null,
   deleteListButton: null,
   listsContainer: null,
+  listCount: null,
   newListForm: null,
   newListInput: null,
   newTaskForm: null,
   newTaskInput: null,
   taskListContainer: null,
-  taskListCount: null,
   taskListTitle: null,
   taskPrioritySelect: null,
   taskPrioritySortButton: null,
   tasksContainer: null,
+  taskCount: null,
 };
 
 // Local storage keys
@@ -371,11 +372,11 @@ function buildTaskHTML(task) {
         <span class="task-name-text" data-task-text="${task.id}">${task.name}</span>
       </label>
       <input 
-          class="task-name-input hidden" 
-          data-task-input="${task.id}" 
-          type="text" 
-          value="${task.name}"
-        />
+        class="task-name-input hidden" 
+        data-task-input="${task.id}" 
+        type="text" 
+        value="${task.name}"
+      />
       <div class="task-actions">
         <button class="task-action-btn edit-task-btn" data-edit-task="${task.id}" title="Edit task">
           <i class="fas fa-pencil-alt"></i>
