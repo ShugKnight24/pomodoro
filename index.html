@@ -24,7 +24,7 @@
     <link href="/favicon.ico" rel="icon" type="image/x-icon" />
     <link
       rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.css"
     />
     <link
       href="https://fonts.googleapis.com/css?family=Happy+Monkey"
@@ -217,11 +217,15 @@
       <div class="todo-container">
         <h2 class="title">Things to do!</h2>
         <div class="all-tasks">
-          <h3 class="task-list-title">My Lists</h3>
+          <div class="task-list-header">
+            <h3 class="task-list-title">My Lists</h3>
+            <p class="task-list-count" data-list-count></p>
+          </div>
           <ul class="task-list" data-lists></ul>
 
           <form data-new-list-form>
             <input
+              id="new-list-name"
               data-new-list-input
               class="new-input list"
               type="text"
@@ -236,19 +240,44 @@
         <div class="todo-list" data-list-display-container>
           <div class="todo-header">
             <h2 class="todo-title" data-list-title>Update Me Bruv!</h2>
-            <p class="task-count" data-list-count># of Tasks remaining</p>
+            <div class="todo-header-actions">
+              <button
+                class="sort-button"
+                data-sort-toggle
+                aria-label="toggle sort by priority"
+                title="Sort by priority"
+              >
+                <span class="sort-icon">⬍</span>
+                <span class="sort-text">Sort by Priority</span>
+              </button>
+              <p class="task-count" data-task-count># of Tasks remaining</p>
+            </div>
           </div>
           <div class="todo-body">
             <div class="tasks" data-tasks></div>
             <div class="new-task-creator">
               <form data-new-task-form>
-                <input
-                  data-new-task-input
-                  class="new-input task"
-                  type="text"
-                  placeholder="new task name"
-                  aria-label="new task name"
-                />
+                <div class="task-input-group">
+                  <input
+                    id="new-task-name"
+                    data-new-task-input
+                    class="new-input task"
+                    type="text"
+                    placeholder="new task name"
+                    aria-label="new task name"
+                  />
+                  <label for="task-priority">Task Priority:</label>
+                  <select
+                    id="task-priority"
+                    data-task-priority
+                    class="priority-select"
+                    aria-label="task priority selection"
+                  >
+                    <option value="low">Low</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="high">High</option>
+                  </select>
+                </div>
                 <button class="button create" aria-label="create new task">
                   +
                 </button>
@@ -278,7 +307,6 @@
         Cirillo. This site is not affiliated with Francesco Cirillo.
       </div>
     </div>
-    <script src="js/script.js" charset="utf-8"></script>
-    <script type="module" src="js/pomodoro.js"></script>
+    <script type="module" src="./js/app.js"></script>
   </body>
 </html>
