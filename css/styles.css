@@ -1105,6 +1105,12 @@ form {
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .modal {
+    animation: none !important;
+  }
+}
+
 .modal-header {
   text-align: center;
   padding: var(--spacing-md);

@@ -21,6 +21,7 @@ export function initToast() {
 export function showToast(message, type = "info", duration = 3000) {
   const toast = document.createElement("div");
   toast.className = `toast toast-${type}`;
+  toast.setAttribute("role", "status");
 
   const icons = {
     success: '<i class="fas fa-check-square"></i>',

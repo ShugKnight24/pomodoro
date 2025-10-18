@@ -430,19 +430,28 @@ function editTaskName(taskId) {
   editBtn.dataset.saveTask = taskId;
   delete editBtn.dataset.editTask;
 
+  const handleBlur = () => {
+    inputElement.removeEventListener("keydown", handleKeydown);
+    inputElement.removeEventListener("blur", handleBlur);
+    saveTaskName(taskId);
+  };
+
   // Handle save on Enter key
-  const handleKeydown = (e) => {
-    if (e.key === "Enter") {
+  const handleKeydown = (event) => {
+    if (event.key === "Enter" || event.key === "Escape") {
+      inputElement.removeEventListener("blur", handleBlur);
+      inputElement.removeEventListener("keydown", handleKeydown);
+    }
+
+    if (event.key === "Enter") {
       saveTaskName(taskId);
-    } else if (e.key === "Escape") {
+    } else if (event.key === "Escape") {
       cancelTaskEdit(taskId);
     }
   };
 
   inputElement.addEventListener("keydown", handleKeydown);
-  inputElement.addEventListener("blur", () => saveTaskName(taskId), {
-    once: true,
-  });
+  inputElement.addEventListener("blur", handleBlur);
 }
 
 function saveTaskName(taskId) {
@@ -508,19 +517,28 @@ function editListName(listId) {
   editBtn.dataset.saveList = listId;
   delete editBtn.dataset.editList;
 
+  const handleBlur = () => {
+    inputElement.removeEventListener("keydown", handleKeydown);
+    inputElement.removeEventListener("blur", handleBlur);
+    saveListName(listId);
+  };
+
   // Handle save on Enter key
-  const handleKeydown = (e) => {
-    if (e.key === "Enter") {
+  const handleKeydown = (event) => {
+    if (event.key === "Enter" || event.key === "Escape") {
+      inputElement.removeEventListener("blur", handleBlur);
+      inputElement.removeEventListener("keydown", handleKeydown);
+    }
+
+    if (event.key === "Enter") {
       saveListName(listId);
-    } else if (e.key === "Escape") {
+    } else if (event.key === "Escape") {
       cancelListEdit(listId);
     }
   };
 
   inputElement.addEventListener("keydown", handleKeydown);
-  inputElement.addEventListener("blur", () => saveListName(listId), {
-    once: true,
-  });
+  inputElement.addEventListener("blur", handleBlur);
 }
 
 function saveListName(listId) {

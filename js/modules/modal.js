@@ -92,7 +92,13 @@ export function showConfirmModal({
 
     modalContainer.classList.remove("hidden");
 
-    setTimeout(() => confirmButton.focus(), 10);
+    setTimeout(() => {
+      if (type === "danger") {
+        cancelButton.focus();
+      } else {
+        confirmButton.focus();
+      }
+    }, 10);
   });
 }
 
