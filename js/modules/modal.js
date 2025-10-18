@@ -6,7 +6,6 @@ let currentResolve = null;
 export function initModal() {
   if (!modalContainer) {
     modalContainer = createModalContainer();
-    document.body.appendChild(modalContainer);
 
     const cancelButton = modalContainer.querySelector("[data-modal-cancel]");
     const confirmButton = modalContainer.querySelector("[data-modal-confirm]");
@@ -38,8 +37,8 @@ function createModalContainer() {
   container.className = "modal-overlay hidden";
   container.setAttribute("role", "dialog");
   container.setAttribute("aria-modal", "true");
-  document.body.appendChild(container);
   container.innerHTML = createModalHTML();
+  document.body.appendChild(container);
   return container;
 }
 

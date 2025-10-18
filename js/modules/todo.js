@@ -251,7 +251,7 @@ function createList(name) {
   };
 }
 
-function createTask(name, priority = "Medium") {
+function createTask(name, priority = "medium") {
   state.taskCounter++;
 
   return {

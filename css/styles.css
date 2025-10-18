@@ -829,6 +829,7 @@ form {
   display: flex;
   gap: var(--spacing-sm);
   flex: 1;
+  align-items: center;
 }
 
 .new-input {
@@ -860,7 +861,6 @@ form {
   font-size: 0.95rem;
 }
 
-/* TODO: Improve this - Make it more clear what this dropdown does */
 .priority-select {
   background: rgba(255, 255, 255, 0.9);
   border: 2px solid var(--color-gray-400);

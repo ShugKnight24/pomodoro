@@ -225,6 +225,7 @@
 
           <form data-new-list-form>
             <input
+              id="new-list-name"
               data-new-list-input
               class="new-input list"
               type="text"
@@ -258,17 +259,19 @@
               <form data-new-task-form>
                 <div class="task-input-group">
                   <input
+                    id="new-task-name"
                     data-new-task-input
                     class="new-input task"
                     type="text"
                     placeholder="new task name"
                     aria-label="new task name"
                   />
-                  <!-- TODO: Improve this - Make it more clear what this dropdown does -->
+                  <label for="task-priority">Task Priority:</label>
                   <select
+                    id="task-priority"
                     data-task-priority
                     class="priority-select"
-                    aria-label="task priority"
+                    aria-label="task priority selection"
                   >
                     <option value="low">Low</option>
                     <option value="medium" selected>Medium</option>
