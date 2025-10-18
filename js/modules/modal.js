@@ -5,26 +5,7 @@ let currentResolve = null;
 
 export function initModal() {
   if (!modalContainer) {
-    modalContainer = document.createElement("div");
-    modalContainer.className = "modal-overlay hidden";
-    modalContainer.setAttribute("role", "dialog");
-    modalContainer.setAttribute("aria-modal", "true");
-
-    modalContainer.innerHTML = `
-      <div class="modal">
-        <div class="modal-header">
-          <h2 class="modal-title"></h2>
-        </div>
-        <div class="modal-body">
-          <p class="modal-message"></p>
-        </div>
-        <div class="modal-actions">
-          <button class="button modal-button modal-cancel-button" data-modal-cancel></button>
-          <button class="button modal-button modal-confirm-button" data-modal-confirm></button>
-        </div>
-      </div>
-    `;
-
+    modalContainer = createModalContainer();
     document.body.appendChild(modalContainer);
 
     const cancelButton = modalContainer.querySelector("[data-modal-cancel]");
@@ -50,6 +31,33 @@ export function initModal() {
       }
     });
   }
+}
+
+function createModalContainer() {
+  const container = document.createElement("div");
+  container.className = "modal-overlay hidden";
+  container.setAttribute("role", "dialog");
+  container.setAttribute("aria-modal", "true");
+  document.body.appendChild(container);
+  container.innerHTML = createModalHTML();
+  return container;
+}
+
+function createModalHTML() {
+  return `
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title"></h2>
+      </div>
+      <div class="modal-body">
+        <p class="modal-message"></p>
+      </div>
+      <div class="modal-actions">
+        <button class="button modal-button modal-cancel-button" data-modal-cancel></button>
+        <button class="button modal-button modal-confirm-button" data-modal-confirm></button>
+      </div>
+    </div>
+  `;
 }
 
 /**

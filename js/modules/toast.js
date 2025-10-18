@@ -4,12 +4,17 @@ let toastContainer = null;
 
 export function initToast() {
   if (!toastContainer) {
-    toastContainer = document.createElement("div");
-    toastContainer.className = "toast-container";
-    toastContainer.setAttribute("aria-live", "polite");
-    toastContainer.setAttribute("aria-atomic", "true");
-    document.body.appendChild(toastContainer);
+    toastContainer = createToastContainer();
   }
+}
+
+function createToastContainer() {
+  const container = document.createElement("div");
+  container.className = "toast-container";
+  container.setAttribute("aria-live", "polite");
+  container.setAttribute("aria-atomic", "true");
+  document.body.appendChild(container);
+  return container;
 }
 
 /**
