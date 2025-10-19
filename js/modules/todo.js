@@ -17,7 +17,7 @@ const elements = {
   taskListContainer: null,
   taskListTitle: null,
   taskPrioritySelect: null,
-  taskPrioritySortButton: null,
+  taskSortButton: null,
   tasksContainer: null,
   taskCount: null,
 };
@@ -35,7 +35,7 @@ const state = {
   lists: [],
   selectedListId: null,
   listCounter: 0,
-  sortedByPriority: false,
+  sortingType: "creation", // creation | dueDate | priority
   taskCounter: 0,
 };
 
@@ -65,8 +65,7 @@ function initializeElements() {
   );
   elements.taskListTitle = document.querySelector("[data-list-title]");
   elements.taskPrioritySelect = document.querySelector("[data-task-priority]");
-  elements.taskPrioritySortButton =
-    document.querySelector("[data-sort-toggle]");
+  elements.taskSortButton = document.querySelector("[data-sort-toggle]");
   elements.tasksContainer = document.querySelector("[data-tasks]");
   elements.taskCount = document.querySelector("[data-task-count]");
 }
@@ -89,10 +88,7 @@ function setupEventListeners() {
   elements.newListForm.addEventListener("submit", newListSubmit);
   elements.newTaskForm.addEventListener("submit", newTaskSubmit);
   elements.tasksContainer.addEventListener("click", taskClick);
-  elements.taskPrioritySortButton.addEventListener(
-    "click",
-    toggleSortByPriority
-  );
+  elements.taskSortButton.addEventListener("click", toggleSortType);
 }
 
 function listItemClick(event) {
@@ -356,9 +352,7 @@ function renderTaskCount(selectedList) {
 function renderTasks(selectedList) {
   let tasksToRender = selectedList.tasks;
 
-  if (state.sortedByPriority) {
-    tasksToRender = sortTasksByPriority(selectedList.tasks);
-  }
+  tasksToRender = getTasksToRender(tasksToRender);
 
   tasksToRender.forEach((task) => {
     buildTaskHTML(task);
@@ -647,17 +641,59 @@ function sortTasksByPriority(tasks) {
   });
 }
 
-function toggleSortByPriority() {
-  state.sortedByPriority = !state.sortedByPriority;
+function sortTasksByDueDate(tasks) {
+  // TODO: Filter out completed tasks first or add them to the end?
+  return [...tasks].sort((a, b) => {
+    // Tasks without due dates go to the end
+    if (!a.dueDate && !b.dueDate) return 0;
+    if (!a.dueDate) return 1;
+    if (!b.dueDate) return -1;
 
-  if (state.sortedByPriority) {
-    elements.taskPrioritySortButton.classList.add("active");
-    showSuccess("Sorting by priority");
+    return new Date(a.dueDate) - new Date(b.dueDate);
+  });
+}
+
+function getTasksToRender(tasks) {
+  switch (state.sortingType) {
+    case "priority":
+      return sortTasksByPriority(tasks);
+    case "dueDate":
+      return sortTasksByDueDate(tasks);
+    default:
+      return tasks; // creation order
+  }
+}
+
+function toggleSortType() {
+  const sortTypes = ["creation", "priority", "dueDate"];
+  const currentIndex = sortTypes.indexOf(state.sortingType);
+  const nextIndex = (currentIndex + 1) % sortTypes.length;
+  state.sortingType = sortTypes[nextIndex];
+
+  const sortLabels = {
+    creation: "Sorting by creation order",
+    priority: "Sorting by priority",
+    dueDate: "Sorting by due date",
+  };
+
+  const buttonInfo = {
+    creation: "Sorting by creation order, toggle to sort by priority",
+    priority: "Sorting by priority, toggle to sort by due date",
+    dueDate: "Sorting by due date, toggle to sort by creation order",
+  };
+
+  if (state.sortingType === "creation") {
+    elements.taskSortButton.classList.remove("active");
   } else {
-    elements.taskPrioritySortButton.classList.remove("active");
-    showSuccess("Sorting by creation order");
+    elements.taskSortButton.classList.add("active");
   }
 
+  elements.taskSortButton.ariaLabel = buttonInfo[state.sortingType].ariaLabel;
+  elements.taskSortButton.title = buttonInfo[state.sortingType].title;
+  document.querySelector(".sort-text").textContent =
+    sortLabels[state.sortingType];
+
+  showSuccess(sortLabels[state.sortingType]);
   render();
 }
 
