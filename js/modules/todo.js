@@ -191,6 +191,7 @@ function taskClick(event) {
 
     save();
     renderTaskCount(selectedList);
+    updateTaskState(selectedTask.id);
     return;
   }
 
@@ -359,7 +360,7 @@ function renderTasks(selectedList) {
   });
 }
 
-function buildTaskHTML(task) {
+function buildTaskHTML(task, returnHTMLOnly = false) {
   let completed = task.completed ? "checked" : "";
   const priority = task.priority || "medium";
   const { icon, label } = getPriorityInfo(priority);
@@ -432,7 +433,34 @@ function buildTaskHTML(task) {
 
   // TODO: Add Pomodoro tracker
 
+  if (returnHTMLOnly) {
+    return taskTemplate;
+  }
+
   elements.tasksContainer.insertAdjacentHTML("beforeend", taskTemplate);
+}
+
+function updateTaskState(taskId) {
+  const taskElement = document.querySelector(`[data-task-item="${taskId}"]`);
+  if (!taskElement) return;
+
+  const selectedList = state.lists.find(
+    (list) => list.id === state.selectedListId
+  );
+  if (!selectedList) return;
+
+  const task = selectedList.tasks.find((task) => task.id === taskId);
+  if (!task) return;
+
+  const newTaskHTML = buildTaskHTML(task, true);
+
+  // Create a temporary container
+  const tempContainer = document.createElement("div");
+  tempContainer.innerHTML = newTaskHTML;
+  const newTaskElement = tempContainer.firstElementChild;
+
+  // Replace the old element with the new one
+  taskElement.parentNode.replaceChild(newTaskElement, taskElement);
 }
 
 async function deleteTask(taskId) {
