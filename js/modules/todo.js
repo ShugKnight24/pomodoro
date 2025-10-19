@@ -32,9 +32,9 @@ const STORAGE_KEYS = {
 
 // State
 const state = {
+  listCounter: 0,
   lists: [],
   selectedListId: null,
-  listCounter: 0,
   sortingType: "creation", // creation | dueDate | priority
   taskCounter: 0,
 };
@@ -199,6 +199,20 @@ function taskClick(event) {
   const button = event.target.closest("button");
   if (!button) return;
 
+  // Handle add pomodoro button click
+  if (button.dataset.addPomodoro) {
+    const taskId = parseInt(button.dataset.addPomodoro);
+    addPomodoro(taskId);
+    return;
+  }
+
+  // Handle remove pomodoro button click
+  if (button.dataset.removePomodoro) {
+    const taskId = parseInt(button.dataset.removePomodoro);
+    removePomodoro(taskId);
+    return;
+  }
+
   // Handle save button click
   if (button.dataset.saveTask) {
     const taskId = parseInt(button.dataset.saveTask);
@@ -270,6 +284,7 @@ function createTask(name, priority = "medium", dueDate = null) {
     createdAt: new Date().toISOString(),
     dueDate: dueDate,
     name: name,
+    pomodoros: 0,
     priority: priority,
   };
 }
@@ -380,6 +395,10 @@ function buildTaskHTML(task, returnHTMLOnly = false) {
   const isOverdue =
     task.dueDate && !task.completed && new Date(task.dueDate) < new Date();
 
+  // Pomodoro display logic
+  const pomodoroCount = task.pomodoros || 0;
+  const pomodoroDisplay = getPomodoroDisplay(pomodoroCount);
+
   // TODO: Simplify with template literals and functions
   const taskTemplate = `
     <div class="task task-priority-${priority}" data-task-item="${task.id}">
@@ -405,6 +424,27 @@ function buildTaskHTML(task, returnHTMLOnly = false) {
         type="text" 
         value="${task.name}"
       />
+      <div class="task-pomodoro-tracker">
+        <div class="pomodoro-display" title="${pomodoroCount} pomodoro${
+    pomodoroCount === 1 ? "" : "s"
+  } completed">
+          ${pomodoroDisplay}
+        </div>
+        <button class="pomodoro-add-btn" data-add-pomodoro="${
+          task.id
+        }" title="Add completed pomodoro" aria-label="Add completed pomodoro">
+          <i class="fas fa-plus"></i>
+        </button>
+        ${
+          pomodoroCount > 0
+            ? `
+        <button class="pomodoro-remove-btn" data-remove-pomodoro="${task.id}" title="Remove pomodoro" aria-label="Remove pomodoro">
+          <i class="fas fa-minus"></i>
+        </button>
+        `
+            : ""
+        }
+      </div>
       <div class="task-metadata">
         ${
           task.completed && completedDate
@@ -461,6 +501,66 @@ function updateTaskState(taskId) {
 
   // Replace the old element with the new one
   taskElement.parentNode.replaceChild(newTaskElement, taskElement);
+}
+
+function getPomodoroDisplay(count) {
+  if (count === 0) {
+    return '<span class="pomodoro-empty">—</span>';
+  } else if (count <= 3) {
+    return "🍅".repeat(count);
+  } else {
+    return `🍅 <span class="pomodoro-count">${count}</span>`;
+  }
+}
+
+function addPomodoro(taskId) {
+  const selectedList = state.lists.find(
+    (list) => list.id === state.selectedListId
+  );
+
+  const task = selectedList.tasks.find((t) => t.id === taskId);
+  if (!task) return;
+
+  task.pomodoros = (task.pomodoros || 0) + 1;
+  save();
+  updateTaskState(taskId);
+  showSuccess(`Pomodoro added! Total: ${task.pomodoros} 🍅`);
+}
+
+function removePomodoro(taskId) {
+  const selectedList = state.lists.find(
+    (list) => list.id === state.selectedListId
+  );
+
+  const task = selectedList.tasks.find((t) => t.id === taskId);
+  if (!task || !task.pomodoros || task.pomodoros <= 0) return;
+
+  task.pomodoros -= 1;
+  save();
+  updateTaskState(taskId);
+  showSuccess(`Pomodoro removed. Total: ${task.pomodoros} 🍅`);
+}
+
+// Export for timer integration
+export function addPomodoroToActiveTask() {
+  const selectedList = state.lists.find(
+    (list) => list.id === state.selectedListId
+  );
+
+  if (!selectedList || selectedList.tasks.length === 0) return false;
+
+  // Find the first incomplete task
+  const activeTask = selectedList.tasks.find((task) => !task.completed);
+
+  if (!activeTask) return false;
+
+  activeTask.pomodoros = (activeTask.pomodoros || 0) + 1;
+  save();
+  updateTaskState(activeTask.id);
+  showSuccess(
+    `Pomodoro completed! ${activeTask.name}: ${activeTask.pomodoros} 🍅`
+  );
+  return true;
 }
 
 async function deleteTask(taskId) {

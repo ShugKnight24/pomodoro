@@ -737,6 +737,82 @@ h1 {
   text-decoration-color: var(--color-gray-700);
 }
 
+/* Pomodoro Tracker */
+.task-pomodoro-tracker {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-left: auto;
+  margin-right: var(--spacing-sm);
+}
+
+.pomodoro-display {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-gray-700);
+  font-family: "Courier New", Courier, monospace;
+  white-space: nowrap;
+  min-width: 60px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+}
+
+.pomodoro-empty {
+  color: var(--color-gray-400);
+  font-size: 1.2rem;
+}
+
+.pomodoro-count {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-gray-800);
+}
+
+.pomodoro-add-btn,
+.pomodoro-remove-btn {
+  background: var(--color-success);
+  color: var(--color-white);
+  border: none;
+  cursor: pointer;
+  font-size: 0.7rem;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all var(--transition-fast);
+  padding: 0;
+  opacity: 0;
+}
+
+.pomodoro-remove-btn {
+  background: var(--color-warning);
+}
+
+.task:hover .pomodoro-add-btn,
+.task:hover .pomodoro-remove-btn {
+  opacity: 1;
+}
+
+.pomodoro-add-btn:hover {
+  background: #059669;
+  transform: scale(1.15);
+}
+
+.pomodoro-remove-btn:hover {
+  background: #dc2626;
+  transform: scale(1.15);
+}
+
+.pomodoro-add-btn i,
+.pomodoro-remove-btn i {
+  font-size: 0.6rem;
+}
+
 /* Task MetaData */
 .task-metadata {
   display: flex;
@@ -840,6 +916,11 @@ h1 {
 }
 
 @media (hover: hover) {
+  .pomodoro-add-btn,
+  .pomodoro-remove-btn {
+    opacity: 1;
+  }
+
   .task-actions {
     opacity: 0;
   }
