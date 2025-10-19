@@ -13,6 +13,7 @@ const elements = {
   newListInput: null,
   newTaskForm: null,
   newTaskInput: null,
+  taskDueDateInput: null,
   taskListContainer: null,
   taskListTitle: null,
   taskPrioritySelect: null,
@@ -58,6 +59,7 @@ function initializeElements() {
   elements.newListInput = document.querySelector("[data-new-list-input]");
   elements.newTaskForm = document.querySelector("[data-new-task-form]");
   elements.newTaskInput = document.querySelector("[data-new-task-input]");
+  elements.taskDueDateInput = document.querySelector("[data-task-due-date]");
   elements.taskListContainer = document.querySelector(
     "[data-list-display-container]"
   );
@@ -187,6 +189,10 @@ function taskClick(event) {
       (task) => task.id === parseInt(event.target.id)
     );
     selectedTask.completed = event.target.checked;
+    selectedTask.completedAt = event.target.checked
+      ? new Date().toISOString()
+      : null;
+
     save();
     renderTaskCount(selectedList);
     return;
@@ -221,6 +227,7 @@ function taskClick(event) {
 function newTaskSubmit(event) {
   event.preventDefault();
   const taskName = elements.newTaskInput.value.trim();
+  const dueDate = elements.taskDueDateInput.value || null;
   const priority = elements.taskPrioritySelect.value;
 
   if (!taskName) {
@@ -229,8 +236,9 @@ function newTaskSubmit(event) {
     return;
   }
 
-  const task = createTask(taskName, priority);
+  const task = createTask(taskName, priority, dueDate);
   elements.newTaskInput.value = "";
+  elements.taskDueDateInput.value = "";
   elements.taskPrioritySelect.value = "medium";
 
   const selectedList = state.lists.find(
@@ -238,7 +246,11 @@ function newTaskSubmit(event) {
   );
   selectedList.tasks.push(task);
   saveAndRender();
-  showSuccess(`Task "${taskName}" added with "${priority}" priority`);
+  showSuccess(
+    `Task "${taskName}" added with "${priority}" priority ${
+      dueDate ? `due "${dueDate}"` : ""
+    }`
+  );
 }
 
 function createList(name) {
@@ -251,12 +263,15 @@ function createList(name) {
   };
 }
 
-function createTask(name, priority = "medium") {
+function createTask(name, priority = "medium", dueDate = null) {
   state.taskCounter++;
 
   return {
-    completed: false,
     id: state.taskCounter, // TODO: Create a better unique id
+    completed: false,
+    completedAt: null,
+    createdAt: new Date().toISOString(),
+    dueDate: dueDate,
     name: name,
     priority: priority,
   };
@@ -355,7 +370,23 @@ function buildTaskHTML(task) {
   const priority = task.priority || "medium";
   const { icon, label } = getPriorityInfo(priority);
 
-  let taskTemplate = `
+  // Simplify date formatting
+  const createdDate = formatDate(task.createdAt);
+  const completedDate = task.completedAt
+    ? formatDate(task.completedAt)
+    : "Not completed";
+  const createdDateLong = task.createdAt ? formatDateLong(task.createdAt) : "";
+  const completedDateLong = task.completedAt
+    ? formatDateLong(task.completedAt)
+    : "Not completed";
+
+  const dueDate = task.dueDate ? formatDate(task.dueDate) : null;
+  const dueDateLong = task.dueDate ? formatDateLong(task.dueDate) : "";
+  const isOverdue =
+    task.dueDate && !task.completed && new Date(task.dueDate) < new Date();
+
+  // TODO: Simplify with template literals and functions
+  const taskTemplate = `
     <div class="task task-priority-${priority}" data-task-item="${task.id}">
       <span class="priority-indicator" title="${label} priority">
         ${icon}
@@ -369,7 +400,9 @@ function buildTaskHTML(task) {
       >
       <label for="${task.id}">
         <span class="custom-checkbox"></span>
-        <span class="task-name-text" data-task-text="${task.id}">${task.name}</span>
+        <span class="task-name-text" data-task-text="${task.id}">${
+    task.name
+  }</span>
       </label>
       <input 
         class="task-name-input hidden" 
@@ -377,11 +410,26 @@ function buildTaskHTML(task) {
         type="text" 
         value="${task.name}"
       />
+      <div class="task-metadata">
+        ${
+          task.completed && completedDate
+            ? `<span class="task-date completed-date" title="Completed: ${completedDateLong}">✓ ${completedDate}</span>`
+            : dueDate
+            ? `<span class="task-date due-date ${
+                isOverdue ? "overdue" : ""
+              }" title="Due: ${dueDateLong}">📅 ${dueDate}</span>`
+            : `<span class="task-date created-date" title="Created: ${createdDateLong}">${createdDate}</span>`
+        }
+      </div>
       <div class="task-actions">
-        <button class="task-action-btn edit-task-btn" data-edit-task="${task.id}" title="Edit task">
+        <button class="task-action-btn edit-task-btn" data-edit-task="${
+          task.id
+        }" title="Edit task">
           <i class="fas fa-pencil-alt"></i>
         </button>
-        <button class="task-action-btn delete-task-btn" data-delete-task="${task.id}" title="Delete task">
+        <button class="task-action-btn delete-task-btn" data-delete-task="${
+          task.id
+        }" title="Delete task">
           <i class="fas fa-trash"></i>
         </button>
       </div>
@@ -611,6 +659,31 @@ function toggleSortByPriority() {
   }
 
   render();
+}
+
+function formatDate(isoString) {
+  if (!isoString) return "";
+
+  const date = new Date(isoString);
+  const now = new Date();
+  const diffInMs = now - date;
+  const diffInMins = Math.floor(diffInMs / 60000);
+  const diffInHours = Math.floor(diffInMs / 3600000);
+  const diffInDays = Math.floor(diffInMs / 86400000);
+
+  if (diffInMins < 1) return "just now"; // Just now < 1 minute
+  if (diffInMins < 60) return `${diffInMins}m ago`; // Minutes ago < 1 hour
+  if (diffInHours < 24) return `${diffInHours}h ago`; // Hours ago < 24 hours
+  if (diffInDays < 7) return `${diffInDays}d ago`; // Days ago < 7 days
+
+  return date.toLocaleDateString();
+}
+
+function formatDateLong(isoString) {
+  if (!isoString) return "Not completed";
+
+  const date = new Date(isoString);
+  return date.toLocaleString();
 }
 
 function clearElement(element) {

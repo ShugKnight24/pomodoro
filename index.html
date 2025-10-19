@@ -258,25 +258,42 @@
             <div class="new-task-creator">
               <form data-new-task-form>
                 <div class="task-input-group">
-                  <input
-                    id="new-task-name"
-                    data-new-task-input
-                    class="new-input task"
-                    type="text"
-                    placeholder="new task name"
-                    aria-label="new task name"
-                  />
-                  <label for="task-priority">Task Priority:</label>
-                  <select
-                    id="task-priority"
-                    data-task-priority
-                    class="priority-select"
-                    aria-label="task priority selection"
-                  >
-                    <option value="low">Low</option>
-                    <option value="medium" selected>Medium</option>
-                    <option value="high">High</option>
-                  </select>
+                  <!-- TODO: Improve mobile responsiveness -->
+                  <div class="task-name-group">
+                    <label for="new-task-name">Task Name</label>
+                    <input
+                      id="new-task-name"
+                      data-new-task-input
+                      class="new-input task"
+                      type="text"
+                      placeholder="new task name"
+                      aria-label="new task name"
+                    />
+                  </div>
+                  <div class="due-date-group">
+                    <label for="task-due-date">Due Date (Optional)</label>
+                    <input
+                      id="task-due-date"
+                      data-task-due-date
+                      class="new-input due-date-input"
+                      type="date"
+                      aria-label="due date"
+                      title="Due date (optional)"
+                    />
+                  </div>
+                  <div class="priority-group">
+                    <label for="task-priority">Task Priority</label>
+                    <select
+                      id="task-priority"
+                      data-task-priority
+                      class="priority-select"
+                      aria-label="task priority selection"
+                    >
+                      <option value="low">Low</option>
+                      <option value="medium" selected>Medium</option>
+                      <option value="high">High</option>
+                    </select>
+                  </div>
                 </div>
                 <button class="button create" aria-label="create new task">
                   +
