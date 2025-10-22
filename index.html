@@ -241,7 +241,68 @@
           <div class="todo-header">
             <h2 class="todo-title" data-list-title>Update Me Bruv!</h2>
             <div class="todo-header-actions">
-              <!-- TODO: Possibly move to a filter system -->
+              <!-- TODO: Improve design and responsiveness of search & filters -->
+              <!-- Layout shifts when filtering & searching -->
+              <div class="todo-filters">
+                <div class="search-container">
+                  <input
+                    id="filter-tasks-input"
+                    type="search"
+                    class="search-input"
+                    data-search-input
+                    placeholder="Search tasks..."
+                    aria-label="Search tasks"
+                  />
+                  <button
+                    class="clear-search-btn hidden"
+                    data-clear-search
+                    aria-label="Clear search"
+                  >
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+                <div class="filter-buttons">
+                  <button class="filter-btn active" data-filter="all">
+                    All
+                  </button>
+                  <button class="filter-btn" data-filter="active">
+                    Active
+                  </button>
+                  <button class="filter-btn" data-filter="completed">
+                    Completed
+                  </button>
+                </div>
+                <div class="priority-filters">
+                  <button
+                    class="priority-filter-btn"
+                    data-priority-filter="all"
+                    title="Show all priorities"
+                  >
+                    All
+                  </button>
+                  <button
+                    class="priority-filter-btn"
+                    data-priority-filter="high"
+                    title="Show high priority"
+                  >
+                    🔴
+                  </button>
+                  <button
+                    class="priority-filter-btn"
+                    data-priority-filter="medium"
+                    title="Show medium priority"
+                  >
+                    🟡
+                  </button>
+                  <button
+                    class="priority-filter-btn"
+                    data-priority-filter="low"
+                    title="Show low priority"
+                  >
+                    🟢
+                  </button>
+                </div>
+              </div>
               <button
                 class="sort-button"
                 data-sort-toggle

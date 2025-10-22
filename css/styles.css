@@ -584,6 +584,168 @@ h1 {
   flex-wrap: wrap;
 }
 
+/* Search and Filters */
+.todo-filters {
+  margin-top: var(--spacing-sm);
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-input {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  padding-right: calc(var(--spacing-md) + 30px);
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.3);
+  color: var(--color-white);
+  font-size: 1rem;
+  outline: none;
+  transition: all var(--transition-base);
+  font-family: inherit;
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.search-input:focus {
+  background: rgba(255, 255, 255, 0.45);
+  border-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 3px 3px 3px 3px rgba(255, 255, 255, 0.45);
+}
+
+.clear-search-btn {
+  position: absolute;
+  right: var(--spacing-xs);
+  background: rgba(255, 255, 255, 0.3);
+  border: none;
+  color: var(--color-white);
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-base);
+}
+
+.clear-search-btn:hover {
+  background: rgba(255, 255, 255, 0.45);
+  transform: scale(1.05);
+}
+
+.clear-search-btn i {
+  font-size: 1.2rem;
+}
+
+.clear-search-btn:hover i {
+  color: var(--color-warning);
+}
+
+/* Remove native search input clear button */
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input[type="search"] {
+  appearance: textfield;
+}
+
+.filter-buttons,
+.priority-filters {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.filter-btn,
+.priority-filter-btn {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.3);
+  color: var(--color-white);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  font-family: inherit;
+  text-transform: uppercase;
+}
+
+.priority-filter-btn[data-priority-filter="high"],
+.priority-filter-btn[data-priority-filter="medium"],
+.priority-filter-btn[data-priority-filter="low"] {
+  padding: 0;
+  font-size: 1.2rem;
+}
+
+.filter-btn:hover,
+.priority-filter-btn:hover {
+  background: rgba(255, 255, 255, 0.6);
+  border-color: rgba(255, 255, 255, 0.9);
+  transform: translateY(-3px);
+}
+
+.filter-btn.active,
+.priority-filter-btn.active {
+  background: var(--color-white);
+  color: var(--color-primary-dark);
+  border-color: var(--color-white);
+  box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.45);
+}
+
+.priority-filter-btn {
+  min-width: 36px;
+  min-height: 36px;
+}
+
+/* No results message */
+.no-results {
+  width: fit-content;
+  padding: var(--spacing-md) var(--spacing-xl);
+  text-align: center;
+  color: var(--color-gray-600);
+  font-size: 1.2rem;
+  font-family: "Courier New", Courier, monospace;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: var(--radius-md);
+  margin: var(--spacing-md) auto;
+}
+
+.no-results-icon {
+  font-size: 3rem;
+  margin-bottom: var(--spacing-sm);
+  opacity: 0.5;
+}
+
+.no-results p {
+  margin: var(--spacing-xs) 0;
+}
+
+/* Task highlighting for search */
+.task.search-match {
+  /* TODO: Implement more distinct highlighting for matching tasks */
+  background: rgba(255, 255, 200, 0.45);
+  border-left-width: 6px;
+}
+
+@media screen and (max-width: 768px) {
+  .todo-filters {
+    padding: 0 var(--spacing-sm);
+  }
+}
+
 /* Sort Button */
 .sort-button {
   display: flex;

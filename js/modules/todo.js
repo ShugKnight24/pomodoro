@@ -3,16 +3,21 @@
 import { confirmDelete } from "./modal.js";
 import { showSuccess, showError } from "./toast.js";
 
+// TODO: Possibly create seperate state objects for different functionalities
 // DOM Elements
 const elements = {
   clearCompletedTasks: null,
+  clearSearchButton: null,
   deleteListButton: null,
+  filterButtons: null,
   listsContainer: null,
   listCount: null,
   newListForm: null,
   newListInput: null,
   newTaskForm: null,
   newTaskInput: null,
+  priorityFilterButtons: null,
+  searchInput: null,
   taskDueDateInput: null,
   taskListContainer: null,
   taskListTitle: null,
@@ -34,7 +39,10 @@ const STORAGE_KEYS = {
 const state = {
   listCounter: 0,
   lists: [],
+  priorityFilter: "all", // all | high | medium | low
+  searchQuery: "",
   selectedListId: null,
+  statusFilter: "all", // all | active | completed
   sortingType: "creation", // creation | dueDate | priority
   taskCounter: 0,
 };
@@ -50,15 +58,21 @@ function initializeElements() {
   elements.clearCompletedTasks = document.querySelector(
     "[data-clear-completed-tasks]"
   );
+  elements.clearSearchButton = document.querySelector("[data-clear-search]");
   elements.deleteListButton = document.querySelector(
     "[data-delete-list-button]"
   );
+  elements.filterButtons = document.querySelectorAll("[data-filter]");
   elements.listsContainer = document.querySelector("[data-lists]");
   elements.listCount = document.querySelector("[data-list-count]");
   elements.newListForm = document.querySelector("[data-new-list-form]");
   elements.newListInput = document.querySelector("[data-new-list-input]");
   elements.newTaskForm = document.querySelector("[data-new-task-form]");
   elements.newTaskInput = document.querySelector("[data-new-task-input]");
+  elements.priorityFilterButtons = document.querySelectorAll(
+    "[data-priority-filter]"
+  );
+  elements.searchInput = document.querySelector("[data-search-input]");
   elements.taskDueDateInput = document.querySelector("[data-task-due-date]");
   elements.taskListContainer = document.querySelector(
     "[data-list-display-container]"
@@ -83,10 +97,18 @@ function loadFromStorage() {
 
 function setupEventListeners() {
   elements.clearCompletedTasks.addEventListener("click", clearCompletedTasks);
+  elements.clearSearchButton.addEventListener("click", clearSearch);
   elements.deleteListButton.addEventListener("click", deleteCurrentList);
+  elements.filterButtons.forEach((btn) => {
+    btn.addEventListener("click", handleStatusFilter);
+  });
   elements.listsContainer.addEventListener("click", listItemClick);
   elements.newListForm.addEventListener("submit", newListSubmit);
   elements.newTaskForm.addEventListener("submit", newTaskSubmit);
+  elements.priorityFilterButtons.forEach((btn) => {
+    btn.addEventListener("click", handlePriorityFilter);
+  });
+  elements.searchInput.addEventListener("input", handleSearch);
   elements.tasksContainer.addEventListener("click", taskClick);
   elements.taskSortButton.addEventListener("click", toggleSortType);
 }
@@ -357,12 +379,23 @@ function renderListCount() {
 }
 
 function renderTaskCount(selectedList) {
-  const incompleteTasksCount = selectedList.tasks.filter(
+  const filteredTasks = filterTasks(selectedList.tasks);
+  const incompleteTasksCount = filteredTasks.filter(
     (task) => !task.completed
   ).length;
   const taskString = incompleteTasksCount === 1 ? "task" : "tasks";
 
-  elements.taskCount.innerText = `${incompleteTasksCount} ${taskString} remaining`;
+  if (
+    state.statusFilter !== "all" ||
+    state.priorityFilter !== "all" ||
+    state.searchQuery
+  ) {
+    elements.taskCount.innerText = `${filteredTasks.length} ${
+      filteredTasks.length === 1 ? "task" : "tasks"
+    } shown (${incompleteTasksCount} ${taskString} remaining)`;
+  } else {
+    elements.taskCount.innerText = `${incompleteTasksCount} ${taskString} remaining`;
+  }
 }
 
 function renderTasks(selectedList) {
@@ -370,17 +403,40 @@ function renderTasks(selectedList) {
 
   tasksToRender = getTasksToRender(tasksToRender);
 
+  if (tasksToRender.length === 0) {
+    return (elements.tasksContainer.innerHTML = renderNoTasks());
+  }
+
   tasksToRender.forEach((task) => {
-    buildTaskHTML(task);
+    const matchesSearch =
+      state.searchQuery && task.name.toLowerCase().includes(state.searchQuery);
+    buildTaskHTML(task, false, matchesSearch);
   });
 }
 
-function buildTaskHTML(task, returnHTMLOnly = false) {
+function renderNoTasks() {
+  const noTasksHTML = `
+    <div class="no-results">
+      <div class="no-results-icon">🔍</div>
+      <p>No tasks found matching "${state.searchQuery}"</p>
+      ${
+        state.searchQuery
+          ? `<p>Try a different search term</p>`
+          : state.statusFilter !== "all" || state.priorityFilter !== "all"
+          ? `<p>Try adjusting your filters</p>`
+          : `<p>Create your first task to get started!</p>`
+      }
+    </div>
+  `;
+  return noTasksHTML;
+}
+
+function buildTaskHTML(task, returnHTMLOnly = false, searchMatched = false) {
   let completed = task.completed ? "checked" : "";
   const priority = task.priority || "medium";
   const { icon, label } = getPriorityInfo(priority);
 
-  // Simplify date formatting
+  // TODO: Simplify date formatting
   const createdDate = formatDate(task.createdAt);
   const completedDate = task.completedAt
     ? formatDate(task.completedAt)
@@ -399,9 +455,13 @@ function buildTaskHTML(task, returnHTMLOnly = false) {
   const pomodoroCount = task.pomodoros || 0;
   const pomodoroDisplay = getPomodoroDisplay(pomodoroCount);
 
+  const searchMatchClass = searchMatched ? "search-match" : "";
+
   // TODO: Simplify with template literals and functions
   const taskTemplate = `
-    <div class="task task-priority-${priority}" data-task-item="${task.id}">
+    <div class="task task-priority-${priority} ${searchMatchClass}" data-task-item="${
+    task.id
+  }">
       <span class="priority-indicator" title="${label} priority">
         ${icon}
       </span>
@@ -492,7 +552,7 @@ function updateTaskState(taskId) {
   const task = selectedList.tasks.find((task) => task.id === taskId);
   if (!task) return;
 
-  const newTaskHTML = buildTaskHTML(task, true);
+  const newTaskHTML = buildTaskHTML(task, true, false);
 
   // Create a temporary container
   const tempContainer = document.createElement("div");
@@ -504,13 +564,9 @@ function updateTaskState(taskId) {
 }
 
 function getPomodoroDisplay(count) {
-  if (count === 0) {
-    return '<span class="pomodoro-empty">—</span>';
-  } else if (count <= 3) {
-    return "🍅".repeat(count);
-  } else {
-    return `🍅 <span class="pomodoro-count">${count}</span>`;
-  }
+  if (count === 0) return '<span class="pomodoro-empty">—</span>';
+  if (count <= 3) return "🍅".repeat(count);
+  return `🍅 <span class="pomodoro-count">${count}</span>`;
 }
 
 function addPomodoro(taskId) {
@@ -782,13 +838,16 @@ function sortTasksByDueDate(tasks) {
 }
 
 function getTasksToRender(tasks) {
+  // Apply filter first
+  let filtered = filterTasks(tasks);
+
   switch (state.sortingType) {
     case "priority":
-      return sortTasksByPriority(tasks);
+      return sortTasksByPriority(filtered);
     case "dueDate":
-      return sortTasksByDueDate(tasks);
+      return sortTasksByDueDate(filtered);
     default:
-      return tasks; // creation order
+      return filtered; // creation order
   }
 }
 
@@ -825,6 +884,90 @@ function toggleSortType() {
   render();
 }
 
+// Search and Filters
+function handleSearch(event) {
+  state.searchQuery = event.target.value.trim().toLowerCase();
+
+  // Show/hide clear button
+  if (state.searchQuery) {
+    elements.clearSearchButton.classList.remove("hidden");
+  } else {
+    elements.clearSearchButton.classList.add("hidden");
+  }
+
+  render();
+}
+
+function clearSearch() {
+  state.searchQuery = "";
+  elements.searchInput.value = "";
+  elements.clearSearchButton.classList.add("hidden");
+  render();
+}
+
+function handleStatusFilter(event) {
+  const filterType = event.target.dataset.filter;
+  state.statusFilter = filterType;
+
+  // Update active state
+  elements.filterButtons.forEach((btn) => {
+    btn.classList.remove("active");
+  });
+  event.target.classList.add("active");
+
+  render();
+  showSuccess(`Showing ${filterType} tasks`);
+}
+
+function handlePriorityFilter(event) {
+  const priority = event.target.dataset.priorityFilter;
+  state.priorityFilter = priority;
+
+  // Update active state
+  elements.priorityFilterButtons.forEach((btn) => {
+    btn.classList.remove("active");
+  });
+  event.target.classList.add("active");
+
+  const priorityLabels = {
+    all: "all priorities",
+    high: "high priority",
+    medium: "medium priority",
+    low: "low priority",
+  };
+
+  render();
+  showSuccess(`Showing ${priorityLabels[priority]} tasks`);
+}
+
+function filterTasks(tasks) {
+  let filtered = [...tasks];
+
+  // Filter by status
+  if (state.statusFilter === "active") {
+    filtered = filtered.filter((task) => !task.completed);
+  } else if (state.statusFilter === "completed") {
+    filtered = filtered.filter((task) => task.completed);
+  }
+
+  // Filter by priority
+  if (state.priorityFilter !== "all") {
+    filtered = filtered.filter(
+      (task) => (task.priority || "medium") === state.priorityFilter
+    );
+  }
+
+  // Filter by search query
+  if (state.searchQuery) {
+    filtered = filtered.filter((task) =>
+      task.name.toLowerCase().includes(state.searchQuery)
+    );
+  }
+
+  return filtered;
+}
+
+// Todo utils
 function formatDate(isoString) {
   if (!isoString) return "";
 
