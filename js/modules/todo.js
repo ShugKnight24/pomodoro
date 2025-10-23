@@ -29,9 +29,9 @@ const elements = {
 
 // Local storage keys
 const STORAGE_KEYS = {
+  LIST_COUNTER: "pomodoro.listCounter",
   LISTS: "pomodoro.lists",
   SELECTED_LIST_ID: "pomodoro.selectedListId",
-  LIST_COUNTER: "pomodoro.listCounter",
   TASK_COUNTER: "pomodoro.taskCounter",
 };
 
@@ -86,11 +86,11 @@ function initializeElements() {
 
 /* Load data from localStorage */
 function loadFromStorage() {
+  state.listCounter =
+    JSON.parse(localStorage.getItem(STORAGE_KEYS.LIST_COUNTER)) || 0;
   state.lists = JSON.parse(localStorage.getItem(STORAGE_KEYS.LISTS)) || [];
   state.selectedListId =
     JSON.parse(localStorage.getItem(STORAGE_KEYS.SELECTED_LIST_ID)) || null;
-  state.listCounter =
-    JSON.parse(localStorage.getItem(STORAGE_KEYS.LIST_COUNTER)) || 0;
   state.taskCounter =
     JSON.parse(localStorage.getItem(STORAGE_KEYS.TASK_COUNTER)) || 0;
 }
