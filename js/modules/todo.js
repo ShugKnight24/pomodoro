@@ -169,9 +169,12 @@ function newListSubmit(event) {
 }
 
 function clearCompletedTasks() {
-  const selectedList = state.lists.find(
-    (list) => list.id === state.selectedListId
-  );
+  const selectedList = getCurrentList();
+
+  if (!selectedList) {
+    return showError(`No list selected to clear completed tasks`);
+  }
+
   if (selectedList) {
     const count = selectedList.tasks.filter((task) => task.completed).length;
     selectedList.tasks = selectedList.tasks.filter((task) => !task.completed);
@@ -181,9 +184,11 @@ function clearCompletedTasks() {
 }
 
 async function deleteCurrentList() {
-  const listToDelete = state.lists.find(
-    (list) => list.id === state.selectedListId
-  );
+  const listToDelete = getCurrentList();
+
+  if (!listToDelete) {
+    return showError(`No list selected to delete`);
+  }
 
   const confirmed = await confirmDelete(listToDelete.name, "list");
   if (!confirmed) return;
@@ -200,9 +205,8 @@ function taskClick(event) {
     event.target.tagName.toLowerCase() === "input" &&
     event.target.type === "checkbox"
   ) {
-    const selectedList = state.lists.find(
-      (list) => list.id === state.selectedListId
-    );
+    const selectedList = getCurrentList();
+    if (!selectedList) return showError(`No list selected`);
     const selectedTask = selectedList.tasks.find(
       (task) => task.id === parseInt(event.target.id)
     );
@@ -274,9 +278,10 @@ function newTaskSubmit(event) {
   elements.taskDueDateInput.value = "";
   elements.taskPrioritySelect.value = "medium";
 
-  const selectedList = state.lists.find(
-    (list) => list.id === state.selectedListId
-  );
+  const selectedList = getCurrentList();
+  if (!selectedList) {
+    return showError(`No list selected to add task`);
+  }
   selectedList.tasks.push(task);
   saveAndRender();
   showSuccess(
@@ -321,13 +326,12 @@ function save() {
 function render() {
   clearElement(elements.listsContainer);
   renderLists();
-  const selectedList = state.lists.find(
-    (list) => list.id === state.selectedListId
-  );
+  const selectedList = getCurrentList();
 
-  if (state.selectedListId === null) {
+  if (!selectedList) {
     // TODO: Achieve with a dynamic class and css specificity to avoid inline styles - hidden...
     elements.taskListContainer.style.display = "none";
+    return;
   } else {
     // TODO: Achieve with a dynamic class - not hidden
     elements.taskListContainer.style.display = "";
@@ -544,10 +548,10 @@ function updateTaskState(taskId) {
   const taskElement = document.querySelector(`[data-task-item="${taskId}"]`);
   if (!taskElement) return;
 
-  const selectedList = state.lists.find(
-    (list) => list.id === state.selectedListId
-  );
-  if (!selectedList) return;
+  const selectedList = getCurrentList();
+  if (!selectedList) {
+    return showError(`No list selected to update task state`);
+  }
 
   const task = selectedList.tasks.find((task) => task.id === taskId);
   if (!task) return;
@@ -570,9 +574,10 @@ function getPomodoroDisplay(count) {
 }
 
 function addPomodoro(taskId) {
-  const selectedList = state.lists.find(
-    (list) => list.id === state.selectedListId
-  );
+  const selectedList = getCurrentList();
+  if (!selectedList) {
+    return showError(`No list selected to add pomodoro to task`);
+  }
 
   const task = selectedList.tasks.find((t) => t.id === taskId);
   if (!task) return;
@@ -584,9 +589,10 @@ function addPomodoro(taskId) {
 }
 
 function removePomodoro(taskId) {
-  const selectedList = state.lists.find(
-    (list) => list.id === state.selectedListId
-  );
+  const selectedList = getCurrentList();
+  if (!selectedList) {
+    return showError(`No list selected to remove pomodoro from task`);
+  }
 
   const task = selectedList.tasks.find((t) => t.id === taskId);
   if (!task || !task.pomodoros || task.pomodoros <= 0) return;
@@ -597,32 +603,31 @@ function removePomodoro(taskId) {
   showSuccess(`Pomodoro removed. Total: ${task.pomodoros} 🍅`);
 }
 
-// Export for timer integration
-export function addPomodoroToActiveTask() {
-  const selectedList = state.lists.find(
-    (list) => list.id === state.selectedListId
-  );
+// TODO: Refine this functionality and connect to Pomodoro
+// export function addPomodoroToActiveTask() {
+//   const selectedList = getCurrentList();
 
-  if (!selectedList || selectedList.tasks.length === 0) return false;
+//   if (!selectedList || selectedList.tasks.length === 0) return false;
 
-  // Find the first incomplete task
-  const activeTask = selectedList.tasks.find((task) => !task.completed);
+//   // TODO: Define "active" task logic better
+//   const activeTask = selectedList.tasks.find((task) => !task.completed);
 
-  if (!activeTask) return false;
+//   if (!activeTask) return false;
 
-  activeTask.pomodoros = (activeTask.pomodoros || 0) + 1;
-  save();
-  updateTaskState(activeTask.id);
-  showSuccess(
-    `Pomodoro completed! ${activeTask.name}: ${activeTask.pomodoros} 🍅`
-  );
-  return true;
-}
+//   activeTask.pomodoros = (activeTask.pomodoros || 0) + 1;
+//   save();
+//   updateTaskState(activeTask.id);
+//   showSuccess(
+//     `Pomodoro completed! ${activeTask.name}: ${activeTask.pomodoros} 🍅`
+//   );
+//   return true;
+// }
 
 async function deleteTask(taskId) {
-  const selectedList = state.lists.find(
-    (list) => list.id === state.selectedListId
-  );
+  const selectedList = getCurrentList();
+  if (!selectedList) {
+    return showError(`No list selected to delete task from`);
+  }
 
   const task = selectedList.tasks.find((t) => t.id === taskId);
   if (!task) return;
@@ -693,9 +698,10 @@ function saveTaskName(taskId) {
     return;
   }
 
-  const selectedList = state.lists.find(
-    (list) => list.id === state.selectedListId
-  );
+  const selectedList = getCurrentList();
+  if (!selectedList) {
+    return showError(`No list selected to update task name`);
+  }
   const task = selectedList.tasks.find((t) => t.id === taskId);
 
   if (task && newName !== task.name) {
@@ -805,6 +811,10 @@ function cancelListEdit(listId) {
   inputElement.classList.add("hidden");
 
   render();
+}
+
+function getCurrentList() {
+  return state.lists.find((list) => list.id === state.selectedListId);
 }
 
 function getPriorityInfo(priority) {
