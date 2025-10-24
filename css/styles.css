@@ -549,6 +549,73 @@ h1 {
   color: var(--color-white);
 }
 
+/* Archive List */
+.archive-list {
+  border-top: 2px solid var(--color-gray-400);
+  margin-top: var(--spacing-sm);
+  padding-top: var(--spacing-sm);
+  background: linear-gradient(135deg, #6b5b95 0%, #5a4a7f 100%);
+  color: var(--color-white);
+}
+
+.archive-list:hover {
+  background: linear-gradient(135deg, #5a4a7f 0%, #4a3a6f 100%);
+}
+
+.archive-list:hover span {
+  color: var(--color-white);
+}
+
+.archive-list.active-list {
+  background: linear-gradient(135deg, #4a3a6f 0%, #3a2a5f 100%);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Archived Tasks */
+.archived-task {
+  background: rgba(107, 91, 149, 0.1);
+  border-left-color: #6b5b95 !important;
+  opacity: 0.95;
+}
+
+.archived-task .custom-checkbox {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.archived-date {
+  color: var(--color-white);
+  background: rgba(107, 91, 149, 0.75);
+  border: 1px solid rgba(107, 91, 149, 0.75);
+}
+
+.original-list {
+  color: var(--color-white);
+  background: rgba(139, 92, 246, 0.75);
+  border: 1px solid rgba(139, 92, 246, 0.75);
+  font-style: italic;
+}
+
+.restore-task-btn {
+  color: #10b981;
+}
+
+.restore-task-btn:hover {
+  background-color: rgba(16, 185, 129, 0.2);
+}
+
+/* Clear archive button */
+.button.delete.archive-delete {
+  background: linear-gradient(135deg, #6b5b95 0%, #5a4a7f 100%);
+  color: var(--color-white);
+  border-color: #6b5b95;
+}
+
+.button.delete.archive-delete:hover {
+  background: linear-gradient(135deg, #5a4a7f 0%, #4a3a6f 100%);
+  border-color: #4a3a6f;
+}
+
 /* Legal Pad */
 .todo-list {
   grid-area: active;
@@ -1255,7 +1322,6 @@ form {
   justify-content: center;
   margin-top: var(--spacing-xl);
   padding-top: var(--spacing-lg);
-  border-top: 2px dashed var(--legal-pad-line);
 }
 
 .button.delete {

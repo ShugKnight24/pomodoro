@@ -3,9 +3,15 @@
 import { confirmDelete } from "./modal.js";
 import { showSuccess, showError } from "./toast.js";
 
+const archive = {
+  ARCHIVE_LIST_ID: -1, // Special ID for archive list
+  ARCHIVE_LIST_NAME: "Archive",
+};
+
 // TODO: Possibly create seperate state objects for different functionalities
 // DOM Elements
 const elements = {
+  clearArchiveButton: null,
   clearCompletedTasks: null,
   clearSearchButton: null,
   deleteListButton: null,
@@ -29,6 +35,7 @@ const elements = {
 
 // Local storage keys
 const STORAGE_KEYS = {
+  ARCHIVE: "pomodoro.archive",
   LIST_COUNTER: "pomodoro.listCounter",
   LISTS: "pomodoro.lists",
   SELECTED_LIST_ID: "pomodoro.selectedListId",
@@ -37,6 +44,7 @@ const STORAGE_KEYS = {
 
 // State
 const state = {
+  archive: null,
   listCounter: 0,
   lists: [],
   priorityFilter: "all", // all | high | medium | low
@@ -50,11 +58,13 @@ const state = {
 export function initTodo() {
   initializeElements();
   loadFromStorage();
+  createArchive();
   setupEventListeners();
   render();
 }
 
 function initializeElements() {
+  elements.clearArchiveButton = document.querySelector("[data-clear-archive]");
   elements.clearCompletedTasks = document.querySelector(
     "[data-clear-completed-tasks]"
   );
@@ -86,6 +96,8 @@ function initializeElements() {
 
 /* Load data from localStorage */
 function loadFromStorage() {
+  state.archive =
+    JSON.parse(localStorage.getItem(STORAGE_KEYS.ARCHIVE)) || null;
   state.listCounter =
     JSON.parse(localStorage.getItem(STORAGE_KEYS.LIST_COUNTER)) || 0;
   state.lists = JSON.parse(localStorage.getItem(STORAGE_KEYS.LISTS)) || [];
@@ -95,7 +107,20 @@ function loadFromStorage() {
     JSON.parse(localStorage.getItem(STORAGE_KEYS.TASK_COUNTER)) || 0;
 }
 
+function createArchive() {
+  if (!state.archive) {
+    state.archive = {
+      id: archive.ARCHIVE_LIST_ID,
+      name: archive.ARCHIVE_LIST_NAME,
+      tasks: [],
+      isArchive: true,
+    };
+    save();
+  }
+}
+
 function setupEventListeners() {
+  elements.clearArchiveButton?.addEventListener("click", clearArchive);
   elements.clearCompletedTasks.addEventListener("click", clearCompletedTasks);
   elements.clearSearchButton.addEventListener("click", clearSearch);
   elements.deleteListButton.addEventListener("click", deleteCurrentList);
@@ -172,22 +197,65 @@ function clearCompletedTasks() {
   const selectedList = getCurrentList();
 
   if (!selectedList) {
-    return showError(`No list selected to clear completed tasks`);
+    showError(`No list selected to clear completed tasks`);
+    return;
   }
 
-  if (selectedList) {
-    const count = selectedList.tasks.filter((task) => task.completed).length;
-    selectedList.tasks = selectedList.tasks.filter((task) => !task.completed);
-    saveAndRender();
-    showSuccess(`${count} completed task${count === 1 ? "" : "s"} cleared`);
+  const completedTasks = selectedList.tasks.filter((task) => task.completed);
+
+  if (completedTasks.length === 0) {
+    showError("No completed tasks to clear");
+    return;
   }
+
+  // Add metadata for restoration from archive
+  const tasksToArchive = completedTasks.map((task) => ({
+    ...task,
+    archivedAt: new Date().toISOString(),
+    archivedFrom: selectedList.name,
+    originalListId: selectedList.id,
+  }));
+  state.archive.tasks.push(...tasksToArchive);
+
+  selectedList.tasks = selectedList.tasks.filter((task) => !task.completed);
+
+  saveAndRender();
+  showSuccess(
+    `${completedTasks.length} task${
+      completedTasks.length === 1 ? "" : "s"
+    } moved to archive`
+  );
+}
+
+async function clearArchive() {
+  // Clear archive button should be hidden in this case, just in case
+  if (state.archive.tasks.length === 0) {
+    showError("Your archive is already empty");
+    return;
+  }
+
+  const confirmed = await confirmDelete(
+    `${state.archive.tasks.length} archived task${
+      state.archive.tasks.length === 1 ? "" : "s"
+    }`,
+    "permanently delete"
+  );
+  if (!confirmed) return;
+
+  const count = state.archive.tasks.length;
+  state.archive.tasks = [];
+  saveAndRender();
+  showSuccess(
+    `${count} archived task${count === 1 ? "" : "s"} deleted permanently`
+  );
 }
 
 async function deleteCurrentList() {
   const listToDelete = getCurrentList();
 
   if (!listToDelete) {
-    return showError(`No list selected to delete`);
+    showError(`No list selected to delete`);
+    return;
   }
 
   const confirmed = await confirmDelete(listToDelete.name, "list");
@@ -206,7 +274,10 @@ function taskClick(event) {
     event.target.type === "checkbox"
   ) {
     const selectedList = getCurrentList();
-    if (!selectedList) return showError(`No list selected`);
+    if (!selectedList) {
+      showError(`No list selected`);
+      return;
+    }
     const selectedTask = selectedList.tasks.find(
       (task) => task.id === parseInt(event.target.id)
     );
@@ -224,6 +295,13 @@ function taskClick(event) {
   // Find the button element (could be the button itself or an icon inside it)
   const button = event.target.closest("button");
   if (!button) return;
+
+  // Handle restore button click (for archive)
+  if (button.dataset.restoreTask) {
+    const taskId = parseInt(button.dataset.restoreTask);
+    restoreTask(taskId);
+    return;
+  }
 
   // Handle add pomodoro button click
   if (button.dataset.addPomodoro) {
@@ -280,7 +358,8 @@ function newTaskSubmit(event) {
 
   const selectedList = getCurrentList();
   if (!selectedList) {
-    return showError(`No list selected to add task`);
+    showError(`No list selected to add task`);
+    return;
   }
   selectedList.tasks.push(task);
   saveAndRender();
@@ -317,9 +396,10 @@ function createTask(name, priority = "medium", dueDate = null) {
 }
 
 function save() {
+  localStorage.setItem(STORAGE_KEYS.ARCHIVE, JSON.stringify(state.archive));
+  localStorage.setItem(STORAGE_KEYS.LIST_COUNTER, state.listCounter);
   localStorage.setItem(STORAGE_KEYS.LISTS, JSON.stringify(state.lists));
   localStorage.setItem(STORAGE_KEYS.SELECTED_LIST_ID, state.selectedListId);
-  localStorage.setItem(STORAGE_KEYS.LIST_COUNTER, state.listCounter);
   localStorage.setItem(STORAGE_KEYS.TASK_COUNTER, state.taskCounter);
 }
 
@@ -339,6 +419,7 @@ function render() {
     renderTaskCount(selectedList);
     clearElement(elements.tasksContainer);
     renderTasks(selectedList);
+    updateArchiveSectionVisibility();
   }
 }
 
@@ -351,15 +432,25 @@ function renderLists() {
   state.lists.forEach((list) => {
     buildListHTML(list);
   });
+  // Render Archive last in list
+  buildListHTML(state.archive);
   renderListCount();
 }
 
 function buildListHTML(list) {
   const isActive = list.id === state.selectedListId ? "active-list" : "";
+  const isArchive = list.isArchive ? "archive-list" : "";
+  const archiveIcon = isArchive ? "🗃️" : "";
+
+  // TODO: Break into atoms / render list input edit button... etc
   let listTemplate = `
-    <li class="list-name ${isActive}" data-list-id="${list.id}">
-      <span class="list-name-text" data-list-text="${list.id}">${list.name}</span>
-      <input
+    <li class="list-name ${isActive} ${isArchive}" data-list-id="${list.id}">
+      <span class="list-name-text" data-list-text="${list.id}">${archiveIcon}${
+    list.name
+  }</span>
+      ${
+        !isArchive
+          ? `<input
         name="list-name-${list.id}"
         class="list-name-input hidden" 
         data-list-input="${list.id}" 
@@ -368,7 +459,10 @@ function buildListHTML(list) {
       />
       <button class="list-action-btn edit-list-btn" data-edit-list="${list.id}" title="Edit list name" aria-label="Edit list name">
         <i class="fas fa-pencil-alt"></i>
-      </button>
+      </button>`
+          : ""
+      }
+      
     </li>
   `;
 
@@ -378,7 +472,10 @@ function buildListHTML(list) {
 }
 
 function renderListCount() {
-  const listCountString = `${state.lists.length} lists`;
+  const listsPlusArchive = state.lists.length + 1;
+  const listCountString = `${listsPlusArchive} list${
+    listsPlusArchive === 1 ? "" : "s"
+  }`;
   elements.listCount.innerText = listCountString;
 }
 
@@ -389,11 +486,17 @@ function renderTaskCount(selectedList) {
   ).length;
   const taskString = incompleteTasksCount === 1 ? "task" : "tasks";
 
-  if (
+  // TODO: Remove Status filters from Archive view // Allow filtering by prio and search
+  if (selectedList.isArchive) {
+    elements.taskCount.innerText = `${filteredTasks.length} archived ${
+      filteredTasks.length === 1 ? "task" : "tasks"
+    }`;
+  } else if (
     state.statusFilter !== "all" ||
     state.priorityFilter !== "all" ||
     state.searchQuery
   ) {
+    // TODO: Better way to dispaly... causes layout
     elements.taskCount.innerText = `${filteredTasks.length} ${
       filteredTasks.length === 1 ? "task" : "tasks"
     } shown (${incompleteTasksCount} ${taskString} remaining)`;
@@ -408,7 +511,7 @@ function renderTasks(selectedList) {
   tasksToRender = getTasksToRender(tasksToRender);
 
   if (tasksToRender.length === 0) {
-    return (elements.tasksContainer.innerHTML = renderNoTasks());
+    return (elements.tasksContainer.innerHTML = renderNoTasks(selectedList));
   }
 
   tasksToRender.forEach((task) => {
@@ -418,13 +521,22 @@ function renderTasks(selectedList) {
   });
 }
 
-function renderNoTasks() {
+// TODO: Break into atoms
+function renderNoTasks(selectedList) {
   const noTasksHTML = `
     <div class="no-results">
-      <div class="no-results-icon">🔍</div>
-      <p>No tasks found matching "${state.searchQuery}"</p>
+      <div class="no-results-icon">${selectedList.isArchive ? "🗃️" : "🔍"}</div>
+      <p>${
+        selectedList.isArchive
+          ? "Archive is empty"
+          : state.searchQuery
+          ? `No tasks found matching "${state.searchQuery}"`
+          : "No tasks found"
+      }</p>
       ${
-        state.searchQuery
+        selectedList.isArchive
+          ? `<p>Completed tasks will appear here when cleared from lists</p>`
+          : state.searchQuery
           ? `<p>Try a different search term</p>`
           : state.statusFilter !== "all" || state.priorityFilter !== "all"
           ? `<p>Try adjusting your filters</p>`
@@ -435,8 +547,14 @@ function renderNoTasks() {
   return noTasksHTML;
 }
 
-function buildTaskHTML(task, returnHTMLOnly = false, searchMatched = false) {
+function buildTaskHTML(
+  task,
+  returnHTMLOnly = false,
+  searchMatched = false,
+  isArchive = false
+) {
   let completed = task.completed ? "checked" : "";
+  // TODO: Allow priority update on edit
   const priority = task.priority || "medium";
   const { icon, label } = getPriorityInfo(priority);
 
@@ -450,6 +568,10 @@ function buildTaskHTML(task, returnHTMLOnly = false, searchMatched = false) {
     ? formatDateLong(task.completedAt)
     : "Not completed";
 
+  // TODO: due date time issue // currently sets the prior date @8pm the day before due to timezone offset?
+  // Allow user to set time as well? Or set to noon by default to avoid timezone issues?
+  // Time setting modal?
+  // TODO: Allow due date update on edit
   const dueDate = task.dueDate ? formatDate(task.dueDate) : null;
   const dueDateLong = task.dueDate ? formatDateLong(task.dueDate) : "";
   const isOverdue =
@@ -461,9 +583,15 @@ function buildTaskHTML(task, returnHTMLOnly = false, searchMatched = false) {
 
   const searchMatchClass = searchMatched ? "search-match" : "";
 
-  // TODO: Simplify with template literals and functions
+  const archiveClass = isArchive ? "archived-task" : "";
+  const archivedDate = task.archivedAt ? formatDate(task.archivedAt) : null;
+  const archivedDateLong = task.archivedAt
+    ? formatDateLong(task.archivedAt)
+    : null;
+
+  // TODO: Simplify by creating atoms
   const taskTemplate = `
-    <div class="task task-priority-${priority} ${searchMatchClass}" data-task-item="${
+    <div class="task task-priority-${priority} ${searchMatchClass} ${archiveClass}" data-task-item="${
     task.id
   }">
       <span class="priority-indicator" title="${label} priority">
@@ -475,6 +603,7 @@ function buildTaskHTML(task, returnHTMLOnly = false, searchMatched = false) {
         id="${task.id}"
         name="" value=""
         ${completed}
+        ${isArchive ? "disabled" : ""}
       >
       <label for="${task.id}">
         <span class="custom-checkbox"></span>
@@ -482,12 +611,18 @@ function buildTaskHTML(task, returnHTMLOnly = false, searchMatched = false) {
     task.name
   }</span>
       </label>
-      <input 
-        class="task-name-input hidden" 
-        data-task-input="${task.id}" 
-        type="text" 
-        value="${task.name}"
-      />
+      ${
+        !isArchive
+          ? `
+            <input 
+              class="task-name-input hidden" 
+              data-task-input="${task.id}" 
+              type="text" 
+              value="${task.name}"
+            />
+          `
+          : ""
+      }
       <div class="task-pomodoro-tracker">
         <div class="pomodoro-display" title="${pomodoroCount} pomodoro${
     pomodoroCount === 1 ? "" : "s"
@@ -511,7 +646,13 @@ function buildTaskHTML(task, returnHTMLOnly = false, searchMatched = false) {
       </div>
       <div class="task-metadata">
         ${
-          task.completed && completedDate
+          // TODO: Remove nested ternaries
+          isArchive && archivedDate
+            ? `
+                <span class="task-date archived-date" title="Archived: ${archivedDateLong}">⌛️ ${archivedDate}</span>
+                <span class="task-date original-list" title="Originally from: ${task.archivedFrom}">📂 ${task.archivedFrom}</span>
+            `
+            : task.completed && completedDate
             ? `<span class="task-date completed-date" title="Completed: ${completedDateLong}">✓ ${completedDate}</span>`
             : dueDate
             ? `<span class="task-date due-date ${
@@ -521,21 +662,27 @@ function buildTaskHTML(task, returnHTMLOnly = false, searchMatched = false) {
         }
       </div>
       <div class="task-actions">
-        <button class="task-action-btn edit-task-btn" data-edit-task="${
-          task.id
-        }" title="Edit task">
-          <i class="fas fa-pencil-alt"></i>
-        </button>
+        ${
+          isArchive
+            ? `
+                <button class="task-action-btn restore-task-btn" data-restore-task="${task.id}" title="Restore task">
+                  <i class="fas fa-undo"></i>
+                </button>
+            `
+            : `
+                <button class="task-action-btn edit-task-btn" data-edit-task="${task.id}" title="Edit task">
+                  <i class="fas fa-pencil-alt"></i>
+                </button>
+              `
+        }
         <button class="task-action-btn delete-task-btn" data-delete-task="${
           task.id
-        }" title="Delete task">
+        }" title="${isArchive ? "Delete permanently" : "Delete task"}">
           <i class="fas fa-trash"></i>
         </button>
       </div>
     </div>
   `;
-
-  // TODO: Add Pomodoro tracker
 
   if (returnHTMLOnly) {
     return taskTemplate;
@@ -550,7 +697,8 @@ function updateTaskState(taskId) {
 
   const selectedList = getCurrentList();
   if (!selectedList) {
-    return showError(`No list selected to update task state`);
+    showError(`No list selected to update task state`);
+    return;
   }
 
   const task = selectedList.tasks.find((task) => task.id === taskId);
@@ -576,7 +724,8 @@ function getPomodoroDisplay(count) {
 function addPomodoro(taskId) {
   const selectedList = getCurrentList();
   if (!selectedList) {
-    return showError(`No list selected to add pomodoro to task`);
+    showError(`No list selected to add pomodoro to task`);
+    return;
   }
 
   const task = selectedList.tasks.find((t) => t.id === taskId);
@@ -591,7 +740,8 @@ function addPomodoro(taskId) {
 function removePomodoro(taskId) {
   const selectedList = getCurrentList();
   if (!selectedList) {
-    return showError(`No list selected to remove pomodoro from task`);
+    showError(`No list selected to remove pomodoro from task`);
+    return;
   }
 
   const task = selectedList.tasks.find((t) => t.id === taskId);
@@ -623,22 +773,101 @@ function removePomodoro(taskId) {
 //   return true;
 // }
 
+function updateArchiveSectionVisibility() {
+  const selectedList = getCurrentList();
+  if (!selectedList) {
+    showError(
+      `Archive isn't rendered correctly, reload the page and try again`
+    );
+    return;
+  }
+
+  const newTaskCreator = elements.newTaskForm.closest(".new-task-creator");
+  const listFilterButtons = document.querySelector(".filter-buttons");
+
+  if (selectedList && selectedList.isArchive) {
+    // Hide task creation and delete list button
+    if (state.archive.tasks.length === 0) {
+      elements.clearArchiveButton.classList.add("hidden");
+    } else {
+      elements.clearArchiveButton.classList.remove("hidden");
+    }
+    elements.clearCompletedTasks.classList.add("hidden");
+    elements.deleteListButton.classList.add("hidden");
+    if (listFilterButtons) {
+      listFilterButtons.classList.add("hidden");
+    }
+    if (newTaskCreator) {
+      newTaskCreator.classList.add("hidden");
+    }
+  } else {
+    // Show task creation and delete list button
+    elements.clearArchiveButton.classList.add("hidden");
+    elements.clearCompletedTasks.classList.remove("hidden");
+    elements.deleteListButton.classList.remove("hidden");
+    if (listFilterButtons) {
+      listFilterButtons.classList.remove("hidden");
+    }
+    if (newTaskCreator) {
+      newTaskCreator.classList.remove("hidden");
+    }
+  }
+}
+
+function restoreTask(taskId) {
+  const task = state.archive.tasks.find((t) => t.id === taskId);
+  if (!task) return;
+
+  // Original list
+  let targetList = state.lists.find((list) => list.id === task.originalListId);
+
+  // If original list no longer exists, use the first list or create a new one
+  if (!targetList) {
+    if (state.lists.length > 0) {
+      targetList = state.lists[0];
+      showSuccess(
+        `Original list not found. Restored "${task.name}" to "${targetList.name}"`
+      );
+    } else {
+      targetList = createList("Restored Tasks");
+      state.lists.push(targetList);
+      showSuccess(
+        `Created new list "Restored Tasks" and restored "${task.name}"`
+      );
+    }
+  } else {
+    showSuccess(`Restored "${task.name}" to "${targetList.name}"`);
+  }
+
+  // Remove archive metadata
+  const { archivedAt, archivedFrom, originalListId, ...restoredTask } = task;
+
+  targetList.tasks.push(restoredTask);
+  state.archive.tasks = state.archive.tasks.filter((t) => t.id !== taskId);
+  saveAndRender();
+}
+
 async function deleteTask(taskId) {
   const selectedList = getCurrentList();
   if (!selectedList) {
-    return showError(`No list selected to delete task from`);
+    showError(`No list selected to delete task from`);
+    return;
   }
 
   const task = selectedList.tasks.find((t) => t.id === taskId);
   if (!task) return;
 
-  const confirmed = await confirmDelete(task.name, "task");
+  const isArchived = selectedList.isArchive;
+  const confirmMessage = isArchived
+    ? "This will permanently delete this task. This action cannot be undone."
+    : task.name;
 
-  if (confirmed) {
-    selectedList.tasks = selectedList.tasks.filter((t) => t.id !== taskId);
-    saveAndRender();
-    showSuccess(`Task "${task.name}" deleted`);
-  }
+  const confirmed = await confirmDelete(confirmMessage, "task");
+  if (!confirmed) return;
+
+  selectedList.tasks = selectedList.tasks.filter((t) => t.id !== taskId);
+  saveAndRender();
+  showSuccess(`Task "${task.name}" ${isArchived ? "permanently" : ""} deleted`);
 }
 
 function editTaskName(taskId) {
@@ -700,7 +929,8 @@ function saveTaskName(taskId) {
 
   const selectedList = getCurrentList();
   if (!selectedList) {
-    return showError(`No list selected to update task name`);
+    showError(`No list selected to update task name`);
+    return;
   }
   const task = selectedList.tasks.find((t) => t.id === taskId);
 
@@ -814,6 +1044,9 @@ function cancelListEdit(listId) {
 }
 
 function getCurrentList() {
+  if (state.selectedListId === archive.ARCHIVE_LIST_ID) {
+    return state.archive;
+  }
   return state.lists.find((list) => list.id === state.selectedListId);
 }
 
