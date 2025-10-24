@@ -409,12 +409,10 @@ function render() {
   const selectedList = getCurrentList();
 
   if (!selectedList) {
-    // TODO: Achieve with a dynamic class and css specificity to avoid inline styles - hidden...
-    elements.taskListContainer.style.display = "none";
+    elements.taskListContainer.classList.add("hidden");
     return;
   } else {
-    // TODO: Achieve with a dynamic class - not hidden
-    elements.taskListContainer.style.display = "";
+    elements.taskListContainer.classList.remove("hidden");
     elements.taskListTitle.innerText = selectedList.name;
     renderTaskCount(selectedList);
     clearElement(elements.tasksContainer);
