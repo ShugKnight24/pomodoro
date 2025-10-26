@@ -504,9 +504,7 @@ function renderTaskCount(selectedList) {
 }
 
 function renderTasks(selectedList) {
-  let tasksToRender = selectedList.tasks;
-
-  tasksToRender = getTasksToRender(tasksToRender);
+  const tasksToRender = getTasksToRender(selectedList.tasks);
 
   if (tasksToRender.length === 0) {
     return (elements.tasksContainer.innerHTML = renderNoTasks(selectedList));
