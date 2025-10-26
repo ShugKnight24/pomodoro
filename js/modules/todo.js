@@ -484,7 +484,6 @@ function renderTaskCount(selectedList) {
   ).length;
   const taskString = incompleteTasksCount === 1 ? "task" : "tasks";
 
-  // TODO: Remove Status filters from Archive view // Allow filtering by prio and search
   if (selectedList.isArchive) {
     elements.taskCount.innerText = `${filteredTasks.length} archived ${
       filteredTasks.length === 1 ? "task" : "tasks"
@@ -494,7 +493,7 @@ function renderTaskCount(selectedList) {
     state.priorityFilter !== "all" ||
     state.searchQuery
   ) {
-    // TODO: Better way to dispaly... causes layout
+    // TODO: Better way to display... causes layout shift
     elements.taskCount.innerText = `${filteredTasks.length} ${
       filteredTasks.length === 1 ? "task" : "tasks"
     } shown (${incompleteTasksCount} ${taskString} remaining)`;
@@ -517,30 +516,216 @@ function renderTasks(selectedList) {
   });
 }
 
-// TODO: Break into atoms
+// TODO: Simplify Ternary Logic to improve readability and clarify
 function renderNoTasks(selectedList) {
+  const icon = selectedList.isArchive ? "🗃️" : "🔍";
+  const noTaskMessage = selectedList.isArchive
+    ? "Archive is empty"
+    : state.searchQuery
+    ? `No tasks found matching "${state.searchQuery}"`
+    : "No tasks found";
+  const noTaskHint = selectedList.isArchive
+    ? `Completed tasks will appear here when cleared from lists`
+    : state.searchQuery
+    ? `Try a different search term`
+    : state.statusFilter !== "all" || state.priorityFilter !== "all"
+    ? `Try adjusting your filters`
+    : `Create your first task to get started!`;
+
   const noTasksHTML = `
     <div class="no-results">
-      <div class="no-results-icon">${selectedList.isArchive ? "🗃️" : "🔍"}</div>
-      <p>${
-        selectedList.isArchive
-          ? "Archive is empty"
-          : state.searchQuery
-          ? `No tasks found matching "${state.searchQuery}"`
-          : "No tasks found"
-      }</p>
-      ${
-        selectedList.isArchive
-          ? `<p>Completed tasks will appear here when cleared from lists</p>`
-          : state.searchQuery
-          ? `<p>Try a different search term</p>`
-          : state.statusFilter !== "all" || state.priorityFilter !== "all"
-          ? `<p>Try adjusting your filters</p>`
-          : `<p>Create your first task to get started!</p>`
-      }
+      <div class="no-results-icon">${icon}</div>
+      <p>${noTaskMessage}</p>
+      <p>${noTaskHint}</p>
     </div>
   `;
   return noTasksHTML;
+}
+
+function getTaskDates(task) {
+  return {
+    archivedAt: task.archivedAt ? formatDate(task.archivedAt) : null,
+    archivedAtLong: task.archivedAt ? formatDateLong(task.archivedAt) : null,
+    completedAt: task.completedAt ? formatDate(task.completedAt) : null,
+    completedAtLong: task.completedAt ? formatDateLong(task.completedAt) : null,
+    createdAt: task.createdAt ? formatDate(task.createdAt) : null,
+    createdAtLong: task.createdAt ? formatDateLong(task.createdAt) : null,
+    dueDate: task.dueDate ? formatDate(task.dueDate) : null,
+    dueDateLong: task.dueDate ? formatDateLong(task.dueDate) : null,
+  };
+}
+
+function getTaskState(task) {
+  const now = new Date();
+  return {
+    isCompleted: task.completed,
+    isOverdue: task.dueDate && !task.completed && new Date(task.dueDate) < now,
+    priority: task.priority || "medium",
+    pomodoroCount: task.pomodoros || 0,
+  };
+}
+
+// TODO: Export all these functions into utils and import from there??
+function buildPriorityIndicator(priority) {
+  const { icon, label } = getPriorityInfo(priority);
+  return `<span class="priority-indicator" title="${label} priority">${icon}</span>`;
+}
+
+function buildCustomCheckbox(task, completed, isArchive) {
+  return `
+    <input
+      class="check"
+      type="checkbox"
+      id="${task.id}"
+      name="" value=""
+      ${completed}
+      ${isArchive ? "disabled" : ""}
+    >
+    <label for="${task.id}">
+      <span class="custom-checkbox"></span>
+      <span class="task-name-text" data-task-text="${task.id}">${
+    task.name
+  }</span>
+    </label>
+  `;
+}
+
+function buildTaskInput(task, isArchive) {
+  if (isArchive) return "";
+
+  return `
+    <input 
+      class="task-name-input hidden" 
+      data-task-input="${task.id}" 
+      type="text" 
+      value="${task.name}"
+    />
+  `;
+}
+
+function buildPomodoroDisplay(count) {
+  if (count === 0) return '<span class="pomodoro-empty">—</span>';
+  if (count <= 3) return "🍅".repeat(count);
+  return `🍅 <span class="pomodoro-count">${count}</span>`;
+}
+
+function buildPomodoroAddButton(taskId) {
+  return `
+    <button class="pomodoro-add-btn" data-add-pomodoro="${taskId}" 
+      title="Add completed pomodoro" aria-label="Add completed pomodoro">
+      <i class="fas fa-plus"></i>
+    </button>
+  `;
+}
+
+function buildPomodoroRemoveButton(taskId) {
+  return `
+    <button class="pomodoro-remove-btn" data-remove-pomodoro="${taskId}"
+      title="Remove pomodoro" aria-label="Remove pomodoro">
+      <i class="fas fa-minus"></i>
+    </button>
+  `;
+}
+
+function buildPomodoroTracker(task, isArchive) {
+  const count = task.pomodoros || 0;
+  const display = buildPomodoroDisplay(count);
+
+  return `
+    <div class="task-pomodoro-tracker">
+      <div class="pomodoro-display" title="${count} pomodoro${
+    count === 1 ? "" : "s"
+  } completed">
+        ${display}
+      </div>
+      ${
+        isArchive
+          ? ""
+          : `
+            ${buildPomodoroAddButton(task.id)}
+            ${count ? `${buildPomodoroRemoveButton(task.id)}` : ""}
+          `
+      }
+    </div>
+  `;
+}
+
+function buildArchivedDates(task, dates) {
+  if (!dates.archivedAt) return "";
+
+  return `
+    <span class="task-date archived-date" title="Archived: ${dates.archivedAtLong}">
+      ⌛️ ${dates.archivedAtLong}
+    </span>
+    <span class="task-date original-list" title="Originally from: ${task.archivedFrom}">
+      📂 ${task.archivedFrom}
+    </span>
+  `;
+}
+
+function buildCompletedDates(dates) {
+  return `
+    <span class="task-date completed-date" title="Completed: ${dates.completedAtLong}">
+      ✓ ${dates.completedAt}
+    </span>
+  `;
+}
+
+function buildDueDates(dates, isOverdue) {
+  const overdueClass = isOverdue ? "overdue" : "";
+  return `
+    <span class="task-date due-date ${overdueClass}" title="Due: ${dates.dueDateLong}">
+      📅 ${dates.dueDate}
+    </span>
+  `;
+}
+
+function buildCreatedDates(dates) {
+  return `
+    <span class="task-date created-date" title="Created: ${dates.createdAtLong}">
+      ${dates.createdAt}
+    </span>
+  `;
+}
+
+function buildTaskDates(task, isArchive, dates, state) {
+  let taskDates;
+
+  if (isArchive && dates.archived) {
+    taskDates = buildArchivedDates(task, dates);
+  } else if (state.isCompleted && dates.completedAt) {
+    taskDates = buildCompletedDates(dates);
+  } else if (dates.dueDate) {
+    taskDates = buildDueDates(dates, state.isOverdue);
+  } else {
+    taskDates = buildCreatedDates(dates);
+  }
+
+  return `<div class="task-metadata">${taskDates}</div>`;
+}
+
+function buildTaskActions(task, isArchive) {
+  const editOrRestore = isArchive
+    ? `<button class="task-action-btn restore-task-btn" data-restore-task="${task.id}" 
+         title="Restore task">
+         <i class="fas fa-undo"></i>
+       </button>`
+    : `<button class="task-action-btn edit-task-btn" data-edit-task="${task.id}" 
+         title="Edit task">
+         <i class="fas fa-pencil-alt"></i>
+       </button>`;
+
+  const deleteTitle = isArchive ? "Delete permanently" : "Delete task";
+
+  return `
+    <div class="task-actions">
+      ${editOrRestore}
+      <button class="task-action-btn delete-task-btn" data-delete-task="${task.id}" 
+        title="${deleteTitle}">
+        <i class="fas fa-trash"></i>
+      </button>
+    </div>
+  `;
 }
 
 function buildTaskHTML(
@@ -550,133 +735,28 @@ function buildTaskHTML(
   isArchive = false
 ) {
   let completed = task.completed ? "checked" : "";
-  // TODO: Allow priority update on edit
-  const priority = task.priority || "medium";
-  const { icon, label } = getPriorityInfo(priority);
-
-  // TODO: Simplify date formatting
-  const createdDate = formatDate(task.createdAt);
-  const completedDate = task.completedAt
-    ? formatDate(task.completedAt)
-    : "Not completed";
-  const createdDateLong = task.createdAt ? formatDateLong(task.createdAt) : "";
-  const completedDateLong = task.completedAt
-    ? formatDateLong(task.completedAt)
-    : "Not completed";
 
   // TODO: due date time issue // currently sets the prior date @8pm the day before due to timezone offset?
   // Allow user to set time as well? Or set to noon by default to avoid timezone issues?
   // Time setting modal?
   // TODO: Allow due date update on edit
-  const dueDate = task.dueDate ? formatDate(task.dueDate) : null;
-  const dueDateLong = task.dueDate ? formatDateLong(task.dueDate) : "";
-  const isOverdue =
-    task.dueDate && !task.completed && new Date(task.dueDate) < new Date();
-
-  // Pomodoro display logic
-  const pomodoroCount = task.pomodoros || 0;
-  const pomodoroDisplay = getPomodoroDisplay(pomodoroCount);
-
-  const searchMatchClass = searchMatched ? "search-match" : "";
+  const taskDates = getTaskDates(task);
+  // TODO: Allow priority update on edit
+  const taskState = getTaskState(task);
 
   const archiveClass = isArchive ? "archived-task" : "";
-  const archivedDate = task.archivedAt ? formatDate(task.archivedAt) : null;
-  const archivedDateLong = task.archivedAt
-    ? formatDateLong(task.archivedAt)
-    : null;
+  const searchMatchClass = searchMatched ? "search-match" : "";
 
-  // TODO: Simplify by creating atoms
   const taskTemplate = `
-    <div class="task task-priority-${priority} ${searchMatchClass} ${archiveClass}" data-task-item="${
-    task.id
-  }">
-      <span class="priority-indicator" title="${label} priority">
-        ${icon}
-      </span>
-      <input
-        class="check"
-        type="checkbox"
-        id="${task.id}"
-        name="" value=""
-        ${completed}
-        ${isArchive ? "disabled" : ""}
-      >
-      <label for="${task.id}">
-        <span class="custom-checkbox"></span>
-        <span class="task-name-text" data-task-text="${task.id}">${
-    task.name
-  }</span>
-      </label>
-      ${
-        !isArchive
-          ? `
-            <input 
-              class="task-name-input hidden" 
-              data-task-input="${task.id}" 
-              type="text" 
-              value="${task.name}"
-            />
-          `
-          : ""
-      }
-      <div class="task-pomodoro-tracker">
-        <div class="pomodoro-display" title="${pomodoroCount} pomodoro${
-    pomodoroCount === 1 ? "" : "s"
-  } completed">
-          ${pomodoroDisplay}
-        </div>
-        <button class="pomodoro-add-btn" data-add-pomodoro="${
-          task.id
-        }" title="Add completed pomodoro" aria-label="Add completed pomodoro">
-          <i class="fas fa-plus"></i>
-        </button>
-        ${
-          pomodoroCount > 0
-            ? `
-        <button class="pomodoro-remove-btn" data-remove-pomodoro="${task.id}" title="Remove pomodoro" aria-label="Remove pomodoro">
-          <i class="fas fa-minus"></i>
-        </button>
-        `
-            : ""
-        }
-      </div>
-      <div class="task-metadata">
-        ${
-          // TODO: Remove nested ternaries
-          isArchive && archivedDate
-            ? `
-                <span class="task-date archived-date" title="Archived: ${archivedDateLong}">⌛️ ${archivedDate}</span>
-                <span class="task-date original-list" title="Originally from: ${task.archivedFrom}">📂 ${task.archivedFrom}</span>
-            `
-            : task.completed && completedDate
-            ? `<span class="task-date completed-date" title="Completed: ${completedDateLong}">✓ ${completedDate}</span>`
-            : dueDate
-            ? `<span class="task-date due-date ${
-                isOverdue ? "overdue" : ""
-              }" title="Due: ${dueDateLong}">📅 ${dueDate}</span>`
-            : `<span class="task-date created-date" title="Created: ${createdDateLong}">${createdDate}</span>`
-        }
-      </div>
-      <div class="task-actions">
-        ${
-          isArchive
-            ? `
-                <button class="task-action-btn restore-task-btn" data-restore-task="${task.id}" title="Restore task">
-                  <i class="fas fa-undo"></i>
-                </button>
-            `
-            : `
-                <button class="task-action-btn edit-task-btn" data-edit-task="${task.id}" title="Edit task">
-                  <i class="fas fa-pencil-alt"></i>
-                </button>
-              `
-        }
-        <button class="task-action-btn delete-task-btn" data-delete-task="${
-          task.id
-        }" title="${isArchive ? "Delete permanently" : "Delete task"}">
-          <i class="fas fa-trash"></i>
-        </button>
-      </div>
+    <div class="task task-priority-${
+      taskState.priority
+    } ${searchMatchClass} ${archiveClass}" data-task-item="${task.id}">
+      ${buildPriorityIndicator(taskState.priority)}
+      ${buildCustomCheckbox(task, completed, isArchive)}
+      ${buildTaskInput(task, isArchive)}
+      ${buildPomodoroTracker(task, isArchive)}
+      ${buildTaskDates(task, isArchive, taskDates, taskState)}
+      ${buildTaskActions(task, isArchive)}
     </div>
   `;
 
@@ -711,12 +791,6 @@ function updateTaskState(taskId) {
   taskElement.parentNode.replaceChild(newTaskElement, taskElement);
 }
 
-function getPomodoroDisplay(count) {
-  if (count === 0) return '<span class="pomodoro-empty">—</span>';
-  if (count <= 3) return "🍅".repeat(count);
-  return `🍅 <span class="pomodoro-count">${count}</span>`;
-}
-
 function addPomodoro(taskId) {
   const selectedList = getCurrentList();
   if (!selectedList) {
@@ -749,13 +823,12 @@ function removePomodoro(taskId) {
   showSuccess(`Pomodoro removed. Total: ${task.pomodoros} 🍅`);
 }
 
-// TODO: Refine this functionality and connect to Pomodoro
+// TODO: Setup selection of an active task and connect to Pomodoro
 // export function addPomodoroToActiveTask() {
 //   const selectedList = getCurrentList();
 
 //   if (!selectedList || selectedList.tasks.length === 0) return false;
 
-//   // TODO: Define "active" task logic better
 //   const activeTask = selectedList.tasks.find((task) => !task.completed);
 
 //   if (!activeTask) return false;
