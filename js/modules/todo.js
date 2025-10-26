@@ -513,7 +513,7 @@ function renderTasks(selectedList) {
   tasksToRender.forEach((task) => {
     const matchesSearch =
       state.searchQuery && task.name.toLowerCase().includes(state.searchQuery);
-    buildTaskHTML(task, false, matchesSearch);
+    buildTaskHTML(task, false, matchesSearch, selectedList.isArchive);
   });
 }
 
@@ -700,7 +700,7 @@ function updateTaskState(taskId) {
   const task = selectedList.tasks.find((task) => task.id === taskId);
   if (!task) return;
 
-  const newTaskHTML = buildTaskHTML(task, true, false);
+  const newTaskHTML = buildTaskHTML(task, true, false, selectedList.isArchive);
 
   // Create a temporary container
   const tempContainer = document.createElement("div");
