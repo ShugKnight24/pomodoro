@@ -627,25 +627,26 @@ function buildPomodoroRemoveButton(taskId) {
   `;
 }
 
+function buildPomodoroControls(taskId, count) {
+  return `
+    ${buildPomodoroAddButton(taskId)}
+    ${count ? `${buildPomodoroRemoveButton(taskId)}` : ""}
+  `;
+}
+
 function buildPomodoroTracker(task, isArchive) {
   const count = task.pomodoros || 0;
-  const display = buildPomodoroDisplay(count);
+  const pomodoroDisplay = buildPomodoroDisplay(count);
+  const pomodoroText = count === 1 ? "pomodoro" : "pomodoros";
+  const pomodoroTitle =
+    count === 0 ? "No pomodoros" : `${count} ${pomodoroText} completed`;
 
   return `
     <div class="task-pomodoro-tracker">
-      <div class="pomodoro-display" title="${count} pomodoro${
-    count === 1 ? "" : "s"
-  } completed">
-        ${display}
+      <div class="pomodoro-display" title="${pomodoroTitle}" aria-label="${pomodoroTitle}">
+        ${pomodoroDisplay}
       </div>
-      ${
-        isArchive
-          ? ""
-          : `
-            ${buildPomodoroAddButton(task.id)}
-            ${count ? `${buildPomodoroRemoveButton(task.id)}` : ""}
-          `
-      }
+      ${isArchive ? "" : `${buildPomodoroControls(task.id, count)}`}
     </div>
   `;
 }
