@@ -691,7 +691,7 @@ function buildCreatedDates(dates) {
 function buildTaskDates(task, isArchive, dates, state) {
   let taskDates;
 
-  if (isArchive && dates.archived) {
+  if (isArchive && dates.archivedAt) {
     taskDates = buildArchivedDates(task, dates);
   } else if (state.isCompleted && dates.completedAt) {
     taskDates = buildCompletedDates(dates);

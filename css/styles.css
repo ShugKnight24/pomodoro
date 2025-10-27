@@ -583,13 +583,13 @@ h1 {
   cursor: not-allowed;
 }
 
-.archived-date {
+.task-date.archived-date {
   color: var(--color-white);
   background: rgba(107, 91, 149, 0.75);
   border: 1px solid rgba(107, 91, 149, 0.75);
 }
 
-.original-list {
+.task-date.original-list {
   color: var(--color-white);
   background: rgba(139, 92, 246, 0.75);
   border: 1px solid rgba(139, 92, 246, 0.75);
