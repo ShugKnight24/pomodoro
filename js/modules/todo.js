@@ -704,26 +704,43 @@ function buildTaskDates(task, isArchive, dates, state) {
   return `<div class="task-metadata">${taskDates}</div>`;
 }
 
+function buildArchiveRestoreButton(taskId) {
+  return `
+      <button class="task-action-btn restore-task-btn" data-restore-task="${taskId}"
+      title="Restore task">
+      <i class="fas fa-undo"></i>
+    </button>
+  `;
+}
+
+function buildEditTaskButton(taskId) {
+  return `
+    <button class="task-action-btn edit-task-btn" data-edit-task="${taskId}"
+      title="Edit task">
+      <i class="fas fa-pencil-alt"></i>
+    </button>
+  `;
+}
+
+function buildTaskDeleteButton(taskId, isArchive) {
+  const deleteTitle = isArchive ? "Delete task permanently" : "Delete task";
+  return `
+    <button class="task-action-btn delete-task-btn" data-delete-task="${taskId}"
+      title="${deleteTitle}">
+      <i class="fas fa-trash"></i>
+    </button>
+  `;
+}
+
 function buildTaskActions(task, isArchive) {
   const editOrRestore = isArchive
-    ? `<button class="task-action-btn restore-task-btn" data-restore-task="${task.id}" 
-         title="Restore task">
-         <i class="fas fa-undo"></i>
-       </button>`
-    : `<button class="task-action-btn edit-task-btn" data-edit-task="${task.id}" 
-         title="Edit task">
-         <i class="fas fa-pencil-alt"></i>
-       </button>`;
-
-  const deleteTitle = isArchive ? "Delete permanently" : "Delete task";
+    ? buildArchiveRestoreButton(task.id)
+    : buildEditTaskButton(task.id);
 
   return `
     <div class="task-actions">
       ${editOrRestore}
-      <button class="task-action-btn delete-task-btn" data-delete-task="${task.id}" 
-        title="${deleteTitle}">
-        <i class="fas fa-trash"></i>
-      </button>
+      ${buildTaskDeleteButton(task.id, isArchive)}
     </div>
   `;
 }
