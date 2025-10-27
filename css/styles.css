@@ -572,10 +572,14 @@ h1 {
 }
 
 /* Archived Tasks */
-.archived-task {
-  background: rgba(107, 91, 149, 0.1);
-  border-left-color: #6b5b95 !important;
+.task.archived-task {
+  background: rgba(107, 91, 149, 0.3);
+  border-left-color: #6b5b95;
   opacity: 0.95;
+}
+
+.task.archived-task:hover {
+  background: rgba(107, 91, 149, 0.45);
 }
 
 .archived-task .custom-checkbox {
