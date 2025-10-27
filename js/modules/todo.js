@@ -653,38 +653,42 @@ function buildPomodoroTracker(task, isArchive) {
 
 function buildArchivedDates(task, dates) {
   if (!dates.archivedAt) return "";
-
+  const { archivedAtLong } = dates;
+  const { archivedFrom } = task;
   return `
-    <span class="task-date archived-date" title="Archived: ${dates.archivedAtLong}">
-      ⌛️ ${dates.archivedAtLong}
+    <span class="task-date archived-date" title="Archived at: ${archivedAtLong}">
+      ⌛️ ${archivedAtLong}
     </span>
-    <span class="task-date original-list" title="Originally from: ${task.archivedFrom}">
-      📂 ${task.archivedFrom}
+    <span class="task-date original-list" title="Originally from: ${archivedFrom} list">
+      📂 ${archivedFrom}
     </span>
   `;
 }
 
 function buildCompletedDates(dates) {
+  const { completedAt, completedAtLong } = dates;
   return `
-    <span class="task-date completed-date" title="Completed: ${dates.completedAtLong}">
-      ✓ ${dates.completedAt}
+    <span class="task-date completed-date" title="Completed at: ${completedAtLong}">
+      ✓ ${completedAt}
     </span>
   `;
 }
 
 function buildDueDates(dates, isOverdue) {
+  const { dueDate, dueDateLong } = dates;
   const overdueClass = isOverdue ? "overdue" : "";
   return `
-    <span class="task-date due-date ${overdueClass}" title="Due: ${dates.dueDateLong}">
-      📅 ${dates.dueDate}
+    <span class="task-date due-date ${overdueClass}" title="Due at: ${dueDateLong}">
+      📅 ${dueDate}
     </span>
   `;
 }
 
 function buildCreatedDates(dates) {
+  const { createdAt, createdAtLong } = dates;
   return `
-    <span class="task-date created-date" title="Created: ${dates.createdAtLong}">
-      ${dates.createdAt}
+    <span class="task-date created-date" title="Created at: ${createdAtLong}">
+      ${createdAt}
     </span>
   `;
 }
