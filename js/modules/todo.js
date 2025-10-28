@@ -396,11 +396,12 @@ function createTask(name, priority = "medium", dueDate = null) {
 }
 
 function save() {
-  localStorage.setItem(STORAGE_KEYS.ARCHIVE, JSON.stringify(state.archive));
-  localStorage.setItem(STORAGE_KEYS.LIST_COUNTER, state.listCounter);
-  localStorage.setItem(STORAGE_KEYS.LISTS, JSON.stringify(state.lists));
-  localStorage.setItem(STORAGE_KEYS.SELECTED_LIST_ID, state.selectedListId);
-  localStorage.setItem(STORAGE_KEYS.TASK_COUNTER, state.taskCounter);
+  const { archive, listCounter, lists, selectedListId, taskCounter } = state;
+  localStorage.setItem(STORAGE_KEYS.ARCHIVE, JSON.stringify(archive));
+  localStorage.setItem(STORAGE_KEYS.LIST_COUNTER, listCounter);
+  localStorage.setItem(STORAGE_KEYS.LISTS, JSON.stringify(lists));
+  localStorage.setItem(STORAGE_KEYS.SELECTED_LIST_ID, selectedListId);
+  localStorage.setItem(STORAGE_KEYS.TASK_COUNTER, taskCounter);
 }
 
 function render() {
@@ -436,26 +437,25 @@ function renderLists() {
 }
 
 function buildListHTML(list) {
-  const isActive = list.id === state.selectedListId ? "active-list" : "";
-  const isArchive = list.isArchive ? "archive-list" : "";
-  const archiveIcon = isArchive ? "🗃️" : "";
+  const { id, isArchive, name } = list;
+  const isActive = id === state.selectedListId ? "active-list" : "";
+  const archiveClass = isArchive ? "archive-list" : "";
+  const archiveIcon = archiveClass ? "🗃️" : "";
 
   // TODO: Break into atoms / render list input edit button... etc
   let listTemplate = `
-    <li class="list-name ${isActive} ${isArchive}" data-list-id="${list.id}">
-      <span class="list-name-text" data-list-text="${list.id}">${archiveIcon}${
-    list.name
-  }</span>
+    <li class="list-name ${isActive} ${archiveClass}" data-list-id="${id}">
+      <span class="list-name-text" data-list-text="${id}">${archiveIcon}${name}</span>
       ${
-        !isArchive
+        !archiveClass
           ? `<input
-        name="list-name-${list.id}"
+        name="list-name-${id}"
         class="list-name-input hidden" 
-        data-list-input="${list.id}" 
+        data-list-input="${id}" 
         type="text" 
-        value="${list.name}"
+        value="${name}"
       />
-      <button class="list-action-btn edit-list-btn" data-edit-list="${list.id}" title="Edit list name" aria-label="Edit list name">
+      <button class="list-action-btn edit-list-btn" data-edit-list="${id}" title="Edit list name" aria-label="Edit list name">
         <i class="fas fa-pencil-alt"></i>
       </button>`
           : ""
@@ -518,17 +518,20 @@ function renderTasks(selectedList) {
 
 // TODO: Simplify Ternary Logic to improve readability and clarify
 function renderNoTasks(selectedList) {
-  const icon = selectedList.isArchive ? "🗃️" : "🔍";
-  const noTaskMessage = selectedList.isArchive
+  const { isArchive } = selectedList;
+  const { priorityFilter, searchQuery, statusFilter } = state;
+
+  const icon = isArchive ? "🗃️" : "🔍";
+  const noTaskMessage = isArchive
     ? "Archive is empty"
-    : state.searchQuery
-    ? `No tasks found matching "${state.searchQuery}"`
+    : searchQuery
+    ? `No tasks found matching "${searchQuery}"`
     : "No tasks found";
-  const noTaskHint = selectedList.isArchive
+  const noTaskHint = isArchive
     ? `Completed tasks will appear here when cleared from lists`
-    : state.searchQuery
+    : searchQuery
     ? `Try a different search term`
-    : state.statusFilter !== "all" || state.priorityFilter !== "all"
+    : statusFilter !== "all" || priorityFilter !== "all"
     ? `Try adjusting your filters`
     : `Create your first task to get started!`;
 
@@ -572,20 +575,19 @@ function buildPriorityIndicator(priority) {
 }
 
 function buildCustomCheckbox(task, completed, isArchive) {
+  const { id, name } = task;
   return `
     <input
       class="check"
       type="checkbox"
-      id="${task.id}"
+      id="${id}"
       name="" value=""
       ${completed}
       ${isArchive ? "disabled" : ""}
     >
-    <label for="${task.id}">
+    <label for="${id}">
       <span class="custom-checkbox"></span>
-      <span class="task-name-text" data-task-text="${task.id}">${
-    task.name
-  }</span>
+      <span class="task-name-text" data-task-text="${id}">${name}</span>
     </label>
   `;
 }
@@ -677,9 +679,9 @@ function buildPomodoroTracker(task, isArchive) {
 }
 
 function buildArchivedDates(task, dates) {
-  if (!dates.archivedAt) return "";
-  const { archivedAtLong } = dates;
+  const { archivedAt, archivedAtLong } = dates;
   const { archivedFrom } = task;
+  if (!archivedAt) return "";
   return `
     <span class="task-date archived-date" title="Archived at: ${archivedAtLong}">
       ⌛️ ${archivedAtLong}
@@ -720,13 +722,15 @@ function buildCreatedDates(dates) {
 
 function buildTaskDates(task, isArchive, dates, state) {
   let taskDates;
+  const { archivedAt, completedAt, dueDate } = dates;
+  const { isCompleted, isOverdue } = state;
 
-  if (isArchive && dates.archivedAt) {
+  if (isArchive && archivedAt) {
     taskDates = buildArchivedDates(task, dates);
-  } else if (state.isCompleted && dates.completedAt) {
+  } else if (isCompleted && completedAt) {
     taskDates = buildCompletedDates(dates);
-  } else if (dates.dueDate) {
-    taskDates = buildDueDates(dates, state.isOverdue);
+  } else if (dueDate) {
+    taskDates = buildDueDates(dates, isOverdue);
   } else {
     taskDates = buildCreatedDates(dates);
   }
@@ -763,14 +767,15 @@ function buildTaskDeleteButton(taskId, isArchive) {
 }
 
 function buildTaskActions(task, isArchive) {
+  const { id } = task;
   const editOrRestore = isArchive
-    ? buildArchiveRestoreButton(task.id)
-    : buildEditTaskButton(task.id);
+    ? buildArchiveRestoreButton(id)
+    : buildEditTaskButton(id);
 
   return `
     <div class="task-actions">
       ${editOrRestore}
-      ${buildTaskDeleteButton(task.id, isArchive)}
+      ${buildTaskDeleteButton(id, isArchive)}
     </div>
   `;
 }
@@ -843,13 +848,15 @@ function addPomodoro(taskId) {
     return;
   }
 
-  const task = selectedList.tasks.find((t) => t.id === taskId);
+  const task = selectedList.tasks.find((task) => task.id === taskId);
   if (!task) return;
 
-  task.pomodoros = (task.pomodoros || 0) + 1;
+  const { pomodoros } = task;
+
+  task.pomodoros = (pomodoros || 0) + 1;
   save();
   updateTaskState(taskId);
-  showSuccess(`Pomodoro added! Total: ${task.pomodoros} 🍅`);
+  showSuccess(`Pomodoro added! Total: ${pomodoros} 🍅`);
 }
 
 function removePomodoro(taskId) {
@@ -859,13 +866,16 @@ function removePomodoro(taskId) {
     return;
   }
 
-  const task = selectedList.tasks.find((t) => t.id === taskId);
-  if (!task || !task.pomodoros || task.pomodoros <= 0) return;
+  const task = selectedList.tasks.find((task) => task.id === taskId);
+
+  const { pomodoros } = task;
+
+  if (!task || !pomodoros || pomodoros <= 0) return;
 
   task.pomodoros -= 1;
   save();
   updateTaskState(taskId);
-  showSuccess(`Pomodoro removed. Total: ${task.pomodoros} 🍅`);
+  showSuccess(`Pomodoro removed. Total: ${pomodoros} 🍅`);
 }
 
 // TODO: Setup selection of an active task and connect to Pomodoro
@@ -929,35 +939,38 @@ function updateArchiveSectionVisibility() {
 }
 
 function restoreTask(taskId) {
-  const task = state.archive.tasks.find((t) => t.id === taskId);
+  const task = state.archive.tasks.find((task) => task.id === taskId);
   if (!task) return;
+
+  const { name } = task;
 
   // Original list
   let targetList = state.lists.find((list) => list.id === task.originalListId);
+  const { name: targetListName } = targetList || {};
 
   // If original list no longer exists, use the first list or create a new one
   if (!targetList) {
     if (state.lists.length > 0) {
       targetList = state.lists[0];
       showSuccess(
-        `Original list not found. Restored "${task.name}" to "${targetList.name}"`
+        `Original list not found. Restored "${name}" to "${targetListName}"`
       );
     } else {
       targetList = createList("Restored Tasks");
       state.lists.push(targetList);
-      showSuccess(
-        `Created new list "Restored Tasks" and restored "${task.name}"`
-      );
+      showSuccess(`Created new list "Restored Tasks" and restored "${name}"`);
     }
   } else {
-    showSuccess(`Restored "${task.name}" to "${targetList.name}"`);
+    showSuccess(`Restored "${name}" to "${targetListName}"`);
   }
 
   // Remove archive metadata
   const { archivedAt, archivedFrom, originalListId, ...restoredTask } = task;
 
   targetList.tasks.push(restoredTask);
-  state.archive.tasks = state.archive.tasks.filter((t) => t.id !== taskId);
+  state.archive.tasks = state.archive.tasks.filter(
+    (task) => task.id !== taskId
+  );
   saveAndRender();
 }
 
@@ -968,20 +981,22 @@ async function deleteTask(taskId) {
     return;
   }
 
-  const task = selectedList.tasks.find((t) => t.id === taskId);
+  const task = selectedList.tasks.find((task) => task.id === taskId);
   if (!task) return;
+
+  const { name } = task;
 
   const isArchived = selectedList.isArchive;
   const confirmMessage = isArchived
     ? "This will permanently delete this task. This action cannot be undone."
-    : task.name;
+    : name;
 
   const confirmed = await confirmDelete(confirmMessage, "task");
   if (!confirmed) return;
 
-  selectedList.tasks = selectedList.tasks.filter((t) => t.id !== taskId);
+  selectedList.tasks = selectedList.tasks.filter((task) => task.id !== taskId);
   saveAndRender();
-  showSuccess(`Task "${task.name}" ${isArchived ? "permanently" : ""} deleted`);
+  showSuccess(`Task "${name}" ${isArchived ? "permanently" : ""} deleted`);
 }
 
 function editTaskName(taskId) {
@@ -1020,15 +1035,16 @@ function editTaskName(taskId) {
 
   // Handle save on Enter key
   const handleKeydown = (event) => {
-    if (event.key === "Enter" || event.key === "Escape") {
+    const { key } = event;
+    if (key === "Enter" || key === "Escape") {
       inputElement.removeEventListener("blur", handleBlur);
       inputElement.removeEventListener("keydown", handleKeydown);
     }
 
-    if (event.key === "Enter") {
+    if (key === "Enter") {
       event.preventDefault();
       saveTaskName(taskId);
-    } else if (event.key === "Escape") {
+    } else if (key === "Escape") {
       cancelTaskEdit(taskId);
     }
   };
@@ -1143,14 +1159,15 @@ function editListName(listId) {
 
   // Handle save on Enter key
   const handleKeydown = (event) => {
-    if (event.key === "Enter" || event.key === "Escape") {
+    const { key } = event;
+    if (key === "Enter" || key === "Escape") {
       inputElement.removeEventListener("blur", handleBlur);
       inputElement.removeEventListener("keydown", handleKeydown);
     }
 
-    if (event.key === "Enter") {
+    if (key === "Enter") {
       saveListName(listId);
-    } else if (event.key === "Escape") {
+    } else if (key === "Escape") {
       cancelListEdit(listId);
     }
   };
@@ -1172,7 +1189,7 @@ function saveListName(listId) {
     return;
   }
 
-  const list = state.lists.find((l) => l.id === listId);
+  const list = state.lists.find((list) => list.id === listId);
 
   if (list && newName !== list.name) {
     list.name = newName;
