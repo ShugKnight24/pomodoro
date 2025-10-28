@@ -2,6 +2,7 @@
 :root {
   /* Pomodoro Colors */
   --color-primary: #4a7c59;
+  --color-primary-rgb: 74, 124, 89;
   --color-primary-dark: #2d5a3d;
   --color-primary-light: #6b9d7a;
   --color-accent: #ff6b6b;
