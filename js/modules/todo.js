@@ -592,14 +592,39 @@ function buildCustomCheckbox(task, completed, isArchive) {
 
 function buildTaskInput(task, isArchive) {
   if (isArchive) return "";
+  const { dueDate, id, name, priority } = task;
 
   return `
-    <input 
-      class="task-name-input hidden" 
-      data-task-input="${task.id}" 
-      type="text" 
-      value="${task.name}"
-    />
+    <div class="task-edit-form hidden" data-task-edit-form="${id}">
+      <input
+        class="task-name-input"
+        data-task-input="${id}"
+        type="text"
+        value="${name}"
+      />
+      <input 
+        class="task-due-date-edit"
+        data-task-due-date-edit="${id}"
+        type="date"
+        value="${dueDate || ""}"
+        aria-label="Edit due date"
+      />
+      <select
+        class="task-priority-edit"
+        data-task-priority-edit="${id}"
+        aria-label="Edit task priority"
+      >
+        <option value="low" ${
+          priority === "low" ? "selected" : ""
+        }>🟢 Low</option>
+        <option value="medium" ${
+          priority === "medium" || !priority ? "selected" : ""
+        }>🟡 Medium</option>
+        <option value="high" ${
+          priority === "high" ? "selected" : ""
+        }>🔴 High</option>
+      </select>
+    </div>
   `;
 }
 
@@ -756,25 +781,23 @@ function buildTaskHTML(
   searchMatched = false,
   isArchive = false
 ) {
-  let completed = task.completed ? "checked" : "";
+  const { completed, id } = task;
+  const isCompleted = completed ? "checked" : "";
 
   // TODO: due date time issue // currently sets the prior date @8pm the day before due to timezone offset?
   // Allow user to set time as well? Or set to noon by default to avoid timezone issues?
   // Time setting modal?
-  // TODO: Allow due date update on edit
   const taskDates = getTaskDates(task);
-  // TODO: Allow priority update on edit
   const taskState = getTaskState(task);
+  const { priority } = taskState;
 
   const archiveClass = isArchive ? "archived-task" : "";
   const searchMatchClass = searchMatched ? "search-match" : "";
 
   const taskTemplate = `
-    <div class="task task-priority-${
-      taskState.priority
-    } ${searchMatchClass} ${archiveClass}" data-task-item="${task.id}">
-      ${buildPriorityIndicator(taskState.priority)}
-      ${buildCustomCheckbox(task, completed, isArchive)}
+    <div class="task task-priority-${priority} ${searchMatchClass} ${archiveClass}" data-task-item="${id}">
+      ${buildPriorityIndicator(priority)}
+      ${buildCustomCheckbox(task, isCompleted, isArchive)}
       ${buildTaskInput(task, isArchive)}
       ${buildPomodoroTracker(task, isArchive)}
       ${buildTaskDates(task, isArchive, taskDates, taskState)}
@@ -964,6 +987,9 @@ async function deleteTask(taskId) {
 function editTaskName(taskId) {
   const taskElement = document.querySelector(`[data-task-item="${taskId}"]`);
   const textElement = taskElement.querySelector(`[data-task-text="${taskId}"]`);
+  const editForm = taskElement.querySelector(
+    `[data-task-edit-form="${taskId}"]`
+  );
   const inputElement = taskElement.querySelector(
     `[data-task-input="${taskId}"]`
   );
@@ -971,7 +997,7 @@ function editTaskName(taskId) {
 
   // Toggle to edit mode
   textElement.classList.add("hidden");
-  inputElement.classList.remove("hidden");
+  editForm.classList.remove("hidden");
   inputElement.focus();
   inputElement.select();
 
@@ -981,7 +1007,12 @@ function editTaskName(taskId) {
   editBtn.dataset.saveTask = taskId;
   delete editBtn.dataset.editTask;
 
-  const handleBlur = () => {
+  const handleBlur = (event) => {
+    // Prevent cancelation when clicking within the edit form
+    // Possibly update this functionality to prevent canceling when clicking other specific elements too
+    if (editForm.contains(event.relatedTarget)) {
+      return;
+    }
     inputElement.removeEventListener("keydown", handleKeydown);
     inputElement.removeEventListener("blur", handleBlur);
     saveTaskName(taskId);
@@ -995,6 +1026,7 @@ function editTaskName(taskId) {
     }
 
     if (event.key === "Enter") {
+      event.preventDefault();
       saveTaskName(taskId);
     } else if (event.key === "Escape") {
       cancelTaskEdit(taskId);
@@ -1010,7 +1042,16 @@ function saveTaskName(taskId) {
   const inputElement = taskElement.querySelector(
     `[data-task-input="${taskId}"]`
   );
+  const prioritySelect = taskElement.querySelector(
+    `[data-task-priority-edit="${taskId}"]`
+  );
+  const dueDateInput = taskElement.querySelector(
+    `[data-task-due-date-edit="${taskId}"]`
+  );
+
   const newName = inputElement.value.trim();
+  const newPriority = prioritySelect.value;
+  const newDueDate = dueDateInput.value || null;
 
   if (!newName) {
     showError("Task name cannot be empty");
@@ -1023,12 +1064,36 @@ function saveTaskName(taskId) {
     showError(`No list selected to update task name`);
     return;
   }
-  const task = selectedList.tasks.find((t) => t.id === taskId);
+  const task = selectedList.tasks.find((task) => task.id === taskId);
+  if (!task) return;
 
-  if (task && newName !== task.name) {
+  let hasChanges = false;
+  const taskEdits = [];
+
+  let { name, priority, dueDate } = task;
+
+  if (name !== newName) {
     task.name = newName;
+    hasChanges = true;
+    taskEdits.push("name");
+  }
+
+  if ((priority || "medium") !== newPriority) {
+    task.priority = newPriority;
+    hasChanges = true;
+    taskEdits.push("priority");
+  }
+
+  if (dueDate !== newDueDate) {
+    task.dueDate = newDueDate;
+    hasChanges = true;
+    taskEdits.push("due date");
+  }
+
+  if (hasChanges) {
     saveAndRender();
-    showSuccess("Task name updated");
+    const changesText = taskEdits.join(", ");
+    showSuccess(`Task updated: ${changesText}`);
   } else {
     cancelTaskEdit(taskId);
   }
@@ -1040,12 +1105,12 @@ function cancelTaskEdit(taskId) {
   if (!taskElement) return;
 
   const textElement = taskElement.querySelector(`[data-task-text="${taskId}"]`);
-  const inputElement = taskElement.querySelector(
-    `[data-task-input="${taskId}"]`
+  const editForm = taskElement.querySelector(
+    `[data-task-edit-form="${taskId}"]`
   );
 
   textElement.classList.remove("hidden");
-  inputElement.classList.add("hidden");
+  editForm.classList.add("hidden");
 
   render();
 }

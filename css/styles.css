@@ -1352,6 +1352,75 @@ form {
   box-shadow: var(--shadow-md);
 }
 
+/* Task Edit Form */
+/* TODO: Improve styles when editing */
+.task-edit-form {
+  display: flex;
+  gap: var(--spacing-xs);
+  align-items: center;
+  justify-content: flex-start;
+  flex: 1;
+  min-width: none;
+  margin-left: var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
+}
+
+.task-edit-form .task-name-input {
+  flex: 1 1 auto;
+  min-width: 100px;
+  max-width: 300px;
+  margin-left: var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: 0.9rem;
+}
+
+.task-due-date-edit {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: 3px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.75);
+  font-size: 0.9rem;
+  font-family: "Courier New", Courier, monospace;
+  cursor: pointer;
+  outline: none;
+  transition: all var(--transition-base);
+}
+
+.task-due-date-edit:focus {
+  border-color: var(--color-primary-dark);
+  box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.2);
+}
+
+.task-priority-edit {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: 3px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.75);
+  font-size: 0.9rem;
+  font-family: "Courier New", Courier, monospace;
+  cursor: pointer;
+  outline: none;
+  transition: all var(--transition-base);
+}
+
+.task-priority-edit:focus {
+  border-color: var(--color-primary-dark);
+  box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.3);
+}
+
+@media screen and (max-width: 768px) {
+  .task-edit-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .task-edit-form .task-name-input,
+  .task-priority-edit,
+  .task-due-date-edit {
+    width: 100%;
+  }
+}
+
 /* Footer */
 .tomato-footer {
   width: fit-content;
