@@ -1151,6 +1151,95 @@ input[type="search"] {
   display: inline;
 }
 
+/* Drag and Drop */
+.drag-handle {
+  background: none;
+  border: none;
+  cursor: grab;
+  font-size: 1.2rem;
+  padding: var(--spacing-xs);
+  transition: color var(--transition-fast);
+  display: flex;
+  align-items: center;
+  margin-right: var(--spacing-xs);
+  color: var(--color-color-gray-900);
+}
+
+.task:hover .drag-handle,
+.task:hover .drag-handle i {
+  opacity: 1;
+}
+
+.task-priority-high .drag-handle:hover i {
+  color: #b91c1c;
+}
+.task-priority-medium .drag-handle:hover i {
+  color: #b45309;
+}
+.task-priority-low .drag-handle:hover i {
+  color: #047857;
+}
+.archived-task .drag-handle:hover i {
+  color: #4c3c7e;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.drag-handle i {
+  pointer-events: none;
+}
+
+.task.dragging {
+  opacity: 0.5;
+  cursor: grabbing;
+  transform: scale(0.9);
+}
+
+.task.dragging.task-priority-high {
+  background: rgba(239, 68, 68, 0.6);
+}
+.task.dragging.task-priority-medium {
+  background: rgba(245, 158, 11, 0.6);
+}
+.task.dragging.task-priority-low {
+  background: rgba(16, 185, 129, 0.6);
+}
+.archived-task.task.dragging {
+  background: rgba(107, 91, 149, 0.6);
+}
+
+.task.drag-over {
+  border-top: 3px solid var(--color-primary);
+  margin-top: var(--spacing-xs);
+  padding-top: var(--spacing-sm);
+}
+
+.archived-task.task.drag-over {
+  border-top: 3px solid #6b5b95;
+}
+
+.task.drag-over::before {
+  content: "Drop here";
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-primary);
+  color: var(--color-white);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  z-index: 10;
+}
+
+.archived-task.drag-over::before {
+  background: #6b5b95;
+}
+
 @media (hover: hover) {
   .pomodoro-add-btn,
   .pomodoro-remove-btn {
@@ -1165,6 +1254,10 @@ input[type="search"] {
     opacity: 1;
   }
 
+  .drag-handle {
+    opacity: 1;
+  }
+
   .list-action-btn {
     opacity: 0;
   }
@@ -1176,6 +1269,10 @@ input[type="search"] {
 
 @media (hover: none) {
   .task-actions {
+    opacity: 1;
+  }
+
+  .drag-handle {
     opacity: 1;
   }
 
