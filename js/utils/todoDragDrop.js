@@ -44,17 +44,7 @@ function handleDragStart(event) {
     return;
   }
 
-  draggedTask = taskElement;
-  event.dataTransfer.effectAllowed = "move";
-  event.dataTransfer.setData("text/html", taskElement.innerHTML);
-  event.dataTransfer.setDragImage(taskElement, 0, 0);
-
-  setTimeout(() => {
-    taskElement.classList.add("dragging");
-    if (dropZone) {
-      dropZone.hidden = false;
-    }
-  }, 0);
+  initializeDrag(event, taskElement);
 }
 
 function handleDragEnd(event) {
@@ -112,14 +102,11 @@ function handleDrop(event) {
   if (!selectedList) return false;
 
   const targetElement = event.target.closest("[data-task-item]");
-  const draggedId = parseInt(draggedTask.dataset.taskItem);
-  const draggedIndex = selectedList.tasks.findIndex(
-    (task) => task.id === draggedId
-  );
 
+  const draggedIndex = getTaskIndex(selectedList, draggedTask);
   if (draggedIndex === -1) return false;
 
-  const listType = selectedList.isArchive ? "archived task" : "task";
+  const listType = getListType(selectedList);
 
   // Drop on itself
   if (targetElement === draggedTask) {
@@ -133,19 +120,12 @@ function handleDrop(event) {
 
   // Drop on another task
   if (targetElement && targetElement !== draggedTask) {
-    const targetId = parseInt(targetElement.dataset.taskItem);
-    const targetIndex = selectedList.tasks.findIndex(
-      (task) => task.id === targetId
-    );
-
+    const targetIndex = getTaskIndex(selectedList, targetElement);
     if (targetIndex === -1) return false;
 
-    const adjustedTargetIndex =
-      draggedIndex < targetIndex ? targetIndex - 1 : targetIndex;
+    const adjustedDropIndex = getAdjustedDropIndex(draggedIndex, targetIndex);
 
-    // Reorder the tasks array
-    const [removed] = selectedList.tasks.splice(draggedIndex, 1);
-    selectedList.tasks.splice(adjustedTargetIndex, 0, removed);
+    reorderArray(selectedList.tasks, draggedIndex, adjustedDropIndex);
 
     saveAndRender();
     showSuccess(
@@ -178,18 +158,14 @@ function handleDropZoneDrop(event) {
   const selectedList = getCurrentList();
   if (!selectedList) return false;
 
-  const draggedId = parseInt(draggedTask.dataset.taskItem);
-  const draggedIndex = selectedList.tasks.findIndex(
-    (task) => task.id === draggedId
-  );
-
+  const draggedIndex = getTaskIndex(selectedList, draggedTask);
   if (draggedIndex === -1) return false;
 
   const lastIndex = selectedList.tasks.length - 1;
 
   // Already last task
   if (draggedIndex === lastIndex) {
-    const listType = selectedList.isArchive ? "archived task" : "task";
+    const listType = getListType(selectedList);
     showSuccess(
       `${
         listType.charAt(0).toUpperCase() + listType.slice(1)
@@ -203,8 +179,7 @@ function handleDropZoneDrop(event) {
   }
 
   // Move to end
-  const [removed] = selectedList.tasks.splice(draggedIndex, 1);
-  selectedList.tasks.push(removed);
+  reorderArray(selectedList.tasks, draggedIndex, lastIndex);
 
   if (dropZone) {
     dropZone.hidden = true;
@@ -212,10 +187,42 @@ function handleDropZoneDrop(event) {
   }
 
   saveAndRender();
-  const listType = selectedList.isArchive ? "archived task" : "task";
+  const listType = getListType(selectedList);
   showSuccess(
     `${listType.charAt(0).toUpperCase() + listType.slice(1)} moved to end`
   );
 
   return false;
+}
+
+function getAdjustedDropIndex(fromIndex, toIndex) {
+  return fromIndex < toIndex ? toIndex - 1 : toIndex;
+}
+
+function getListType(list) {
+  return list.isArchive ? "archived task" : "task";
+}
+
+function getTaskIndex(list, taskElement) {
+  const taskId = parseInt(taskElement.dataset.taskItem);
+  return list.tasks.findIndex((task) => task.id === taskId);
+}
+
+function initializeDrag(event, taskElement) {
+  draggedTask = taskElement;
+  event.dataTransfer.effectAllowed = DRAG_EFFECT;
+  event.dataTransfer.setData("text/plain", taskElement.dataset.taskItem);
+
+  setTimeout(() => {
+    taskElement.classList.add("dragging");
+    if (dropZone) {
+      dropZone.hidden = false;
+    }
+  }, 0);
+}
+
+function reorderArray(array, fromIndex, toIndex) {
+  const [removed] = array.splice(fromIndex, 1);
+  array.splice(toIndex, 0, removed);
+  return array;
 }
