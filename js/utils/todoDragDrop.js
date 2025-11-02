@@ -210,7 +210,7 @@ function getTaskIndex(list, taskElement) {
 
 function initializeDrag(event, taskElement) {
   draggedTask = taskElement;
-  event.dataTransfer.effectAllowed = DRAG_EFFECT;
+  event.dataTransfer.effectAllowed = "move";
   event.dataTransfer.setData("text/plain", taskElement.dataset.taskItem);
 
   setTimeout(() => {
