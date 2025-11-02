@@ -35,13 +35,61 @@ a:hover {
   padding: var(--spacing-md);
 }
 
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 h1 {
-  margin: var(--spacing-md) 0;
+  margin: var(--spacing-md) auto;
   font-size: clamp(2rem, 5vw, 3.5rem);
   font-weight: 700;
   color: var(--color-primary-dark);
-  text-align: center;
   font-family: "Happy Monkey", cursive;
+}
+
+.section-toggle {
+  border: 3px solid var(--color-primary);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all var(--transition-slow);
+  padding: 0;
+  padding-block: 0;
+  padding-inline: 0;
+  flex-shrink: 0;
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+.section-toggle:hover {
+  color: var(--color-primary);
+  background: var(--color-white);
+  transform: scale(1.05);
+}
+
+.section-toggle:active {
+  transform: scale(0.9);
+}
+
+.section-toggle-icon {
+  font-size: 2.4rem;
+  transition: transform var(--transition-slow);
+  display: inline-block;
+  line-height: 1;
+}
+
+.section-toggle.section-collapsed .section-toggle-icon {
+  transform: rotate(-180deg);
+}
+
+.collapsible-section {
+  overflow: hidden;
+  transition: max-height var(--transition-slow);
+}
+
+.collapsible-section.section-collapsed {
+  max-height: 0 !important;
 }
 
 /* Main */
@@ -424,17 +472,28 @@ h1 {
   grid-template-columns: 1fr;
   grid-template-areas:
     "header"
+    "content";
+  align-items: start;
+}
+
+.todo-container .section-header {
+  grid-area: header;
+}
+
+.todo-container .collapsible-section {
+  display: grid;
+  gap: var(--spacing-sm);
+  grid-template-columns: 1fr;
+  grid-template-areas:
     "lists"
     "active";
   align-items: start;
 }
 
 .title {
-  grid-area: header;
-  text-align: center;
   font-size: clamp(2rem, 4vw, 3rem);
   font-weight: 800;
-  margin: 0 0 var(--spacing-sm) 0;
+  margin: 0 auto var(--spacing-sm);
   color: var(--color-primary-dark);
   font-family: "Happy Monkey", cursive;
 }
@@ -1779,11 +1838,9 @@ form {
 
 /* Responsive Design */
 @media screen and (min-width: 768px) {
-  .todo-container {
+  .todo-container .collapsible-section {
     grid-template-columns: minmax(250px, 300px) 1fr;
-    grid-template-areas:
-      "header header"
-      "lists active";
+    grid-template-areas: "lists active";
   }
 }
 
