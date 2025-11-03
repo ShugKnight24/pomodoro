@@ -1286,13 +1286,14 @@ function toggleSortType() {
   state.sortingType = sortTypes[nextIndex];
 
   const sortLabels = {
-    creation: "Sorting by creation order",
+    creation: "Sorting by creation / manual sort",
     priority: "Sorting by priority",
     dueDate: "Sorting by due date",
   };
 
   const buttonInfo = {
-    creation: "Sorting by creation order, toggle to sort by priority",
+    creation:
+      "Sorting by creation order and manual sort, toggle to sort by priority",
     priority: "Sorting by priority, toggle to sort by due date",
     dueDate: "Sorting by due date, toggle to sort by creation order",
   };
