@@ -72,232 +72,349 @@
         </div>
       </div>
       <main class="timer-body">
-        <h1>Pomodoro Clock</h1>
-        <div class="accordion-wrapper">
-          <div class="accordion description-accordion">
-            <button
-              aria-label="open description accordion"
-              class="accordion-heading"
-            >
-              What is the Pomodoro Technique?
-              <span class="accordion-icon">+</span>
-            </button>
-          </div>
-          <div class="accordion-body">
-            <p>
-              Do you find yourself regularly procrastinating your most important
-              tasks?
-            </p>
-            <p>
-              <a
-                href="https://en.wikipedia.org/wiki/Pomodoro_Technique"
-                rel="noopener noreferrer"
-                target="_blank"
-                >The Pomodoro Technique</a
+        <div class="section-header">
+          <h1>Pomodoro Clock</h1>
+          <button
+            class="section-toggle"
+            data-section-toggle="pomodoro"
+            aria-label="Toggle Pomodoro section"
+          >
+            <i class="section-toggle-icon fas fa-chevron-circle-down"></i>
+          </button>
+        </div>
+        <div class="collapsible-section" data-section="pomodoro">
+          <div class="accordion-wrapper">
+            <div class="accordion description-accordion">
+              <button
+                aria-label="open description accordion"
+                class="accordion-heading"
               >
-              is a time management system created by
-              <a
-                href="https://francescocirillo.com"
-                rel="noopener noreferrer"
-                target="_blank"
-                >Francesco Cirillo</a
-              >. It is a great method that you can use to overcome your
-              procrastination / resistance and get things done. Breaking up your
-              tasks into smaller more manageable chunks will allow you to work
-              more effectively and productively.
-            </p>
-            <h2>Conquer time or time will conquer you</h2>
+                What is the Pomodoro Technique?
+                <span class="accordion-icon">+</span>
+              </button>
+            </div>
+            <div class="accordion-body">
+              <p>
+                Do you find yourself regularly procrastinating your most
+                important tasks?
+              </p>
+              <p>
+                <a
+                  href="https://en.wikipedia.org/wiki/Pomodoro_Technique"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  >The Pomodoro Technique</a
+                >
+                is a time management system created by
+                <a
+                  href="https://francescocirillo.com"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  >Francesco Cirillo</a
+                >. It is a great method that you can use to overcome your
+                procrastination / resistance and get things done. Breaking up
+                your tasks into smaller more manageable chunks will allow you to
+                work more effectively and productively.
+              </p>
+              <h2>Conquer time or time will conquer you</h2>
+            </div>
           </div>
-        </div>
-        <div class="accordion-wrapper">
-          <div class="accordion how-to-accordion">
-            <button
-              aria-label="open how to accordion"
-              class="accordion-heading"
-            >
-              How to Use the Pomodoro Technique?
-              <span class="accordion-icon">+</span>
-            </button>
-          </div>
-          <div class="accordion-body">
-            <p>
-              Choose a task you want to get done and set the timer for how long
-              you estimate that task will take. This counts as a single
-              "Pomodoro"
-            </p>
-            <p>
-              Note: Traditional Pomodoros are 25 minutes long and allow you to
-              break your tasks into more manageable chunks
-            </p>
-            <ol>
-              <li>Set your first Pomodoro</li>
-              <li>
-                Focus and work solely on that task until the timer runs out
-              </li>
-              <li>
-                After timer completion, put a checkmark on your to-do list
-              </li>
-              <li>Take a short break (typically 5 minutes)</li>
-              <li>
-                Keep working on your tasks until you've done four Pomodoros
-              </li>
-              <li>
-                After four Pomodoros, take a longer break (typically 10 minutes)
-              </li>
-              <li>Repeat step 1 until all of your tasks are done</li>
-              <li>Kick back and relax!</li>
-            </ol>
-          </div>
-        </div>
-        <div class="accordion-wrapper">
-          <div class="accordion additional-info-accordion">
-            <button
-              aria-label="open additional information accordion"
-              class="accordion-heading"
-            >
-              Additional Information
-              <span class="accordion-icon">+</span>
-            </button>
-          </div>
-          <div class="accordion-body">
-            <p>
-              Watch this video to get more information about The Pomodoro
-              Technique from
-              <a
-                href="https://barbaraoakley.com/"
-                rel="noopener noreferrer"
-                target="_blank"
-                >Dr. Barbara Oakley</a
+          <div class="accordion-wrapper">
+            <div class="accordion how-to-accordion">
+              <button
+                aria-label="open how to accordion"
+                class="accordion-heading"
               >
-              creator of
-              <a
-                href="https://www.coursera.org/learn/learning-how-to-learn"
-                rel="noopener noreferrer"
-                target="_blank"
-                >Learning How to Learn</a
-              >, the most popular open online course in the world, which teaches
-              students the techniques to learn in a more effective manner.
-            </p>
-            <div class="embeded-video-container">
-              <iframe
-                width="560"
-                height="315"
-                src="https://www.youtube-nocookie.com/embed/dTQDaUQ9MAU?si=JI44Y5eX-faXKZGs"
-                title="Brain Training to Beat Procrastination with the World's Easiest Learning Technique | Barbara Oakley"
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerpolicy="strict-origin-when-cross-origin"
-                allowfullscreen
-              ></iframe>
+                How to Use the Pomodoro Technique?
+                <span class="accordion-icon">+</span>
+              </button>
+            </div>
+            <div class="accordion-body">
+              <p>
+                Choose a task you want to get done and set the timer for how
+                long you estimate that task will take. This counts as a single
+                "Pomodoro"
+              </p>
+              <p>
+                Note: Traditional Pomodoros are 25 minutes long and allow you to
+                break your tasks into more manageable chunks
+              </p>
+              <ol>
+                <li>Set your first Pomodoro</li>
+                <li>
+                  Focus and work solely on that task until the timer runs out
+                </li>
+                <li>
+                  After timer completion, put a checkmark on your to-do list
+                </li>
+                <li>Take a short break (typically 5 minutes)</li>
+                <li>
+                  Keep working on your tasks until you've done four Pomodoros
+                </li>
+                <li>
+                  After four Pomodoros, take a longer break (typically 10
+                  minutes)
+                </li>
+                <li>Repeat step 1 until all of your tasks are done</li>
+                <li>Kick back and relax!</li>
+              </ol>
             </div>
           </div>
-        </div>
-        <div class="time-container">
-          <div class="container">
-            <div class="session-div">
-              <h2 id="session-header">Session Time</h2>
-              <button class="button remove-time" id="minus-5-clock">-</button>
-              <h3 id="session-time">25</h3>
-              <button class="button add-time" id="add-5-clock">+</button>
+          <div class="accordion-wrapper">
+            <div class="accordion additional-info-accordion">
+              <button
+                aria-label="open additional information accordion"
+                class="accordion-heading"
+              >
+                Additional Information
+                <span class="accordion-icon">+</span>
+              </button>
             </div>
-            <div class="break-div">
-              <h2 id="break-header">Break Time</h2>
-              <button class="button remove-time" id="minus-5-break">-</button>
-              <h3 id="break-time">5</h3>
-              <button class="button add-time" id="add-5-break">+</button>
+            <div class="accordion-body">
+              <p>
+                Watch this video to get more information about The Pomodoro
+                Technique from
+                <a
+                  href="https://barbaraoakley.com/"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  >Dr. Barbara Oakley</a
+                >
+                creator of
+                <a
+                  href="https://www.coursera.org/learn/learning-how-to-learn"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  >Learning How to Learn</a
+                >, the most popular open online course in the world, which
+                teaches students the techniques to learn in a more effective
+                manner.
+              </p>
+              <div class="embeded-video-container">
+                <iframe
+                  width="560"
+                  height="315"
+                  src="https://www.youtube-nocookie.com/embed/dTQDaUQ9MAU?si=JI44Y5eX-faXKZGs"
+                  title="Brain Training to Beat Procrastination with the World's Easiest Learning Technique | Barbara Oakley"
+                  frameborder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerpolicy="strict-origin-when-cross-origin"
+                  allowfullscreen
+                ></iframe>
+              </div>
             </div>
           </div>
-          <div id="pomodoro-actions">
-            <a class="button" id="start">Start</a>
-            <a class="button hidden" id="stop">Stop</a>
-            <a class="button hidden" id="reset">Reset</a>
+          <div class="time-container">
+            <div class="container">
+              <div class="session-div">
+                <h2 id="session-header">Session Time</h2>
+                <button class="button remove-time" id="minus-5-clock">-</button>
+                <h3 id="session-time">25</h3>
+                <button class="button add-time" id="add-5-clock">+</button>
+              </div>
+              <div class="break-div">
+                <h2 id="break-header">Break Time</h2>
+                <button class="button remove-time" id="minus-5-break">-</button>
+                <h3 id="break-time">5</h3>
+                <button class="button add-time" id="add-5-break">+</button>
+              </div>
+            </div>
+            <div id="pomodoro-actions">
+              <a class="button" id="start">Start</a>
+              <a class="button hidden" id="stop">Stop</a>
+              <a class="button hidden" id="reset">Reset</a>
+            </div>
           </div>
         </div>
       </main>
       <div class="todo-container">
-        <h2 class="title">Things to do!</h2>
-        <div class="all-tasks">
-          <div class="task-list-header">
-            <h3 class="task-list-title">My Lists</h3>
-            <p class="task-list-count" data-list-count></p>
-          </div>
-          <ul class="task-list" data-lists></ul>
-
-          <form data-new-list-form>
-            <input
-              id="new-list-name"
-              data-new-list-input
-              class="new-input list"
-              type="text"
-              placeholder="new list name"
-              aria-label="new list name"
-            />
-            <button class="button create" aria-label="create new list">
-              +
-            </button>
-          </form>
+        <div class="section-header">
+          <h2 class="title">Things to do!</h2>
+          <button
+            class="section-toggle"
+            data-section-toggle="todo"
+            aria-label="Toggle Todo section"
+          >
+            <i class="section-toggle-icon fas fa-chevron-circle-down"></i>
+          </button>
         </div>
-        <div class="todo-list" data-list-display-container>
-          <div class="todo-header">
-            <h2 class="todo-title" data-list-title>Update Me Bruv!</h2>
-            <div class="todo-header-actions">
-              <button
-                class="sort-button"
-                data-sort-toggle
-                aria-label="toggle sort by priority"
-                title="Sort by priority"
-              >
-                <span class="sort-icon">⬍</span>
-                <span class="sort-text">Sort by Priority</span>
-              </button>
-              <p class="task-count" data-task-count># of Tasks remaining</p>
+        <div class="collapsible-section" data-section="todo">
+          <div class="all-tasks">
+            <div class="task-list-header">
+              <h3 class="task-list-title">My Lists</h3>
+              <p class="task-list-count" data-list-count></p>
             </div>
+            <ul class="task-list" data-lists></ul>
+
+            <form data-new-list-form>
+              <input
+                id="new-list-name"
+                data-new-list-input
+                class="new-input list"
+                type="text"
+                placeholder="new list name"
+                aria-label="new list name"
+              />
+              <button class="button create" aria-label="create new list">
+                +
+              </button>
+            </form>
           </div>
-          <div class="todo-body">
-            <div class="tasks" data-tasks></div>
-            <div class="new-task-creator">
-              <form data-new-task-form>
-                <div class="task-input-group">
-                  <input
-                    id="new-task-name"
-                    data-new-task-input
-                    class="new-input task"
-                    type="text"
-                    placeholder="new task name"
-                    aria-label="new task name"
-                  />
-                  <label for="task-priority">Task Priority:</label>
-                  <select
-                    id="task-priority"
-                    data-task-priority
-                    class="priority-select"
-                    aria-label="task priority selection"
-                  >
-                    <option value="low">Low</option>
-                    <option value="medium" selected>Medium</option>
-                    <option value="high">High</option>
-                  </select>
+          <div class="todo-list" data-list-display-container>
+            <div class="todo-header">
+              <h2 class="todo-title" data-list-title>Update Me Bruv!</h2>
+              <div class="todo-header-actions">
+                <!-- TODO: Improve design and responsiveness of search & filters -->
+                <!-- Layout shifts when filtering & searching -->
+                <div class="todo-filters">
+                  <div class="search-container">
+                    <input
+                      id="filter-tasks-input"
+                      type="search"
+                      class="search-input"
+                      data-search-input
+                      placeholder="Search tasks..."
+                      aria-label="Search tasks"
+                    />
+                    <button
+                      class="clear-search-btn hidden"
+                      data-clear-search
+                      aria-label="Clear search"
+                    >
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                  <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">
+                      All
+                    </button>
+                    <button class="filter-btn" data-filter="active">
+                      Active
+                    </button>
+                    <button class="filter-btn" data-filter="completed">
+                      Completed
+                    </button>
+                  </div>
+                  <div class="priority-filters">
+                    <button
+                      class="priority-filter-btn active"
+                      data-priority-filter="all"
+                      title="Show all priorities"
+                    >
+                      All
+                    </button>
+                    <button
+                      class="priority-filter-btn"
+                      data-priority-filter="high"
+                      title="Show high priority"
+                    >
+                      🔴
+                    </button>
+                    <button
+                      class="priority-filter-btn"
+                      data-priority-filter="medium"
+                      title="Show medium priority"
+                    >
+                      🟡
+                    </button>
+                    <button
+                      class="priority-filter-btn"
+                      data-priority-filter="low"
+                      title="Show low priority"
+                    >
+                      🟢
+                    </button>
+                  </div>
                 </div>
-                <button class="button create" aria-label="create new task">
-                  +
+                <button
+                  class="sort-button"
+                  data-sort-toggle
+                  aria-label="Sorting by creation order and manual sort, toggle to sort by priority"
+                  title="Sorting by creation order and manual sort, toggle to sort by priority"
+                >
+                  <span class="sort-icon">
+                    <i class="fas fa-sort-amount-up-alt"></i>
+                  </span>
+                  <span class="sort-text"
+                    >Sorting by creation / manual sort</span
+                  >
                 </button>
-              </form>
+                <p class="task-count" data-task-count># of Tasks remaining</p>
+              </div>
             </div>
-            <div class="delete-list">
-              <button
-                aria-label="clear completed tasks"
-                class="button delete"
-                data-clear-completed-tasks
-              >
-                Clear Completed Tasks
-              </button>
-              <button
-                aria-label="delete current list"
-                class="button delete"
-                data-delete-list-button
-              >
-                Delete Current List
-              </button>
+            <div class="todo-body">
+              <div class="tasks" data-tasks></div>
+              <div class="drop-zone" data-drop-zone hidden>
+                <div class="drop-zone-indicator">Drop at end</div>
+              </div>
+              <div class="new-task-creator">
+                <form data-new-task-form>
+                  <div class="task-input-group">
+                    <!-- TODO: Improve mobile responsiveness -->
+                    <div class="task-name-group">
+                      <label for="new-task-name">Task Name</label>
+                      <input
+                        id="new-task-name"
+                        data-new-task-input
+                        class="new-input task"
+                        type="text"
+                        placeholder="new task name"
+                        aria-label="new task name"
+                      />
+                    </div>
+                    <div class="due-date-group">
+                      <label for="task-due-date">Due Date (Optional)</label>
+                      <input
+                        id="task-due-date"
+                        data-task-due-date
+                        class="new-input due-date-input"
+                        type="date"
+                        aria-label="due date"
+                        title="Due date (optional)"
+                      />
+                    </div>
+                    <div class="priority-group">
+                      <label for="task-priority">Task Priority</label>
+                      <select
+                        id="task-priority"
+                        data-task-priority
+                        class="priority-select"
+                        aria-label="task priority selection"
+                      >
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                      </select>
+                    </div>
+                  </div>
+                  <button class="button create" aria-label="create new task">
+                    +
+                  </button>
+                </form>
+              </div>
+              <div class="delete-list">
+                <button
+                  aria-label="clear completed tasks"
+                  class="button delete"
+                  data-clear-completed-tasks
+                >
+                  Clear Completed Tasks
+                </button>
+                <button
+                  aria-label="delete current list"
+                  class="button delete"
+                  data-delete-list-button
+                >
+                  Delete Current List
+                </button>
+                <button
+                  aria-label="clear archived tasks"
+                  class="button delete archive-delete hidden"
+                  data-clear-archive
+                >
+                  Clear Archive
+                </button>
+              </div>
             </div>
           </div>
         </div>
