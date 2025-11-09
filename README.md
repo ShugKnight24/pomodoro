@@ -10,10 +10,13 @@ More to come...
   - Breaks when new lists / tasks are added, have to toggle section again to fix. bad experience
 - [ ] Improve accessibility
 - [ ] Improve UI/UX
+
   - [ ] further refine mobile responsiveness
     - Go with different layout / functionality
   - [ ] Better styles for Settings menu
     - [ ] Add additional fields
+  - [ ] Create starter list and tasks as a tutorial
+
 - [ ] Build a tomato with css
 - [ ] Add a settings menu for additional options
   - [ ] custom time setting
@@ -48,10 +51,6 @@ More to come...
     - [ ] Add confirmation popup
     - [ ] Tasks
       - [ ] Add confirmation popup
-  - [ ] IUI/UX
-    - [ ] Create starter list(s) and tasks as a tutorial
-    - [ ] Ways to deal with long list and task names aside from overflow hidden
-    - [ ] Shift to new line?
   - [ ] Side by side w/ timer on Desktop large screens?
   - [ ] Appearance on mobile
     - [ ] Current design breaking due to some overflows
