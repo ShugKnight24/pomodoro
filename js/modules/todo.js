@@ -958,15 +958,14 @@ function restoreTask(taskId) {
 
   // Original list
   let targetList = state.lists.find((list) => list.id === task.originalListId);
-  const { name: targetListName } = targetList || {};
 
   // If original list no longer exists, use the first list or create a new one
   if (!targetList) {
     if (state.lists.length > 0) {
       targetList = state.lists[0];
-      const { name: targetListName } = targetList;
+
       showSuccess(
-        `Original list not found. Restored "${name}" to "${targetListName}"`
+        `Original list not found. Restored "${name}" to "${targetList.name}"`
       );
     } else {
       targetList = createList("Restored Tasks");
@@ -974,7 +973,7 @@ function restoreTask(taskId) {
       showSuccess(`Created new list "Restored Tasks" and restored "${name}"`);
     }
   } else {
-    showSuccess(`Restored "${name}" to "${targetListName}"`);
+    showSuccess(`Restored "${name}" to "${targetList.name}"`);
   }
 
   // Remove archive metadata
