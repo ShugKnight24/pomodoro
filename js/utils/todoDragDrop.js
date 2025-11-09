@@ -75,7 +75,7 @@ function handleDragEnter(event) {
   const taskElement = event.target.closest("[data-task-item]");
   if (!taskElement) return;
 
-  if (taskElement && taskElement !== draggedTask) {
+  if (taskElement !== draggedTask) {
     taskElement.classList.add("drag-over");
   }
 }
@@ -83,10 +83,6 @@ function handleDragEnter(event) {
 function handleDragLeave(event) {
   const taskElement = event.target.closest("[data-task-item]");
   if (!taskElement) return;
-
-  if (taskElement && !taskElement.contains(event.relatedTarget)) {
-    taskElement.classList.remove("drag-over");
-  }
 
   if (taskElement && !taskElement.contains(event.relatedTarget)) {
     taskElement.classList.remove("drag-over");

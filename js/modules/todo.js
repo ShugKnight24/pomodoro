@@ -868,7 +868,7 @@ function addPomodoro(taskId) {
   task.pomodoros = (pomodoros || 0) + 1;
   save();
   updateTaskState(taskId);
-  showSuccess(`Pomodoro added! Total: ${pomodoros} 🍅`);
+  showSuccess(`Pomodoro added! Total: ${task.pomodoros} 🍅`);
 }
 
 function removePomodoro(taskId) {
@@ -887,7 +887,7 @@ function removePomodoro(taskId) {
   task.pomodoros -= 1;
   save();
   updateTaskState(taskId);
-  showSuccess(`Pomodoro removed. Total: ${pomodoros} 🍅`);
+  showSuccess(`Pomodoro removed. Total: ${task.pomodoros} 🍅`);
 }
 
 // TODO: Setup selection of an active task and connect to Pomodoro
@@ -921,7 +921,7 @@ function updateArchiveSectionVisibility() {
   const newTaskCreator = elements.newTaskForm.closest(".new-task-creator");
   const listFilterButtons = document.querySelector(".filter-buttons");
 
-  if (selectedList && selectedList.isArchive) {
+  if (selectedList.isArchive) {
     // Hide task creation and delete list button
     if (state.archive.tasks.length === 0) {
       elements.clearArchiveButton.classList.add("hidden");
@@ -964,6 +964,7 @@ function restoreTask(taskId) {
   if (!targetList) {
     if (state.lists.length > 0) {
       targetList = state.lists[0];
+      const { name: targetListName } = targetList;
       showSuccess(
         `Original list not found. Restored "${name}" to "${targetListName}"`
       );
@@ -1304,8 +1305,8 @@ function toggleSortType() {
     elements.taskSortButton.classList.add("active");
   }
 
-  elements.taskSortButton.ariaLabel = buttonInfo[state.sortingType].ariaLabel;
-  elements.taskSortButton.title = buttonInfo[state.sortingType].title;
+  elements.taskSortButton.ariaLabel = buttonInfo[state.sortingType];
+  elements.taskSortButton.title = buttonInfo[state.sortingType];
   document.querySelector(".sort-text").textContent =
     sortLabels[state.sortingType];
 

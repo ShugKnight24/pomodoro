@@ -75,7 +75,6 @@ function expandSection(section, button) {
 function collapseSection(section, button, animate = true) {
   if (animate) {
     section.style.maxHeight = section.scrollHeight + "px";
-    section.offsetHeight;
 
     requestAnimationFrame(() => {
       section.classList.add("section-collapsed");
