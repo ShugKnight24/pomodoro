@@ -453,18 +453,13 @@ h1 {
 
 /* Todo List */
 .todo-container {
-  --primary-color: var(--color-primary);
-  --light-color: var(--color-gray-50);
-  --dark-color: var(--color-gray-900);
-  --warning-color: var(--color-warning);
-
   margin: var(--spacing-lg) 0;
   padding: var(--spacing-lg);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-weight: 400;
   font-size: 1rem;
   background: var(--color-white);
-  color: var(--dark-color);
+  color: var(--color-gray-900);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-xl);
   display: grid;
@@ -573,21 +568,30 @@ h1 {
   opacity: 0;
 }
 
+.list-action-btn:hover {
+  background-color: rgba(73, 80, 87, 0.2);
+}
+
 .list-name:hover .list-action-btn {
   opacity: 1;
 }
 
-.list-action-btn:hover {
-  background-color: rgba(255, 255, 255, 0.45);
+.list-action-btn i {
+  color: var(--color-gray-700);
+  transition: color var(--transition-fast);
 }
 
-.list-action-btn i {
+.active-list .list-action-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.active-list .list-action-btn i {
   color: var(--color-white);
 }
 
 .list-name-input {
   flex: 1;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.9);
   border: 2px solid var(--color-primary);
   color: var(--color-gray-900);
   font-size: 1.125rem;
@@ -1389,7 +1393,7 @@ form {
   flex: 1;
   background: rgba(255, 255, 255, 0.8);
   border: 2px solid var(--color-gray-300);
-  color: var(--dark-color);
+  color: var(--color-gray-900);
   font-size: 1.05rem;
   outline: none;
   padding: var(--spacing-sm) var(--spacing-md);
