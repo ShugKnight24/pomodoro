@@ -35,6 +35,12 @@ a:hover {
   padding: var(--spacing-md);
 }
 
+@media screen and (max-width: 768px) {
+  #tomato-container {
+    padding: var(--spacing-xs);
+  }
+}
+
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -471,6 +477,12 @@ h1 {
   align-items: start;
 }
 
+@media screen and (max-width: 768px) {
+  .todo-container {
+    padding: var(--spacing-xs);
+  }
+}
+
 .todo-container .section-header {
   grid-area: header;
 }
@@ -705,6 +717,12 @@ h1 {
   flex-wrap: wrap;
 }
 
+@media screen and (max-width: 768px) {
+  .todo-header {
+    padding: var(--spacing-md);
+  }
+}
+
 .todo-title {
   margin: 0;
   font-size: 1.5rem;
@@ -877,12 +895,6 @@ input[type="search"] {
   border-left-width: 6px;
 }
 
-@media screen and (max-width: 768px) {
-  .todo-filters {
-    padding: 0 var(--spacing-sm);
-  }
-}
-
 /* Sort Button */
 .sort-button {
   display: flex;
@@ -952,6 +964,13 @@ input[type="search"] {
   margin-left: var(--spacing-2xl);
 }
 
+@media screen and (max-width: 768px) {
+  .todo-body {
+    padding: var(--spacing-sm);
+    margin-left: var(--spacing-md);
+  }
+}
+
 .todo-body::before {
   content: "";
   position: absolute;
@@ -988,6 +1007,13 @@ input[type="search"] {
   color: var(--color-gray-900);
   flex: 1;
   min-width: 0;
+}
+
+@media screen and (max-width: 600px) {
+  .task label {
+    flex: 1 1 70%;
+    font-size: 1rem;
+  }
 }
 
 .check[type="checkbox"] {
@@ -1224,8 +1250,15 @@ input[type="search"] {
   transition: color var(--transition-fast);
   display: flex;
   align-items: center;
-  margin-right: var(--spacing-xs);
+  margin: 0 var(--spacing-xs);
   color: var(--color-gray-900);
+}
+
+@media screen and (max-width: 600px) {
+  .drag-handle {
+    font-size: 2rem;
+    padding: 0;
+  }
 }
 
 .task:hover .drag-handle,
@@ -1381,12 +1414,27 @@ form {
   align-items: center;
 }
 
+@media screen and (max-width: 768px) {
+  .new-task-creator form {
+    margin-top: var(--spacing-md);
+    flex-direction: column;
+  }
+}
+
 /* Task Input Group */
 .task-input-group {
   display: flex;
   gap: var(--spacing-sm);
   flex: 1;
   align-items: center;
+}
+
+@media screen and (max-width: 768px) {
+  .task-input-group {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+  }
 }
 
 .new-input {
@@ -1433,6 +1481,15 @@ form {
   font-weight: 600;
 }
 
+@media screen and (max-width: 768px) {
+  .task-name-group,
+  .due-date-group,
+  .priority-group {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+}
+
 .priority-select {
   background: rgba(255, 255, 255, 0.9);
   border: 2px solid var(--color-gray-400);
@@ -1454,33 +1511,47 @@ form {
 /* Priority Indicator */
 .priority-indicator {
   font-size: 1.2rem;
-  margin-right: var(--spacing-xs);
+  margin: 0 var(--spacing-sm);
   display: inline-flex;
   align-items: center;
-  padding-left: var(--spacing-sm);
+}
+
+@media screen and (max-width: 600px) {
+  .priority-indicator {
+    font-size: 1.5rem;
+    margin: 0 var(--spacing-xs);
+  }
 }
 
 /* Priority styling */
 .task-priority-high {
   border-left: 3px solid #ef4444;
 }
-
 .task-priority-medium {
   border-left: 3px solid #f59e0b;
 }
-
 .task-priority-low {
   border-left: 3px solid #10b981;
+}
+
+@media screen and (max-width: 600px) {
+  .task-priority-high {
+    border-bottom: 3px solid #ef4444;
+  }
+  .task-priority-medium {
+    border-bottom: 3px solid #f59e0b;
+  }
+  .task-priority-low {
+    border-bottom: 3px solid #10b981;
+  }
 }
 
 .task-priority-high:hover {
   background: rgba(239, 68, 68, 0.75);
 }
-
 .task-priority-medium:hover {
   background: rgba(245, 158, 11, 0.75);
 }
-
 .task-priority-low:hover {
   background: rgba(16, 185, 129, 0.75);
 }
@@ -1514,6 +1585,14 @@ form {
   justify-content: center;
   margin-top: var(--spacing-xl);
   padding-top: var(--spacing-lg);
+}
+
+@media screen and (max-width: 768px) {
+  .delete-list {
+    flex-direction: column;
+    margin-top: var(--spacing-sm);
+    padding-top: var(--spacing-sm);
+  }
 }
 
 .button.delete {
@@ -1850,10 +1929,6 @@ form {
 
 @media screen and (max-width: 768px) {
   .container {
-    flex-direction: column;
-  }
-
-  .todo-header {
     flex-direction: column;
   }
 
