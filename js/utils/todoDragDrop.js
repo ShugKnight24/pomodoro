@@ -127,6 +127,11 @@ function handleDrop(event) {
 
     reorderArray(selectedList.tasks, draggedIndex, adjustedDropIndex);
 
+    if (dropZone) {
+      dropZone.hidden = true;
+      dropZone.classList.remove("drag-over");
+    }
+
     saveAndRender();
     showSuccess(
       `${listType.charAt(0).toUpperCase() + listType.slice(1)} reordered`
