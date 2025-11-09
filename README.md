@@ -1,32 +1,32 @@
-# Pomodoro Timer
-Basic Pomodoro timer built with jQuery
+# Pomodoro Tracker
 
-Currently refactoring... Will likely create a React version in the future
+Pomodoro tracker with timer and todo list built with vanilla JavaScript
 
-### Improvements / To-Do:
-- [ ] Improve UI - *Cringe* 😬
-  - [X] Fix mobile responsiveness - *Cringe Intensifies*
-  - [X] Moved description to accordion
-  - [X] Add accordion for how to use Pomodoro
-  - [X] Add accordion for additional info
-  - [ ] Better styles for Setting menu
-    - [ ] Add all needed fields
-  - [ ] Animations / etc...
+More to come...
+
+## Improvements / To-Do
+
+- [ ] Refactor section toggle functionality - don't rely on max-height
+  - Breaks when new lists / tasks are added, have to toggle section again to fix. bad experience
+- [ ] Improve accessibility
+- [ ] Improve UI/UX
+
+  - [ ] further refine mobile responsiveness
+    - Go with different layout / functionality
+  - [ ] Better styles for Settings menu
+    - [ ] Add additional fields
+  - [ ] Create starter list and tasks as a tutorial
+
 - [ ] Build a tomato with css
 - [ ] Add a settings menu for additional options
-  - [X] Add the menu
-    - [ ] Inputs for custom time setting
-    - [X] Volume bar
-	- [ ] Additional sounds
-	- [ ] Browser notification controls
-- [ ] Clean up timer logic
+  - [ ] custom time setting
+  - [ ] Additional sounds
+  - [ ] Browser notification controls
 - [ ] Don't run audio if user hits stop button
-- [X] Pomodoro trademark / copyright
-  - [X] Illustrate site is not affiliated with Francesco Cirillo
 - [ ] Add current time to the title element
-- [ ] Remove reliance on jQuery
 
-### Future Ideas
+## Future Ideas
+
 - [ ] Allow user to turn on ticking / metronome noise per second
   - [ ] Different sounds...
   - [ ] Allow users to set their own via YouTube
@@ -45,49 +45,27 @@ Currently refactoring... Will likely create a React version in the future
   - [ ] Task tracking / BasicTask Management
     - [ ] Progress over time (i.e. number of Pomodoros invested)
 - [ ] Add todo functionality
-  - [ ] Basic ToDo functionality
-    - [X] Store todos
-      - [X] Lists
-      - [X] Tasks
-    - [X] Display todos
-      - [X] Lists
-      - [X] Tasks
-    - [X] Add todos
-      - [X] Lists
-	    - [X] Set active list on add of new list
-	  - [X] Tasks
-    - [ ] Update todos
-      - [ ] Lists
-      - [ ] Tasks
-    - [ ] Delete todos
-      - [ ] Lists
-	    - [ ] From lists list 😂
-		- [X] Button below selected list
-		- [ ] Add confirmation popup
-	  - [ ] Tasks
-	    - [ ] Add confirmation popup
-  - [ ] Track completed todos in one list
-    - [ ] Push to list on clear completed
-	- [ ] Store completed in local storage
-  - [ ] Track number of Pomodoros per todo
-  - [ ] Improve styles - UI/UX
-    - [ ] Create starter list(s) and tasks as a tutorial
-    - [ ] Ways to deal with long list and task names aside from overflow hidden
-	  - [ ] Shift to new line?
-	- [ ] Side by side w/ timer on Desktop large screens?
-	- [ ] Appearance on mobile
-	  - [ ] Current design breaking due to some overflows
-	  - [ ] Improve element stacking for a cleaner flow
+
+  - [ ] Improve ToDo functionality
+    - [ ] Delete Lists in list creation form?
+    - [ ] Add confirmation popup
+    - [ ] Tasks
+      - [ ] Add confirmation popup
+  - [ ] Side by side w/ timer on Desktop large screens?
+  - [ ] Appearance on mobile
+    - [ ] Current design breaking due to some overflows
+    - [ ] Improve element stacking for a cleaner flow
   - [ ] Delete All
     - [ ] Add button to remove all tasks and lists and clear local storage
 
-### Implementations
+---
 
-### Bugs
-- [ ] 9/19 - Occasionally, the initial session time does not get set correctly
-  - [ ] Find out why that occurs
-- [ ] 9/19 - Stoping counter during session still runs break
-  - [ ] Should not have a break if you paused your session
-- [ ] 9/19 - Stopping counter during break causes break time to disappear and makes reset button appear
+## Implementations
 
-### Resolved Bugs
+## Bugs
+
+## Resolved Bugs
+
+- Stopping counter during break works correctly
+- Stopping counter during session does not run the break
+- Initial session time is now properly set
