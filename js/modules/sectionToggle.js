@@ -1,6 +1,7 @@
 "use strict";
 
 // TODO: refactor, functionality is repetitive. Simplify and DRY out
+// TODO: reconsider and refactor implementation due to issues with accordion interaction
 const STORAGE_KEY = "pomodoroSectionStates";
 
 export function initSectionToggle() {
@@ -11,6 +12,8 @@ export function initSectionToggle() {
     const section = document.querySelector(`[data-section="${sectionName}"]`);
 
     if (!section) return;
+
+    setupAccordionResizeObserver(section);
 
     if (!section.classList.contains("section-collapsed")) {
       section.style.maxHeight = section.scrollHeight + "px";
@@ -23,6 +26,22 @@ export function initSectionToggle() {
     }
 
     button.addEventListener("click", () => toggleSection(section, button));
+  });
+}
+
+function setupAccordionResizeObserver(section) {
+  const accordionHeadings = section.querySelectorAll(".accordion-heading");
+  if (accordionHeadings.length === 0) return;
+
+  accordionHeadings.forEach((heading) => {
+    heading.addEventListener("click", () => {
+      // Ensure accordion animation completes, then update section height
+      setTimeout(() => {
+        if (!section.classList.contains("section-collapsed")) {
+          section.style.maxHeight = section.scrollHeight + "px";
+        }
+      }, 600); // Longer than accordion animation
+    });
   });
 }
 
