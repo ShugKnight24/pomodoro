@@ -90,12 +90,18 @@ h1 {
 }
 
 .collapsible-section {
-  overflow: hidden;
-  transition: max-height var(--transition-slow);
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows var(--transition-slow);
 }
 
 .collapsible-section.section-collapsed {
-  max-height: 0 !important;
+  grid-template-rows: 0fr;
+}
+
+.section-content-wrapper {
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* Main */
@@ -487,7 +493,7 @@ h1 {
   grid-area: header;
 }
 
-.todo-container .collapsible-section {
+.todo-container .section-content-wrapper {
   display: grid;
   gap: var(--spacing-sm);
   grid-template-columns: 1fr;
@@ -1921,17 +1927,13 @@ form {
 
 /* Responsive Design */
 @media screen and (min-width: 768px) {
-  .todo-container .collapsible-section {
+  .todo-container .section-content-wrapper {
     grid-template-columns: minmax(250px, 300px) 1fr;
     grid-template-areas: "lists active";
   }
 }
 
 @media screen and (max-width: 768px) {
-  .container {
-    flex-direction: column;
-  }
-
   .todo-header-actions {
     width: 100%;
     justify-content: space-between;

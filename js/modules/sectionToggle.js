@@ -1,7 +1,5 @@
 "use strict";
 
-// TODO: refactor, functionality is repetitive. Simplify and DRY out
-// TODO: reconsider and refactor implementation due to issues with accordion interaction
 const STORAGE_KEY = "pomodoroSectionStates";
 
 export function initSectionToggle() {
@@ -13,79 +11,24 @@ export function initSectionToggle() {
 
     if (!section) return;
 
-    setupAccordionResizeObserver(section);
-
-    if (!section.classList.contains("section-collapsed")) {
-      section.style.maxHeight = section.scrollHeight + "px";
-    }
-
     // Restore collapsed state from localStorage
     const savedStates = getSavedStates();
     if (savedStates[sectionName]) {
-      collapseSection(section, button, false);
+      section.classList.add("section-collapsed");
+      button.classList.add("section-collapsed");
     }
 
     button.addEventListener("click", () => toggleSection(section, button));
   });
 }
 
-function setupAccordionResizeObserver(section) {
-  const accordionHeadings = section.querySelectorAll(".accordion-heading");
-  if (accordionHeadings.length === 0) return;
-
-  accordionHeadings.forEach((heading) => {
-    heading.addEventListener("click", () => {
-      // Ensure accordion animation completes, then update section height
-      setTimeout(() => {
-        if (!section.classList.contains("section-collapsed")) {
-          section.style.maxHeight = section.scrollHeight + "px";
-        }
-      }, 600); // Longer than accordion animation
-    });
-  });
-}
-
 function toggleSection(section, button) {
+  section.classList.toggle("section-collapsed");
+  button.classList.toggle("section-collapsed");
+
   const isCollapsed = section.classList.contains("section-collapsed");
-
-  if (isCollapsed) {
-    expandSection(section, button);
-  } else {
-    collapseSection(section, button, true);
-  }
-
-  // Save state
   const sectionName = button.dataset.sectionToggle;
-  saveState(sectionName, !isCollapsed);
-}
-
-function expandSection(section, button) {
-  section.classList.remove("section-collapsed");
-  button.classList.remove("section-collapsed");
-
-  section.style.maxHeight = section.scrollHeight + "px";
-
-  setTimeout(() => {
-    if (!section.classList.contains("section-collapsed")) {
-      section.style.maxHeight = section.scrollHeight + "px";
-    }
-  }, 600); // Match CSS transition
-}
-
-function collapseSection(section, button, animate = true) {
-  if (animate) {
-    section.style.maxHeight = section.scrollHeight + "px";
-
-    requestAnimationFrame(() => {
-      section.classList.add("section-collapsed");
-      button.classList.add("section-collapsed");
-      section.style.maxHeight = "0";
-    });
-  } else {
-    section.classList.add("section-collapsed");
-    button.classList.add("section-collapsed");
-    section.style.maxHeight = "0";
-  }
+  saveState(sectionName, isCollapsed);
 }
 
 function getSavedStates() {
