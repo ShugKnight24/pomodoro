@@ -269,6 +269,37 @@ h1 {
   font-weight: 600;
 }
 
+.timer-display-wrapper {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: rotate(90deg) scaleX(-1);
+}
+
+.progress-ring__circle {
+  transition: stroke-dashoffset 0.35s;
+  transform-origin: 50% 50%;
+  stroke-linecap: round;
+}
+
+.timer-controls {
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+}
+
 .session-div h3,
 .break-div h3 {
   font-size: 2.5rem;

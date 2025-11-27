@@ -3,7 +3,6 @@
 import { formatTime, hideElements, showElements } from "./utils.js";
 
 // TODO: Implement custom time setting
-// TODO: Convert to stop into pause -> Display Pause & Reset while timers are running
 
 // State
 const state = {
@@ -14,6 +13,7 @@ const state = {
   isRunning: false,
   sessionTime: 25,
   sessionTimerId: null,
+  totalSeconds: 0,
 };
 
 // DOM Elements
@@ -22,6 +22,7 @@ const elements = {
   breakHeader: null,
   breakMinusButton: null,
   breakPlusButton: null,
+  breakProgress: null,
   breakTime: null,
   buzzer: null,
   resetButton: null,
@@ -29,6 +30,7 @@ const elements = {
   sessionHeader: null,
   sessionMinusButton: null,
   sessionPlusButton: null,
+  sessionProgress: null,
   sessionTime: null,
   startButton: null,
   stopButton: null,
@@ -37,6 +39,7 @@ const elements = {
 export function initTimer() {
   initializeElements();
   setupTimerEventListeners();
+  initializeProgressRings();
 }
 
 const initializeElements = () => {
@@ -44,6 +47,7 @@ const initializeElements = () => {
   elements.breakHeader = document.getElementById("break-header");
   elements.breakMinusButton = document.getElementById("minus-5-break");
   elements.breakPlusButton = document.getElementById("add-5-break");
+  elements.breakProgress = document.getElementById("break-progress");
   elements.breakTime = document.getElementById("break-time");
   elements.buzzer = document.getElementById("buzzer");
   elements.resetButton = document.getElementById("reset");
@@ -51,6 +55,7 @@ const initializeElements = () => {
   elements.sessionHeader = document.getElementById("session-header");
   elements.sessionMinusButton = document.getElementById("minus-5-clock");
   elements.sessionPlusButton = document.getElementById("add-5-clock");
+  elements.sessionProgress = document.getElementById("session-progress");
   elements.sessionTime = document.getElementById("session-time");
   elements.startButton = document.getElementById("start");
   elements.stopButton = document.getElementById("stop");
@@ -71,7 +76,26 @@ function setupTimerEventListeners() {
     adjustTime("session", 5)
   );
   elements.startButton.addEventListener("click", startTimer);
-  elements.stopButton.addEventListener("click", resetTimer);
+  elements.stopButton.addEventListener("click", pauseTimer);
+}
+
+function initializeProgressRings() {
+  if (!elements.sessionProgress || !elements.breakProgress) return;
+
+  const radius = elements.sessionProgress.r.baseVal.value;
+  const circumference = radius * 2 * Math.PI;
+
+  [elements.sessionProgress, elements.breakProgress].forEach((ring) => {
+    ring.style.strokeDasharray = `${circumference} ${circumference}`;
+    ring.style.strokeDashoffset = 0; // Start filled
+  });
+}
+
+function setProgress(percent, element) {
+  const radius = element.r.baseVal.value;
+  const circumference = radius * 2 * Math.PI;
+  const offset = circumference - (percent / 100) * circumference;
+  element.style.strokeDashoffset = offset;
 }
 
 /* Start button click */
@@ -79,26 +103,57 @@ function startTimer() {
   if (state.isRunning) return;
 
   state.isRunning = true;
-  state.currentSeconds = state.sessionTime * 60;
+
+  if (state.currentSeconds === 0 || state.totalSeconds === 0) {
+    state.currentSeconds = state.sessionTime * 60;
+    state.totalSeconds = state.currentSeconds;
+  }
+
+  if (state.isBreak) {
+    hideElements([elements.sessionDiv]);
+    showElements([elements.breakDiv]);
+  } else {
+    hideElements([elements.breakDiv]);
+    showElements([elements.sessionDiv]);
+  }
 
   hideElements([
-    elements.breakDiv,
     elements.breakMinusButton,
     elements.breakPlusButton,
     elements.sessionMinusButton,
     elements.sessionPlusButton,
     elements.startButton,
   ]);
-  showElements([elements.stopButton]);
+  showElements([elements.stopButton, elements.resetButton]);
 
-  state.sessionTimerId = setInterval(timerTick, 1000);
+  if (state.isBreak) {
+    state.breakTimerId = setInterval(timerTick, 1000);
+  } else {
+    state.sessionTimerId = setInterval(timerTick, 1000);
+  }
+
   timerTick();
+  elements.startButton.textContent = "Start";
+}
+
+function pauseTimer() {
+  state.isRunning = false;
+  clearInterval(state.sessionTimerId);
+  clearInterval(state.breakTimerId);
+  state.sessionTimerId = null;
+  state.breakTimerId = null;
+
+  showElements([elements.startButton]);
+  hideElements([elements.stopButton]);
+
+  elements.startButton.textContent = "Resume";
 }
 
 /* Stop & Reset button click */
 function resetTimer() {
   clearTimers();
   resetToDefaults();
+  elements.startButton.textContent = "Start";
 }
 
 /**
@@ -107,13 +162,20 @@ function resetTimer() {
  */
 function timerTick() {
   state.currentSeconds--;
+
+  const total = state.totalSeconds || 1;
+  const remainingPercent = (state.currentSeconds / total) * 100;
+
   if (state.isBreak) {
     elements.breakTime.textContent = formatTime(state.currentSeconds);
+    setProgress(remainingPercent, elements.breakProgress);
     if (state.currentSeconds <= 0) {
       breakComplete();
     }
   } else {
     elements.sessionTime.textContent = formatTime(state.currentSeconds);
+    setProgress(remainingPercent, elements.sessionProgress);
+
     if (state.currentSeconds <= 0) {
       sessionComplete();
     }
@@ -129,6 +191,8 @@ function sessionComplete() {
 
   // Start break
   state.currentSeconds = state.breakTime * 60;
+  state.totalSeconds = state.currentSeconds;
+
   elements.sessionDiv.classList.add("hidden");
   elements.breakDiv.classList.remove("hidden");
 
@@ -143,10 +207,20 @@ function breakComplete() {
   state.breakTimerId = null;
   state.isRunning = false;
   state.isBreak = false;
+  state.currentSeconds = 0;
+  state.totalSeconds = 0;
+
+  setProgress(0, elements.breakProgress);
 
   // Show reset button
   elements.resetButton.classList.remove("hidden");
-  hideElements([elements.breakDiv, elements.stopButton]);
+  hideElements([elements.breakDiv, elements.stopButton, elements.resetButton]);
+
+  elements.startButton.textContent = "Start";
+  showElements([elements.startButton]);
+
+  // Reset to defaults
+  resetToDefaults();
 }
 
 /**
@@ -195,10 +269,15 @@ function resetToDefaults() {
   state.sessionTime = 25;
   state.breakTime = 5;
   state.currentSeconds = 0;
+  state.totalSeconds = 0;
 
   // Update displays
   elements.sessionTime.textContent = state.sessionTime;
   elements.breakTime.textContent = state.breakTime;
+
+  // Reset rings to full
+  setProgress(100, elements.sessionProgress);
+  setProgress(100, elements.breakProgress);
 
   // Show all controls, hide stop/reset
   showAllControls();
