@@ -20,6 +20,7 @@ const state = {
 const elements = {
   breakDiv: null,
   breakHeader: null,
+  breakHourglass: null,
   breakMinusButton: null,
   breakPlusButton: null,
   breakProgress: null,
@@ -28,6 +29,7 @@ const elements = {
   resetButton: null,
   sessionDiv: null,
   sessionHeader: null,
+  sessionHourglass: null,
   sessionMinusButton: null,
   sessionPlusButton: null,
   sessionProgress: null,
@@ -45,6 +47,7 @@ export function initTimer() {
 const initializeElements = () => {
   elements.breakDiv = document.querySelector(".break-div");
   elements.breakHeader = document.getElementById("break-header");
+  elements.breakHourglass = document.getElementById("break-hourglass");
   elements.breakMinusButton = document.getElementById("minus-5-break");
   elements.breakPlusButton = document.getElementById("add-5-break");
   elements.breakProgress = document.getElementById("break-progress");
@@ -53,6 +56,7 @@ const initializeElements = () => {
   elements.resetButton = document.getElementById("reset");
   elements.sessionDiv = document.querySelector(".session-div");
   elements.sessionHeader = document.getElementById("session-header");
+  elements.sessionHourglass = document.getElementById("session-hourglass");
   elements.sessionMinusButton = document.getElementById("minus-5-clock");
   elements.sessionPlusButton = document.getElementById("add-5-clock");
   elements.sessionProgress = document.getElementById("session-progress");
@@ -96,6 +100,37 @@ function setProgress(percent, element) {
   const circumference = radius * 2 * Math.PI;
   const offset = circumference - (percent / 100) * circumference;
   element.style.strokeDashoffset = offset;
+
+  // Update Hourglass
+  updateHourglass(percent);
+}
+
+function updateHourglass(percent) {
+  const isBreak = state.isBreak;
+  const svg = isBreak ? elements.breakHourglass : elements.sessionHourglass;
+  if (!svg) return;
+
+  const topSand = svg.querySelector(".sand-top");
+  const bottomSand = svg.querySelector(".sand-bottom");
+
+  const sandHeight = 45; // Max height of sand in bulb
+  const topHeight = (percent / 100) * sandHeight;
+  const bottomHeight = sandHeight - topHeight;
+
+  topSand.setAttribute("height", Math.max(0, topHeight));
+  topSand.setAttribute("y", 50 - topHeight); // Bottom of top bulb
+
+  bottomSand.setAttribute("height", Math.max(0, bottomHeight));
+  bottomSand.setAttribute("y", 95 - bottomHeight); // Bottom of bottom bulb
+}
+
+// TODO: utilize this better
+function toggleSandStream(show) {
+  const streams = document.querySelectorAll(".sand-stream");
+  streams.forEach((stream) => {
+    if (show) stream.classList.remove("hidden");
+    else stream.classList.add("hidden");
+  });
 }
 
 /* Start button click */
@@ -103,6 +138,7 @@ function startTimer() {
   if (state.isRunning) return;
 
   state.isRunning = true;
+  toggleSandStream(true);
 
   if (state.currentSeconds === 0 || state.totalSeconds === 0) {
     state.currentSeconds = state.sessionTime * 60;
@@ -138,6 +174,8 @@ function startTimer() {
 
 function pauseTimer() {
   state.isRunning = false;
+  toggleSandStream(false);
+
   clearInterval(state.sessionTimerId);
   clearInterval(state.breakTimerId);
   state.sessionTimerId = null;
@@ -152,6 +190,7 @@ function pauseTimer() {
 /* Stop & Reset button click */
 function resetTimer() {
   clearTimers();
+  toggleSandStream(false);
   resetToDefaults();
   elements.startButton.textContent = "Start";
 }
@@ -185,6 +224,7 @@ function timerTick() {
 /* Handle session completion */
 function sessionComplete() {
   playBuzzer();
+  toggleSandStream(true);
   clearInterval(state.sessionTimerId);
   state.sessionTimerId = null;
   state.isBreak = true;
@@ -204,6 +244,7 @@ function sessionComplete() {
 function breakComplete() {
   playBuzzer();
   clearInterval(state.breakTimerId);
+  toggleSandStream(false);
   state.breakTimerId = null;
   state.isRunning = false;
   state.isBreak = false;
