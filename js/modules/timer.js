@@ -42,6 +42,15 @@ export function initTimer() {
   initializeElements();
   setupTimerEventListeners();
   initializeProgressRings();
+
+  // Initialize visual state
+  const savedVisual = localStorage.getItem("timerVisual") || "ring";
+  updateVisualMode(savedVisual);
+
+  // Listen for settings change
+  document.addEventListener("timer-visual-change", (event) => {
+    updateVisualMode(event.detail.visualType);
+  });
 }
 
 const initializeElements = () => {
@@ -93,6 +102,22 @@ function initializeProgressRings() {
     ring.style.strokeDasharray = `${circumference} ${circumference}`;
     ring.style.strokeDashoffset = 0; // Start filled
   });
+}
+
+function updateVisualMode(mode) {
+  const rings = document.querySelectorAll(".progress-ring");
+  const hourglasses = document.querySelectorAll(".hourglass-svg");
+  const wrappers = document.querySelectorAll(".timer-display-wrapper");
+
+  if (mode === "hourglass") {
+    rings.forEach((element) => element.classList.add("hidden"));
+    hourglasses.forEach((element) => element.classList.remove("hidden"));
+    wrappers.forEach((wrapper) => wrapper.classList.add("hourglass-layout")); // stacked layout for hourglass
+  } else {
+    rings.forEach((element) => element.classList.remove("hidden"));
+    hourglasses.forEach((element) => element.classList.add("hidden"));
+    wrappers.forEach((wrapper) => wrapper.classList.remove("hourglass-layout"));
+  }
 }
 
 function setProgress(percent, element) {
