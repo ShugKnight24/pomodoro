@@ -1697,18 +1697,6 @@ form {
   border-left: 3px solid #10b981;
 }
 
-@media screen and (max-width: 600px) {
-  .task-priority-high {
-    border-bottom: 3px solid #ef4444;
-  }
-  .task-priority-medium {
-    border-bottom: 3px solid #f59e0b;
-  }
-  .task-priority-low {
-    border-bottom: 3px solid #10b981;
-  }
-}
-
 .task-priority-high:hover {
   background: rgba(239, 68, 68, 0.75);
 }
@@ -2083,7 +2071,7 @@ form {
 }
 
 /* Responsive Design */
-@media screen and (min-width: 768px) {
+@media screen and (min-width: 1050px) {
   .todo-container .section-content-wrapper {
     grid-template-columns: minmax(250px, 300px) 1fr;
     grid-template-areas: "lists active";
@@ -2091,13 +2079,78 @@ form {
 }
 
 @media screen and (max-width: 768px) {
+  .accordion-wrapper {
+    width: 100%;
+  }
   .todo-header-actions {
     width: 100%;
     justify-content: space-between;
   }
+  .task {
+    position: relative;
+    padding-right: 40px; /* Space for chevron */
+    transition: background-color var(--transition-base);
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
 
-  .accordion-wrapper {
+  .task-priority-high {
+    border-bottom: 3px solid #ef4444;
+  }
+  .task-priority-medium {
+    border-bottom: 3px solid #f59e0b;
+  }
+  .task-priority-low {
+    border-bottom: 3px solid #10b981;
+  }
+
+  /* Chevron Indicator */
+  .task::after {
+    font-size: 1.2rem;
+    content: "\f078"; /* FontAwesome chevron-down */
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    position: absolute;
+    right: 12px;
+    top: 12px;
+    color: var(--color-gray-600);
+    transition: transform var(--transition-base);
+    pointer-events: none;
+  }
+
+  .task.expanded::after {
+    transform: rotate(180deg);
+  }
+
+  /* Hide details by default on mobile */
+  .task .task-pomodoro-tracker,
+  .task .task-metadata,
+  .task .task-actions {
+    display: none;
+  }
+
+  /* Show details when expanded */
+  /* TODO: Continue to refine the display */
+  .task.expanded .task-pomodoro-tracker,
+  .task.expanded .task-metadata,
+  .task.expanded .task-actions {
+    display: flex;
     width: 100%;
+    margin-top: var(--spacing-sm);
+    justify-content: flex-end;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .task.expanded .task-actions {
+    justify-content: flex-end;
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    margin-top: var(--spacing-md);
+    opacity: 1;
+  }
+
+  /* Ensure text doesn't overlap chevron */
+  .task label {
+    max-width: calc(100% - 40px);
   }
 }
 

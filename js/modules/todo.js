@@ -297,48 +297,65 @@ function taskClick(event) {
 
   // Find the button element (could be the button itself or an icon inside it)
   const button = event.target.closest("button");
-  if (!button) return;
 
-  // Handle restore button click (for archive)
-  if (button.dataset.restoreTask) {
-    const taskId = parseInt(button.dataset.restoreTask);
-    restoreTask(taskId);
-    return;
+  if (button) {
+    // Handle restore button click (for archive)
+    if (button.dataset.restoreTask) {
+      const taskId = parseInt(button.dataset.restoreTask);
+      restoreTask(taskId);
+      return;
+    }
+
+    // Handle add pomodoro button click
+    if (button.dataset.addPomodoro) {
+      const taskId = parseInt(button.dataset.addPomodoro);
+      addPomodoro(taskId);
+      return;
+    }
+
+    // Handle remove pomodoro button click
+    if (button.dataset.removePomodoro) {
+      const taskId = parseInt(button.dataset.removePomodoro);
+      removePomodoro(taskId);
+      return;
+    }
+
+    // Handle save button click
+    if (button.dataset.saveTask) {
+      const taskId = parseInt(button.dataset.saveTask);
+      saveTaskName(taskId);
+      return;
+    }
+
+    // Handle delete button click
+    if (button.dataset.deleteTask) {
+      const taskId = parseInt(button.dataset.deleteTask);
+      deleteTask(taskId);
+      return;
+    }
+
+    // Handle edit button click
+    if (button.dataset.editTask) {
+      const taskId = parseInt(button.dataset.editTask);
+      editTaskName(taskId);
+      return;
+    }
   }
 
-  // Handle add pomodoro button click
-  if (button.dataset.addPomodoro) {
-    const taskId = parseInt(button.dataset.addPomodoro);
-    addPomodoro(taskId);
-    return;
-  }
+  // Mobile Expansion Logic
+  // TODO: Add a modal for desktop as well?
+  if (window.innerWidth <= 768) {
+    if (event.target.matches("input, select, textarea")) {
+      return;
+    }
 
-  // Handle remove pomodoro button click
-  if (button.dataset.removePomodoro) {
-    const taskId = parseInt(button.dataset.removePomodoro);
-    removePomodoro(taskId);
-    return;
-  }
-
-  // Handle save button click
-  if (button.dataset.saveTask) {
-    const taskId = parseInt(button.dataset.saveTask);
-    saveTaskName(taskId);
-    return;
-  }
-
-  // Handle delete button click
-  if (button.dataset.deleteTask) {
-    const taskId = parseInt(button.dataset.deleteTask);
-    deleteTask(taskId);
-    return;
-  }
-
-  // Handle edit button click
-  if (button.dataset.editTask) {
-    const taskId = parseInt(button.dataset.editTask);
-    editTaskName(taskId);
-    return;
+    const taskCard = event.target.closest(".task");
+    if (taskCard) {
+      if (event.target.closest("label")) {
+        event.preventDefault();
+      }
+      taskCard.classList.toggle("expanded");
+    }
   }
 }
 
