@@ -449,7 +449,7 @@ h1 {
   transition: all var(--transition-base);
   cursor: pointer;
   margin-bottom: var(--spacing-sm);
-  transition: transform var(--transition-slow);
+  transition: transform var(--transition-base);
   background-color: transparent;
   box-shadow: none;
 }
@@ -465,7 +465,7 @@ h1 {
   height: 100vh;
   width: 0;
   position: fixed;
-  z-index: 1;
+  z-index: 2;
   top: 0;
   right: 0;
   background: linear-gradient(
@@ -475,7 +475,7 @@ h1 {
   );
   overflow-x: hidden;
   padding-top: var(--spacing-2xl);
-  transition: width var(--transition-slow);
+  transition: width var(--transition-base);
   color: var(--color-white);
 }
 
