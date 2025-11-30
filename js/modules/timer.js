@@ -1,5 +1,7 @@
 "use strict";
 
+import "../components/progress-ring.js";
+
 import { formatTime, hideElements, showElements } from "./utils.js";
 
 // TODO: Implement custom time setting
@@ -93,39 +95,34 @@ function setupTimerEventListeners() {
 }
 
 function initializeProgressRings() {
-  if (!elements.sessionProgress || !elements.breakProgress) return;
-
-  const radius = elements.sessionProgress.r.baseVal.value;
-  const circumference = radius * 2 * Math.PI;
-
-  [elements.sessionProgress, elements.breakProgress].forEach((ring) => {
-    ring.style.strokeDasharray = `${circumference} ${circumference}`;
-    ring.style.strokeDashoffset = 0; // Start filled
-  });
+  if (elements.sessionProgress) {
+    elements.sessionProgress.setProgress(100);
+  }
+  if (elements.breakProgress) {
+    elements.breakProgress.setProgress(100);
+  }
 }
 
 function updateVisualMode(mode) {
-  const rings = document.querySelectorAll(".progress-ring");
+  const rings = [elements.sessionProgress, elements.breakProgress];
   const hourglasses = document.querySelectorAll(".hourglass-svg");
   const wrappers = document.querySelectorAll(".timer-display-wrapper");
 
   if (mode === "hourglass") {
-    rings.forEach((element) => element.classList.add("hidden"));
+    rings.forEach((element) => element?.classList.add("hidden"));
     hourglasses.forEach((element) => element.classList.remove("hidden"));
     wrappers.forEach((wrapper) => wrapper.classList.add("hourglass-layout")); // stacked layout for hourglass
   } else {
-    rings.forEach((element) => element.classList.remove("hidden"));
+    rings.forEach((element) => element?.classList.remove("hidden"));
     hourglasses.forEach((element) => element.classList.add("hidden"));
     wrappers.forEach((wrapper) => wrapper.classList.remove("hourglass-layout"));
   }
 }
 
 function setProgress(percent, element) {
-  const radius = element.r.baseVal.value;
-  const circumference = radius * 2 * Math.PI;
-  const offset = circumference - (percent / 100) * circumference;
-  element.style.strokeDashoffset = offset;
-
+  if (element && element.setProgress) {
+    element.setProgress(percent);
+  }
   // Update Hourglass
   updateHourglass(percent);
 }

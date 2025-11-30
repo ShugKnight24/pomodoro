@@ -279,19 +279,6 @@ h1 {
   justify-content: center;
 }
 
-.progress-ring {
-  position: absolute;
-  top: 0;
-  left: 0;
-  transform: rotate(90deg) scaleX(-1);
-}
-
-.progress-ring__circle {
-  transition: stroke-dashoffset 0.35s;
-  transform-origin: 50% 50%;
-  stroke-linecap: round;
-}
-
 /* Hourglass Styles */
 .hourglass-svg {
   position: absolute;
