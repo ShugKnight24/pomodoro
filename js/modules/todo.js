@@ -1,5 +1,6 @@
 "use strict";
 
+import { updateTasks } from "./calendar.js";
 import { confirmDelete } from "./modal.js";
 import { showSuccess, showError } from "./toast.js";
 import { setupTaskDragAndDrop } from "../utils/todoDragDrop.js";
@@ -12,6 +13,7 @@ const archive = {
 // TODO: Possibly create seperate state objects for different functionalities
 // DOM Elements
 export const elements = {
+  calendarContainer: null,
   clearArchiveButton: null,
   clearCompletedTasks: null,
   clearSearchButton: null,
@@ -32,6 +34,8 @@ export const elements = {
   taskSortButton: null,
   tasksContainer: null,
   taskCount: null,
+  todoContainer: null,
+  viewToggleButtons: null,
 };
 
 // Local storage keys
@@ -54,6 +58,7 @@ const state = {
   statusFilter: "all", // all | active | completed
   sortingType: "creation", // creation | dueDate | priority
   taskCounter: 0,
+  view: "list", // 'list' | 'calendar'
 };
 
 export function initTodo() {
@@ -65,6 +70,11 @@ export function initTodo() {
 }
 
 function initializeElements() {
+  elements.calendarContainer = document.getElementById("calendar-container");
+  elements.calendarGrid = document.querySelector("[data-calendar-grid]");
+  elements.calendarTitle = document.querySelector("[data-calendar-title]");
+  elements.calendarPrevBtn = document.querySelector("[data-calendar-prev]");
+  elements.calendarNextBtn = document.querySelector("[data-calendar-next]");
   elements.clearArchiveButton = document.querySelector("[data-clear-archive]");
   elements.clearCompletedTasks = document.querySelector(
     "[data-clear-completed-tasks]"
@@ -93,6 +103,8 @@ function initializeElements() {
   elements.taskSortButton = document.querySelector("[data-sort-toggle]");
   elements.tasksContainer = document.querySelector("[data-tasks]");
   elements.taskCount = document.querySelector("[data-task-count]");
+  elements.todoContainer = document.querySelector(".todo-container");
+  elements.viewToggleButtons = document.querySelectorAll("[data-view]");
 }
 
 /* Load data from localStorage */
@@ -137,6 +149,9 @@ function setupEventListeners() {
   elements.searchInput.addEventListener("input", handleSearch);
   elements.tasksContainer.addEventListener("click", taskClick);
   elements.taskSortButton.addEventListener("click", toggleSortType);
+  elements.viewToggleButtons.forEach((btn) => {
+    btn.addEventListener("click", handleViewToggle);
+  });
 
   setupTaskDragAndDrop();
 }
@@ -429,16 +444,28 @@ function render() {
   renderLists();
   const selectedList = getCurrentList();
 
-  if (!selectedList) {
-    elements.taskListContainer.classList.add("hidden");
-    return;
+  if (state.view === "calendar") {
+    elements.todoContainer.classList.add("hidden");
+    elements.calendarContainer.classList.remove("hidden");
+
+    // Collect all tasks from all lists for the calendar
+    const allTasks = state.lists.flatMap((list) => list.tasks);
+    updateTasks(allTasks);
   } else {
-    elements.taskListContainer.classList.remove("hidden");
-    elements.taskListTitle.innerText = selectedList.name;
-    renderTaskCount(selectedList);
-    clearElement(elements.tasksContainer);
-    renderTasks(selectedList);
-    updateArchiveSectionVisibility();
+    elements.todoContainer.classList.remove("hidden");
+    elements.calendarContainer.classList.add("hidden");
+
+    if (!selectedList) {
+      elements.taskListContainer.classList.add("hidden");
+      return;
+    } else {
+      elements.taskListContainer.classList.remove("hidden");
+      elements.taskListTitle.innerText = selectedList.name;
+      renderTaskCount(selectedList);
+      clearElement(elements.tasksContainer);
+      renderTasks(selectedList);
+      updateArchiveSectionVisibility();
+    }
   }
 }
 
@@ -1411,6 +1438,25 @@ function filterTasks(tasks) {
   }
 
   return filtered;
+}
+
+// TODO: add this in a better place
+function handleViewToggle(event) {
+  const button = event.target.closest("button");
+  if (!button) return;
+
+  const view = button.dataset.view;
+  state.view = view;
+
+  // Update active button state
+  elements.viewToggleButtons.forEach((button) => {
+    button.classList.remove("active");
+  });
+  button.classList.add("active");
+
+  render();
+  // TODO: Prevent this message from firing if the view is the same as the current state
+  showSuccess(`Switched to ${view} view`);
 }
 
 // Todo utils

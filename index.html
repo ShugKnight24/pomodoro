@@ -428,6 +428,16 @@
           </div>
         </div>
       </main>
+      <div class="view-controls-container">
+        <div class="view-controls">
+          <button class="view-btn active" data-view="list">
+            <i class="fas fa-list"></i> List
+          </button>
+          <button class="view-btn" data-view="calendar">
+            <i class="fas fa-calendar-alt"></i> Calendar
+          </button>
+        </div>
+      </div>
       <div class="todo-container">
         <div class="section-header">
           <h2 class="title">Things to do!</h2>
@@ -619,6 +629,42 @@
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+      <div class="calendar-container hidden" id="calendar-container">
+        <div class="section-header">
+          <h2 class="title">Calendar</h2>
+          <div class="calendar-nav">
+            <button
+              class="calendar-nav-btn"
+              data-calendar-prev
+              aria-label="Previous month"
+            >
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <h3 class="calendar-title" data-calendar-title>Month Year</h3>
+            <button
+              class="calendar-nav-btn"
+              data-calendar-next
+              aria-label="Next month"
+            >
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+        <div class="section-content-wrapper">
+          <div class="calendar-body">
+            <div class="calendar-weekdays">
+              <div>Sun</div>
+              <div>Mon</div>
+              <div>Tue</div>
+              <div>Wed</div>
+              <div>Thu</div>
+              <div>Fri</div>
+              <div>Sat</div>
+            </div>
+            <div class="calendar-grid" data-calendar-grid></div>
           </div>
         </div>
       </div>
