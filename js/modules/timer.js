@@ -1,6 +1,7 @@
 "use strict";
 
 import "../components/progress-ring.js";
+import "../components/hour-glass.js";
 
 import { formatTime, hideElements, showElements } from "./utils.js";
 
@@ -105,16 +106,16 @@ function initializeProgressRings() {
 
 function updateVisualMode(mode) {
   const rings = [elements.sessionProgress, elements.breakProgress];
-  const hourglasses = document.querySelectorAll(".hourglass-svg");
+  const hourglasses = [elements.sessionHourglass, elements.breakHourglass];
   const wrappers = document.querySelectorAll(".timer-display-wrapper");
 
   if (mode === "hourglass") {
     rings.forEach((element) => element?.classList.add("hidden"));
-    hourglasses.forEach((element) => element.classList.remove("hidden"));
+    hourglasses.forEach((element) => element?.classList.remove("hidden"));
     wrappers.forEach((wrapper) => wrapper.classList.add("hourglass-layout")); // stacked layout for hourglass
   } else {
     rings.forEach((element) => element?.classList.remove("hidden"));
-    hourglasses.forEach((element) => element.classList.add("hidden"));
+    hourglasses.forEach((element) => element?.classList.add("hidden"));
     wrappers.forEach((wrapper) => wrapper.classList.remove("hourglass-layout"));
   }
 }
@@ -123,35 +124,24 @@ function setProgress(percent, element) {
   if (element && element.setProgress) {
     element.setProgress(percent);
   }
-  // Update Hourglass
+
   updateHourglass(percent);
 }
 
 function updateHourglass(percent) {
-  const isBreak = state.isBreak;
-  const svg = isBreak ? elements.breakHourglass : elements.sessionHourglass;
-  if (!svg) return;
-
-  const topSand = svg.querySelector(".sand-top");
-  const bottomSand = svg.querySelector(".sand-bottom");
-
-  const sandHeight = 45; // Max height of sand in bulb
-  const topHeight = (percent / 100) * sandHeight;
-  const bottomHeight = sandHeight - topHeight;
-
-  topSand.setAttribute("height", Math.max(0, topHeight));
-  topSand.setAttribute("y", 50 - topHeight); // Bottom of top bulb
-
-  bottomSand.setAttribute("height", Math.max(0, bottomHeight));
-  bottomSand.setAttribute("y", 95 - bottomHeight); // Bottom of bottom bulb
+  const hourglass = state.isBreak
+    ? elements.breakHourglass
+    : elements.sessionHourglass;
+  if (hourglass && hourglass.updateSand) {
+    hourglass.updateSand(percent);
+  }
 }
 
-// TODO: utilize this better
 function toggleSandStream(show) {
-  const streams = document.querySelectorAll(".sand-stream");
-  streams.forEach((stream) => {
-    if (show) stream.classList.remove("hidden");
-    else stream.classList.add("hidden");
+  [elements.sessionHourglass, elements.breakHourglass].forEach((hourglass) => {
+    if (hourglass && hourglass.showSandStream) {
+      hourglass.showSandStream(show);
+    }
   });
 }
 

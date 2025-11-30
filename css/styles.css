@@ -279,20 +279,6 @@ h1 {
   justify-content: center;
 }
 
-/* Hourglass Styles */
-.hourglass-svg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  transition: opacity var(--transition-base);
-}
-
-.hourglass-svg.hidden {
-  opacity: 0;
-  pointer-events: none;
-  display: block !important; /* Override utility hidden for transition */
-}
-
 /* Hourglass Layout Mode */
 .timer-display-wrapper.hourglass-layout {
   display: flex;
@@ -304,7 +290,7 @@ h1 {
   gap: var(--spacing-sm);
 }
 
-.timer-display-wrapper.hourglass-layout .hourglass-svg {
+.timer-display-wrapper.hourglass-layout hour-glass {
   position: relative;
   height: 180px;
   width: 180px;
@@ -316,23 +302,6 @@ h1 {
   z-index: auto;
   order: 2; /* Controls below */
   margin-top: var(--spacing-sm);
-}
-
-/* Sand Stream Animation */
-.sand-stream {
-  animation: sandFlow 0.3s linear infinite;
-  opacity: 0.9;
-}
-
-.sand-stream.hidden {
-  display: none;
-  animation: none;
-}
-
-@keyframes sandFlow {
-  to {
-    stroke-dashoffset: -3;
-  }
 }
 
 .timer-controls {
