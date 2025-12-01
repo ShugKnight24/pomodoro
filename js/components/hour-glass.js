@@ -19,6 +19,15 @@ hourglassStyles.replaceSync(`
     display: block;
   }
 
+  :host(.flipping) svg {
+    animation: flip 0.6s ease-in-out forwards;
+  }
+
+  @keyframes flip {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(180deg); }
+  }
+
   .sand-stream {
     animation: sandFlow 0.3s linear infinite;
     opacity: 0.9;
@@ -36,8 +45,6 @@ hourglassStyles.replaceSync(`
   }
 `);
 
-// TODO: Don't start w/ completely full placeholder
-// Have sand on bottom and on start animate a rotation and have sand fall
 class Hourglass extends HTMLElement {
   constructor() {
     super();
@@ -140,6 +147,20 @@ class Hourglass extends HTMLElement {
         />
       </svg>
     `;
+  }
+
+  async flip() {
+    // Start with sand at the bottom
+    this.progress = 0;
+    this.showSandStream(false);
+    this.classList.add("flipping");
+
+    // Wait for animation to finish (0.6s matches CSS animation duration)
+    await new Promise((resolve) => setTimeout(resolve, 600));
+
+    this.classList.remove("flipping");
+    this.progress = 100;
+    this.showSandStream(true);
   }
 
   updateSand(percent) {

@@ -102,6 +102,8 @@ function initializeProgressRings() {
   if (elements.breakProgress) {
     elements.breakProgress.setProgress(100);
   }
+  // Set hourglasses to initial state
+  resetHourglasses();
 }
 
 function updateVisualMode(mode) {
@@ -146,11 +148,10 @@ function toggleSandStream(show) {
 }
 
 /* Start button click */
-function startTimer() {
+async function startTimer() {
   if (state.isRunning) return;
 
   state.isRunning = true;
-  toggleSandStream(true);
 
   if (state.currentSeconds === 0 || state.totalSeconds === 0) {
     state.currentSeconds = state.sessionTime * 60;
@@ -173,6 +174,22 @@ function startTimer() {
     elements.startButton,
   ]);
   showElements([elements.stopButton, elements.resetButton]);
+
+  if (state.currentSeconds === state.totalSeconds) {
+    const activeHourglass = state.isBreak
+      ? elements.breakHourglass
+      : elements.sessionHourglass;
+
+    // Flip the hourglass
+    if (
+      activeHourglass &&
+      !activeHourglass.classList.contains("hidden") &&
+      typeof activeHourglass.flip === "function"
+    ) {
+      await activeHourglass.flip();
+    }
+  }
+  toggleSandStream(true);
 
   if (state.isBreak) {
     state.breakTimerId = setInterval(timerTick, 1000);
@@ -234,9 +251,9 @@ function timerTick() {
 }
 
 /* Handle session completion */
-function sessionComplete() {
+async function sessionComplete() {
   playBuzzer();
-  toggleSandStream(true);
+
   clearInterval(state.sessionTimerId);
   state.sessionTimerId = null;
   state.isBreak = true;
@@ -247,6 +264,16 @@ function sessionComplete() {
 
   elements.sessionDiv.classList.add("hidden");
   elements.breakDiv.classList.remove("hidden");
+
+  const breakHourglass = elements.breakHourglass;
+  if (
+    breakHourglass &&
+    !breakHourglass.classList.contains("hidden") &&
+    typeof breakHourglass.flip === "function"
+  ) {
+    breakHourglass.progress = 0; // Ensure sand is at bottom before flipping
+    await breakHourglass.flip();
+  }
 
   state.breakTimerId = setInterval(timerTick, 1000);
   timerTick();
@@ -332,9 +359,16 @@ function resetToDefaults() {
   setProgress(100, elements.sessionProgress);
   setProgress(100, elements.breakProgress);
 
+  resetHourglasses();
+
   // Show all controls, hide stop/reset
   showAllControls();
   hideElements([elements.resetButton, elements.stopButton]);
+}
+
+function resetHourglasses() {
+  if (elements.sessionHourglass) elements.sessionHourglass.progress = 0;
+  if (elements.breakHourglass) elements.breakHourglass.progress = 0;
 }
 
 /* Show all controls (reset state) */
