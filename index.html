@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <!-- Google tag (gtag.js) -->
@@ -18,40 +18,105 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Pomodoro Clock - A simple and effective time management tool based on the Pomodoro Technique."
+      content="Pomidor (Помидор) — Own your time, own your data. A bilingual productivity suite with Pomodoro timer, task management, calendar visualization, and privacy-first Google Calendar integration."
     />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#10b981" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="Pomidor" />
+    <meta name="application-name" content="Pomidor" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="msapplication-TileColor" content="#10b981" />
+    <meta name="msapplication-tap-highlight" content="no" />
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json" />
+
+    <!-- Favicon and Icons -->
     <link href="/favicon.ico" rel="icon" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="icons/icon-152.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-192.png" />
+
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.css"
     />
     <link
-      href="https://fonts.googleapis.com/css?family=Happy+Monkey"
+      href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Happy+Monkey&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="css/variables.css" charset="utf-8" />
     <link rel="stylesheet" href="css/styles.css" charset="utf-8" />
     <audio id="buzzer" src="audio/buzzer.mp3" type="audio/mpeg"></audio>
-    <title>Pomodoro Clock</title>
+    <title>Pomidor — Помидор</title>
   </head>
   <body>
     <div id="tomato-container">
       <div class="settings-container">
-        <button
-          aria-label="Toggle settings panel"
-          class="button open-settings fas fa-cog"
-        ></button>
+        <div class="settings-controls">
+          <button
+            aria-label="Toggle dark mode"
+            class="button theme-toggle"
+            id="theme-toggle"
+            title="Toggle dark mode"
+          >
+            <i class="fas fa-moon"></i>
+          </button>
+          <button
+            aria-label="Toggle settings panel"
+            class="button open-settings"
+            title="Open settings"
+          >
+            <i class="fas fa-cog"></i>
+          </button>
+        </div>
       </div>
       <div class="side-settings">
-        <button
-          aria-label="close settings panel"
-          class="button close-settings fas fa-times"
-        ></button>
-        <h2 class="settings-heading">Settings</h2>
+        <button aria-label="close settings panel" class="button close-settings">
+          <i class="fas fa-times"></i>
+        </button>
+        <h2 class="settings-heading" data-i18n="settings">Settings</h2>
 
-        <div class="visual-setting-container">
-          <h3 class="volume-heading">Timer Progress Indicator</h3>
+        <!-- Language Selector -->
+        <div class="setting-group">
+          <h3 class="setting-label" data-i18n="language">Language / Язык</h3>
+          <select
+            id="language-select"
+            class="setting-select"
+            aria-label="Select language"
+          >
+            <option value="en">English</option>
+            <option value="ru">Русский</option>
+          </select>
+          <p class="setting-hint" data-i18n="moreLangsComing">
+            More languages coming soon / Больше языков скоро
+          </p>
+        </div>
+
+        <!-- App Theme Selector -->
+        <div class="setting-group">
+          <h3 class="setting-label">App Theme</h3>
+          <select
+            id="app-theme-select"
+            class="setting-select"
+            aria-label="Select app theme"
+          >
+            <option value="modern">Modern</option>
+            <option value="legal-pad">Legal Pad (Legacy)</option>
+            <option value="midnight">Midnight</option>
+            <option value="ocean">Ocean</option>
+          </select>
+        </div>
+
+        <!-- Timer Visual Toggle -->
+        <div class="setting-group">
+          <h3 class="setting-label">Timer Progress Indicator</h3>
           <div class="toggle-wrapper">
             <span class="toggle-label">Ring</span>
             <label class="switch">
@@ -62,31 +127,172 @@
           </div>
         </div>
 
-        <div class="volume-container">
-          <h3 class="volume-heading">Volume</h3>
-          <button
-            aria-label="decrease buzzer volume by 10%"
-            class="button fas fa-minus"
-          ></button>
-          <input
-            id="update-volume"
-            aria-label="update buzzer volume"
-            type="range"
-            name="volume"
-            min="0"
-            max="100"
-            step="10"
-            value="100"
-          />
-          <button
-            aria-label="increase buzzer volume by 10%"
-            class="button fas fa-plus"
-          ></button>
+        <!-- Timer UI Style -->
+        <div class="setting-group">
+          <h3 class="setting-label">Timer Style</h3>
+          <select
+            id="timer-style-select"
+            class="setting-select"
+            aria-label="Select timer style"
+          >
+            <option value="classic">Classic (Side by Side)</option>
+            <option value="modern">Modern (Centered)</option>
+          </select>
+        </div>
+
+        <!-- Animation Style -->
+        <div class="setting-group">
+          <h3 class="setting-label">Focus Mode Background Animation</h3>
+          <select
+            id="animation-style-select"
+            class="setting-select"
+            aria-label="Select animation style"
+          >
+            <option value="none">None</option>
+            <option value="particles">Floating Particles</option>
+            <option value="ripples">Zen Ripples</option>
+            <option value="orbit">Orbiting Dots</option>
+            <option value="breathing">Breathing Glow</option>
+            <option value="all">All Effects</option>
+          </select>
+        </div>
+
+        <!-- Timer Presets -->
+        <div class="setting-group">
+          <h3 class="setting-label">Timer Presets</h3>
+          <div class="preset-buttons">
+            <button class="preset-btn" data-session="25" data-break="5">
+              25/5
+            </button>
+            <button class="preset-btn" data-session="50" data-break="10">
+              50/10
+            </button>
+            <button class="preset-btn" data-session="90" data-break="20">
+              90/20
+            </button>
+          </div>
+          <div class="custom-timer-inputs">
+            <h4 class="custom-timer-title">Custom Time</h4>
+            <div class="custom-timer-field">
+              <label for="custom-session">Session (min)</label>
+              <input
+                type="number"
+                id="custom-session"
+                min="1"
+                max="180"
+                value="25"
+              />
+            </div>
+            <div class="custom-timer-field">
+              <label for="custom-break">Break (min)</label>
+              <input
+                type="number"
+                id="custom-break"
+                min="1"
+                max="60"
+                value="5"
+              />
+            </div>
+            <button class="button apply-custom-timer" id="apply-custom-timer">
+              <i class="fas fa-check"></i> Apply
+            </button>
+          </div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="setting-group">
+          <h3 class="setting-label">Notifications</h3>
+          <div class="toggle-wrapper">
+            <span class="toggle-label">Off</span>
+            <label class="switch">
+              <input type="checkbox" id="notifications-toggle" />
+              <span class="slider round"></span>
+            </label>
+            <span class="toggle-label">On</span>
+          </div>
+          <p class="setting-hint" id="notification-status">
+            Click to enable browser notifications
+          </p>
+        </div>
+
+        <!-- Volume Control -->
+        <div class="setting-group">
+          <h3 class="setting-label">Volume</h3>
+          <div class="volume-controls">
+            <button
+              aria-label="decrease buzzer volume by 10%"
+              class="button volume-btn"
+              id="volume-down"
+            >
+              <i class="fas fa-minus"></i>
+            </button>
+            <input
+              id="update-volume"
+              aria-label="update buzzer volume"
+              type="range"
+              name="volume"
+              min="0"
+              max="100"
+              step="10"
+              value="100"
+            />
+            <button
+              aria-label="increase buzzer volume by 10%"
+              class="button volume-btn"
+              id="volume-up"
+            >
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
+          <p class="setting-hint volume-display">100%</p>
+        </div>
+
+        <!-- Data Management -->
+        <div class="setting-group">
+          <h3 class="setting-label">Data Management</h3>
+          <div class="data-buttons">
+            <button class="button data-btn" id="export-data">
+              <i class="fas fa-download"></i> Export
+            </button>
+            <button class="button data-btn" id="import-data">
+              <i class="fas fa-upload"></i> Import
+            </button>
+            <input type="file" id="import-file" accept=".json" hidden />
+          </div>
         </div>
       </div>
       <main class="timer-body">
+        <!-- Brand Banner -->
+        <div class="brand-banner">
+          <picture>
+            <source
+              srcset="icons/brand/pomidor_en.webp"
+              type="image/webp"
+              media="(min-width: 1px)"
+              data-lang="en"
+            />
+            <img
+              src="icons/brand/pomidor_en_clean.png"
+              alt="Pomidor — Own your time, own your data"
+              class="brand-hero"
+              data-lang="en"
+            />
+          </picture>
+          <picture class="brand-hero-ru" style="display: none">
+            <source
+              srcset="icons/brand/помидор_ru.webp"
+              type="image/webp"
+              media="(min-width: 1px)"
+            />
+            <img
+              src="icons/brand/помидор_ru_clean.png"
+              alt="Помидор — Владей своим временем, владей своими данными"
+              class="brand-hero"
+            />
+          </picture>
+        </div>
         <div class="section-header">
-          <h1>Pomodoro Clock</h1>
+          <h1>Pomidor <span class="brand-subtitle">Помидор</span></h1>
           <button
             class="section-toggle"
             data-section-toggle="pomodoro"
@@ -211,14 +417,22 @@
                     src="https://www.youtube-nocookie.com/embed/dTQDaUQ9MAU?si=JI44Y5eX-faXKZGs"
                     title="Brain Training to Beat Procrastination with the World's Easiest Learning Technique | Barbara Oakley"
                     frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allow="
+                      accelerometer;
+                      autoplay;
+                      clipboard-write;
+                      encrypted-media;
+                      gyroscope;
+                      picture-in-picture;
+                      web-share;
+                    "
                     referrerpolicy="strict-origin-when-cross-origin"
                     allowfullscreen
                   ></iframe>
                 </div>
               </div>
             </div>
-            <div class="time-container">
+            <div class="time-container" id="timer-classic">
               <div class="container">
                 <div class="session-div">
                   <h2 id="session-header">Session Time</h2>
@@ -283,19 +497,753 @@
                 <a class="button hidden" id="reset">Reset</a>
               </div>
             </div>
+
+            <!-- Modern Timer UI (Focus-style) -->
+            <div class="time-container modern-timer hidden" id="timer-modern">
+              <!-- Background animations container -->
+              <div class="modern-timer-animations" id="modern-timer-animations">
+                <div class="timer-particles">
+                  <div class="timer-particle"></div>
+                  <div class="timer-particle"></div>
+                  <div class="timer-particle"></div>
+                  <div class="timer-particle"></div>
+                  <div class="timer-particle"></div>
+                  <div class="timer-particle"></div>
+                  <div class="timer-particle"></div>
+                  <div class="timer-particle"></div>
+                  <div class="timer-particle"></div>
+                  <div class="timer-particle"></div>
+                </div>
+                <div class="timer-zen-ripple"></div>
+                <div class="timer-orbit">
+                  <div class="timer-orbit-dot"></div>
+                  <div class="timer-orbit-dot"></div>
+                  <div class="timer-orbit-dot"></div>
+                  <div class="timer-orbit-dot"></div>
+                </div>
+                <div class="timer-breathing-glow"></div>
+              </div>
+
+              <!-- Progress ring -->
+              <div class="modern-progress-ring" id="modern-progress-ring">
+                <svg viewBox="0 0 400 400">
+                  <circle class="ring-bg" cx="200" cy="200" r="180"></circle>
+                  <circle
+                    class="ring-progress"
+                    cx="200"
+                    cy="200"
+                    r="180"
+                    id="modern-ring-progress"
+                  ></circle>
+                </svg>
+              </div>
+
+              <!-- Timer content -->
+              <div class="modern-timer-content">
+                <!-- Mode toggle (Session/Break) -->
+                <div class="modern-mode-toggle" id="modern-mode-toggle">
+                  <button class="mode-btn active" data-mode="session">
+                    <i class="fas fa-brain"></i>
+                    <span>Session</span>
+                  </button>
+                  <button class="mode-btn" data-mode="break">
+                    <i class="fas fa-coffee"></i>
+                    <span>Break</span>
+                  </button>
+                </div>
+
+                <p class="modern-timer-status" id="modern-timer-status">
+                  Session Time
+                </p>
+                <div class="modern-timer-display" id="modern-timer-display">
+                  25:00
+                </div>
+
+                <!-- Timer adjust controls -->
+                <div class="modern-timer-adjust">
+                  <button
+                    class="modern-adjust-btn"
+                    id="modern-minus"
+                    aria-label="Decrease time"
+                  >
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <span class="modern-adjust-label">Adjust Time</span>
+                  <button
+                    class="modern-adjust-btn"
+                    id="modern-plus"
+                    aria-label="Increase time"
+                  >
+                    <i class="fas fa-plus"></i>
+                  </button>
+                </div>
+
+                <!-- Controls -->
+                <div class="modern-timer-controls">
+                  <button
+                    class="modern-timer-btn reset"
+                    id="modern-reset"
+                    aria-label="Reset timer"
+                  >
+                    <i class="fas fa-undo"></i>
+                  </button>
+                  <button
+                    class="modern-timer-btn play"
+                    id="modern-play"
+                    aria-label="Start timer"
+                  >
+                    <i class="fas fa-play"></i>
+                  </button>
+                  <button
+                    class="modern-timer-btn pause hidden"
+                    id="modern-pause"
+                    aria-label="Pause timer"
+                  >
+                    <i class="fas fa-pause"></i>
+                  </button>
+                  <button
+                    class="modern-timer-btn skip"
+                    id="modern-skip"
+                    aria-label="Skip to break"
+                  >
+                    <i class="fas fa-forward"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </main>
+      <!-- Animated Pomodoro Scene -->
+      <div class="pomodoro-scene" id="pomodoro-scene">
+        <svg
+          viewBox="0 0 800 260"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+          class="pomodoro-scene-svg"
+        >
+          <!-- Ground / soil -->
+          <ellipse
+            cx="400"
+            cy="240"
+            rx="380"
+            ry="20"
+            fill="url(#soilGrad)"
+            opacity="0.6"
+          />
+
+          <!-- Gradient definitions -->
+          <defs>
+            <radialGradient id="tomatoGrad" cx="50%" cy="40%" r="50%">
+              <stop offset="0%" stop-color="#ff6b6b" />
+              <stop offset="70%" stop-color="#e53e3e" />
+              <stop offset="100%" stop-color="#c53030" />
+            </radialGradient>
+            <radialGradient id="tomatoGrad2" cx="50%" cy="40%" r="50%">
+              <stop offset="0%" stop-color="#fc8181" />
+              <stop offset="70%" stop-color="#f56565" />
+              <stop offset="100%" stop-color="#e53e3e" />
+            </radialGradient>
+            <radialGradient id="smallTomatoGrad" cx="50%" cy="40%" r="50%">
+              <stop offset="0%" stop-color="#68d391" />
+              <stop offset="100%" stop-color="#38a169" />
+            </radialGradient>
+            <linearGradient id="stemGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#48bb78" />
+              <stop offset="100%" stop-color="#276749" />
+            </linearGradient>
+            <linearGradient id="soilGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="transparent" />
+              <stop offset="30%" stop-color="#9c7c5c" />
+              <stop offset="70%" stop-color="#8b6f47" />
+              <stop offset="100%" stop-color="transparent" />
+            </linearGradient>
+            <filter id="softShadow">
+              <feDropShadow
+                dx="0"
+                dy="3"
+                stdDeviation="4"
+                flood-opacity="0.15"
+              />
+            </filter>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+
+          <!-- Left vine/plant -->
+          <g class="scene-plant scene-plant-left" filter="url(#softShadow)">
+            <path
+              class="scene-stem"
+              d="M200 235 Q195 190 185 160 Q175 130 190 100 Q200 80 195 55"
+              stroke="url(#stemGrad)"
+              stroke-width="4"
+              fill="none"
+              stroke-linecap="round"
+            />
+            <!-- Leaves -->
+            <path
+              class="scene-leaf scene-leaf-1"
+              d="M185 160 Q160 145 155 125 Q175 130 185 160Z"
+              fill="#48bb78"
+              opacity="0.9"
+            />
+            <path
+              class="scene-leaf scene-leaf-2"
+              d="M190 120 Q215 105 225 85 Q205 100 190 120Z"
+              fill="#68d391"
+              opacity="0.85"
+            />
+            <path
+              class="scene-leaf scene-leaf-3"
+              d="M190 100 Q165 85 160 65 Q180 80 190 100Z"
+              fill="#48bb78"
+              opacity="0.9"
+            />
+            <!-- Small green tomato (growing) -->
+            <circle
+              class="scene-tomato-small"
+              cx="195"
+              cy="55"
+              r="12"
+              fill="url(#smallTomatoGrad)"
+            />
+            <path
+              d="M195 43 Q195 38 192 35 M195 43 Q195 38 198 35"
+              stroke="#276749"
+              stroke-width="1.5"
+              fill="none"
+              stroke-linecap="round"
+            />
+          </g>
+
+          <!-- Center main tomato (star of the show) -->
+          <g class="scene-tomato-main" filter="url(#softShadow)">
+            <path
+              class="scene-stem"
+              d="M400 235 Q398 200 400 175 Q402 155 400 135"
+              stroke="url(#stemGrad)"
+              stroke-width="5"
+              fill="none"
+              stroke-linecap="round"
+            />
+            <!-- Main leaves -->
+            <path
+              class="scene-leaf scene-leaf-4"
+              d="M400 175 Q365 155 350 135 Q378 150 400 175Z"
+              fill="#48bb78"
+              opacity="0.9"
+            />
+            <path
+              class="scene-leaf scene-leaf-5"
+              d="M400 175 Q435 155 450 135 Q422 150 400 175Z"
+              fill="#68d391"
+              opacity="0.85"
+            />
+            <path
+              class="scene-leaf scene-leaf-6"
+              d="M400 155 Q370 135 360 110 Q385 130 400 155Z"
+              fill="#38a169"
+              opacity="0.9"
+            />
+            <path
+              class="scene-leaf scene-leaf-7"
+              d="M400 155 Q430 135 440 110 Q415 130 400 155Z"
+              fill="#48bb78"
+              opacity="0.85"
+            />
+            <!-- Big ripe tomato -->
+            <ellipse
+              class="scene-tomato-body"
+              cx="400"
+              cy="105"
+              rx="42"
+              ry="38"
+              fill="url(#tomatoGrad)"
+            />
+            <!-- Tomato highlight -->
+            <ellipse
+              cx="387"
+              cy="90"
+              rx="14"
+              ry="10"
+              fill="rgba(255,255,255,0.25)"
+              transform="rotate(-15 387 90)"
+            />
+            <!-- Tomato top/calyx -->
+            <path
+              d="M400 67 Q395 60 385 62 Q392 55 400 58 Q408 55 415 62 Q405 60 400 67Z"
+              fill="#276749"
+            />
+            <!-- Cute face on tomato -->
+            <g class="scene-tomato-face">
+              <circle cx="390" cy="102" r="3" fill="#7c2d2d" />
+              <circle cx="410" cy="102" r="3" fill="#7c2d2d" />
+              <circle cx="391" cy="101" r="1" fill="rgba(255,255,255,0.6)" />
+              <circle cx="411" cy="101" r="1" fill="rgba(255,255,255,0.6)" />
+              <path
+                class="scene-tomato-smile"
+                d="M394 112 Q400 118 406 112"
+                stroke="#7c2d2d"
+                stroke-width="2"
+                fill="none"
+                stroke-linecap="round"
+              />
+              <!-- Rosy cheeks -->
+              <circle cx="383" cy="110" r="5" fill="rgba(255,150,150,0.4)" />
+              <circle cx="417" cy="110" r="5" fill="rgba(255,150,150,0.4)" />
+            </g>
+          </g>
+
+          <!-- Right vine/plant -->
+          <g class="scene-plant scene-plant-right" filter="url(#softShadow)">
+            <path
+              class="scene-stem"
+              d="M600 235 Q605 195 610 170 Q618 140 605 110 Q598 90 605 65"
+              stroke="url(#stemGrad)"
+              stroke-width="4"
+              fill="none"
+              stroke-linecap="round"
+            />
+            <!-- Leaves -->
+            <path
+              class="scene-leaf scene-leaf-8"
+              d="M610 170 Q635 155 640 135 Q620 145 610 170Z"
+              fill="#68d391"
+              opacity="0.85"
+            />
+            <path
+              class="scene-leaf scene-leaf-9"
+              d="M605 130 Q580 115 575 95 Q595 110 605 130Z"
+              fill="#48bb78"
+              opacity="0.9"
+            />
+            <path
+              class="scene-leaf scene-leaf-10"
+              d="M605 110 Q630 95 635 75 Q615 90 605 110Z"
+              fill="#68d391"
+              opacity="0.85"
+            />
+            <!-- Ripe tomato (smaller) -->
+            <ellipse
+              class="scene-tomato-ripe"
+              cx="605"
+              cy="65"
+              rx="18"
+              ry="16"
+              fill="url(#tomatoGrad2)"
+            />
+            <ellipse
+              cx="600"
+              cy="58"
+              rx="6"
+              ry="4"
+              fill="rgba(255,255,255,0.2)"
+              transform="rotate(-10 600 58)"
+            />
+            <path
+              d="M605 49 Q602 44 597 46 Q601 41 605 43 Q609 41 613 46 Q608 44 605 49Z"
+              fill="#276749"
+            />
+          </g>
+
+          <!-- Tiny decorative elements -->
+          <circle
+            class="scene-sparkle scene-sparkle-1"
+            cx="300"
+            cy="80"
+            r="2"
+            fill="var(--color-primary)"
+            opacity="0"
+          />
+          <circle
+            class="scene-sparkle scene-sparkle-2"
+            cx="500"
+            cy="60"
+            r="2"
+            fill="var(--color-accent)"
+            opacity="0"
+          />
+          <circle
+            class="scene-sparkle scene-sparkle-3"
+            cx="150"
+            cy="120"
+            r="1.5"
+            fill="var(--color-primary)"
+            opacity="0"
+          />
+          <circle
+            class="scene-sparkle scene-sparkle-4"
+            cx="650"
+            cy="100"
+            r="1.5"
+            fill="var(--color-accent)"
+            opacity="0"
+          />
+          <circle
+            class="scene-sparkle scene-sparkle-5"
+            cx="350"
+            cy="40"
+            r="2"
+            fill="var(--color-primary-light)"
+            opacity="0"
+          />
+        </svg>
+      </div>
+
       <div class="view-controls-container">
         <div class="view-controls">
           <button class="view-btn active" data-view="list">
             <i class="fas fa-list"></i> List
           </button>
+          <button class="view-btn" data-view="kanban">
+            <i class="fas fa-columns"></i> Kanban
+          </button>
+          <button class="view-btn" data-view="vault">
+            <i class="fas fa-book"></i> Vault
+          </button>
           <button class="view-btn" data-view="calendar">
             <i class="fas fa-calendar-alt"></i> Calendar
           </button>
+          <button class="view-btn" data-view="stats">
+            <i class="fas fa-chart-bar"></i> Stats
+          </button>
         </div>
       </div>
+
+      <!-- Statistics Dashboard -->
+      <div class="stats-container hidden" id="stats-container">
+        <div class="section-header">
+          <h2 class="title">Productivity Stats</h2>
+          <div class="stats-period-toggle">
+            <button class="period-btn active" data-period="week">Week</button>
+            <button class="period-btn" data-period="month">Month</button>
+            <button class="period-btn" data-period="all">All Time</button>
+          </div>
+        </div>
+
+        <!-- Main Stats Cards -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-icon pomodoro-icon">
+              <svg
+                viewBox="0 0 24 24"
+                width="28"
+                height="28"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="14" r="8" />
+                <path d="M12 6V2" />
+                <path d="M8 2h8" />
+                <circle
+                  cx="12"
+                  cy="14"
+                  r="3"
+                  fill="currentColor"
+                  opacity="0.3"
+                />
+              </svg>
+            </span>
+            <p class="stat-value" id="total-pomodoros">0</p>
+            <p class="stat-label">Total Pomodoros</p>
+            <p class="stat-trend positive" id="pomodoro-trend">
+              <i class="fas fa-arrow-up"></i> <span>0 this week</span>
+            </p>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon task-icon">
+              <svg
+                viewBox="0 0 24 24"
+                width="28"
+                height="28"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M9 11l3 3L22 4" />
+                <path
+                  d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"
+                />
+              </svg>
+            </span>
+            <p class="stat-value" id="tasks-completed">0</p>
+            <p class="stat-label">Tasks Completed</p>
+            <p class="stat-trend positive" id="task-trend">
+              <i class="fas fa-arrow-up"></i> <span>0 this week</span>
+            </p>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon streak-icon">
+              <svg
+                viewBox="0 0 24 24"
+                width="28"
+                height="28"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M12 2c.5 3.5 2.5 6 5 8-1.5 1.5-3 3.5-3 6 0 2.5-1.5 4-4 6-2.5-2-4-3.5-4-6 0-2.5-1.5-4.5-3-6 2.5-2 4.5-4.5 5-8h4z"
+                  fill="currentColor"
+                  opacity="0.15"
+                />
+                <path
+                  d="M12 2c.5 3.5 2.5 6 5 8-1.5 1.5-3 3.5-3 6 0 2.5-1.5 4-4 6-2.5-2-4-3.5-4-6 0-2.5-1.5-4.5-3-6 2.5-2 4.5-4.5 5-8h4z"
+                />
+              </svg>
+            </span>
+            <p class="stat-value" id="current-streak">0</p>
+            <p class="stat-label">Day Streak</p>
+            <p class="stat-trend" id="streak-info">
+              <span>Best: 0 days</span>
+            </p>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon time-icon">
+              <svg
+                viewBox="0 0 24 24"
+                width="28"
+                height="28"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+            </span>
+            <p class="stat-value" id="focus-time">0h</p>
+            <p class="stat-label">Focus Time</p>
+            <p class="stat-trend" id="time-trend">
+              <span>This week</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Productivity Insights -->
+        <div class="stats-insights">
+          <h3 class="stats-section-title">
+            <i class="fas fa-lightbulb"></i> Productivity Insights
+          </h3>
+          <div class="insights-grid">
+            <div class="insight-card">
+              <div class="insight-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  width="22"
+                  height="22"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <line x1="18" y1="20" x2="18" y2="10" />
+                  <line x1="12" y1="20" x2="12" y2="4" />
+                  <line x1="6" y1="20" x2="6" y2="14" />
+                </svg>
+              </div>
+              <div class="insight-content">
+                <span class="insight-value" id="avg-daily-pomodoros">0</span>
+                <span class="insight-label">Avg. Daily Pomodoros</span>
+              </div>
+            </div>
+            <div class="insight-card">
+              <div class="insight-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  width="22"
+                  height="22"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <polygon
+                    points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                    fill="currentColor"
+                    opacity="0.15"
+                  />
+                  <polygon
+                    points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                  />
+                </svg>
+              </div>
+              <div class="insight-content">
+                <span class="insight-value" id="best-day">--</span>
+                <span class="insight-label">Most Productive Day</span>
+              </div>
+            </div>
+            <div class="insight-card">
+              <div class="insight-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  width="22"
+                  height="22"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <circle cx="12" cy="12" r="6" />
+                  <circle cx="12" cy="12" r="2" fill="currentColor" />
+                </svg>
+              </div>
+              <div class="insight-content">
+                <span class="insight-value" id="goal-completion-rate">0%</span>
+                <span class="insight-label">Goal Completion Rate</span>
+              </div>
+            </div>
+            <div class="insight-card">
+              <div class="insight-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  width="22"
+                  height="22"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                  <polyline points="17 6 23 6 23 12" />
+                </svg>
+              </div>
+              <div class="insight-content">
+                <span class="insight-value" id="weekly-trend">--</span>
+                <span class="insight-label">Weekly Trend</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stats-details">
+          <div class="stats-chart-container">
+            <h3 class="stats-section-title">Weekly Activity</h3>
+            <div class="weekly-chart" id="weekly-chart">
+              <div class="chart-bar" data-day="Mon">
+                <span class="bar-fill"></span><span class="bar-label">M</span>
+              </div>
+              <div class="chart-bar" data-day="Tue">
+                <span class="bar-fill"></span><span class="bar-label">T</span>
+              </div>
+              <div class="chart-bar" data-day="Wed">
+                <span class="bar-fill"></span><span class="bar-label">W</span>
+              </div>
+              <div class="chart-bar" data-day="Thu">
+                <span class="bar-fill"></span><span class="bar-label">T</span>
+              </div>
+              <div class="chart-bar" data-day="Fri">
+                <span class="bar-fill"></span><span class="bar-label">F</span>
+              </div>
+              <div class="chart-bar" data-day="Sat">
+                <span class="bar-fill"></span><span class="bar-label">S</span>
+              </div>
+              <div class="chart-bar" data-day="Sun">
+                <span class="bar-fill"></span><span class="bar-label">S</span>
+              </div>
+            </div>
+          </div>
+          <div class="stats-progress-container">
+            <h3 class="stats-section-title">Daily Goal Progress</h3>
+            <div class="daily-goal">
+              <div class="goal-header">
+                <span>Today's Pomodoros</span>
+                <span id="daily-goal-count">0 / 8</span>
+              </div>
+              <div class="progress-bar">
+                <div
+                  class="progress-fill"
+                  id="daily-progress"
+                  style="width: 0%"
+                ></div>
+              </div>
+            </div>
+            <div class="goal-setting">
+              <label for="daily-goal-input">Daily Goal:</label>
+              <input
+                type="number"
+                id="daily-goal-input"
+                min="1"
+                max="20"
+                value="8"
+              />
+              <span>pomodoros</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activity Heatmap -->
+        <div class="stats-heatmap-section">
+          <h3 class="stats-section-title">
+            <i class="fas fa-calendar-alt"></i> Activity Heatmap
+          </h3>
+          <div class="heatmap-nav">
+            <button
+              class="heatmap-nav-btn"
+              id="heatmap-prev"
+              aria-label="Previous month"
+            >
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <span class="heatmap-month" id="heatmap-month">December 2024</span>
+            <button
+              class="heatmap-nav-btn"
+              id="heatmap-next"
+              aria-label="Next month"
+            >
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+          <div class="heatmap-container" id="stats-heatmap">
+            <div class="heatmap-weekdays">
+              <span>S</span><span>M</span><span>T</span><span>W</span
+              ><span>T</span><span>F</span><span>S</span>
+            </div>
+            <div class="heatmap-grid" id="heatmap-grid"></div>
+          </div>
+          <div class="heatmap-legend">
+            <span class="legend-label">Less</span>
+            <span class="heatmap-cell level-0"></span>
+            <span class="heatmap-cell level-1"></span>
+            <span class="heatmap-cell level-2"></span>
+            <span class="heatmap-cell level-3"></span>
+            <span class="heatmap-cell level-4"></span>
+            <span class="legend-label">More</span>
+          </div>
+        </div>
+
+        <!-- Recent Sessions -->
+        <div class="stats-sessions-section">
+          <h3 class="stats-section-title">
+            <i class="fas fa-history"></i> Recent Sessions
+          </h3>
+          <div class="sessions-list" id="sessions-list">
+            <p class="empty-sessions">
+              No sessions recorded yet. Complete a pomodoro to see your history!
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div class="todo-container">
         <div class="section-header">
           <h2 class="title">Things to do!</h2>
@@ -456,6 +1404,20 @@
                           <option value="high">High</option>
                         </select>
                       </div>
+                      <div class="estimate-group">
+                        <label for="task-estimate">Est. Pomodoros</label>
+                        <input
+                          id="task-estimate"
+                          data-task-estimate
+                          class="new-input estimate-input"
+                          type="number"
+                          min="0"
+                          max="20"
+                          placeholder="0"
+                          aria-label="estimated pomodoros"
+                          title="Estimated pomodoros (optional)"
+                        />
+                      </div>
                     </div>
                     <button class="button create" aria-label="create new task">
                       +
@@ -493,22 +1455,41 @@
       <div class="calendar-container hidden" id="calendar-container">
         <div class="section-header">
           <h2 class="title">Calendar</h2>
-          <div class="calendar-nav">
-            <button
-              class="calendar-nav-btn"
-              data-calendar-prev
-              aria-label="Previous month"
-            >
-              <i class="fas fa-chevron-left"></i>
-            </button>
-            <h3 class="calendar-title" data-calendar-title>Month Year</h3>
-            <button
-              class="calendar-nav-btn"
-              data-calendar-next
-              aria-label="Next month"
-            >
-              <i class="fas fa-chevron-right"></i>
-            </button>
+          <div class="calendar-controls">
+            <div class="calendar-view-toggle">
+              <button class="view-toggle-btn active" data-view="month">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Month</span>
+              </button>
+              <button class="view-toggle-btn" data-view="week">
+                <i class="fas fa-calendar-week"></i>
+                <span>Week</span>
+              </button>
+            </div>
+            <div class="calendar-nav">
+              <button
+                class="calendar-nav-btn"
+                data-calendar-prev
+                aria-label="Previous"
+              >
+                <i class="fas fa-chevron-left"></i>
+              </button>
+              <h3 class="calendar-title" data-calendar-title>Month Year</h3>
+              <button
+                class="calendar-nav-btn"
+                data-calendar-next
+                aria-label="Next"
+              >
+                <i class="fas fa-chevron-right"></i>
+              </button>
+              <button
+                class="calendar-nav-btn today-btn"
+                data-calendar-today
+                aria-label="Go to today"
+              >
+                Today
+              </button>
+            </div>
           </div>
         </div>
         <div class="section-content-wrapper">
@@ -524,13 +1505,460 @@
             </div>
             <div class="calendar-grid" data-calendar-grid></div>
           </div>
+          <div class="calendar-legend">
+            <div class="legend-item">
+              <span class="legend-dot completed"></span>
+              <span>Completed</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot pending"></span>
+              <span>Pending</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot has-pomodoros"></span>
+              <span>Has Pomodoros</span>
+            </div>
+          </div>
         </div>
       </div>
+
+      <!-- Day Detail Modal -->
+      <div class="modal day-modal" id="day-modal">
+        <div class="modal-content day-modal-content">
+          <div class="modal-header">
+            <h3 class="day-modal-title" id="day-modal-title">
+              January 1, 2024
+            </h3>
+            <button class="modal-close" data-close-day-modal aria-label="Close">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <div class="day-modal-body">
+            <div class="day-stats">
+              <div class="day-stat">
+                <i class="fas fa-clock"></i>
+                <span id="day-pomodoros">0 Pomodoros</span>
+              </div>
+              <div class="day-stat">
+                <i class="fas fa-check-circle"></i>
+                <span id="day-completed">0 Completed</span>
+              </div>
+            </div>
+            <div class="day-tasks">
+              <h4>Tasks for this day</h4>
+              <div class="day-task-list" id="day-task-list">
+                <p class="empty-day-message">No tasks for this day</p>
+              </div>
+            </div>
+            <div class="day-quick-add">
+              <input
+                type="text"
+                id="day-quick-task"
+                placeholder="Add a task for this day..."
+                class="day-task-input"
+              />
+              <button
+                class="day-add-btn"
+                id="day-add-task-btn"
+                aria-label="Add task"
+              >
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Kanban Board -->
+      <div class="kanban-container hidden" id="kanban-container">
+        <div class="section-header">
+          <h2 class="title">Kanban Board</h2>
+          <div class="kanban-toolbar">
+            <button class="button kanban-toolbar-btn" id="kanban-new-board">
+              <i class="fas fa-plus"></i> New Board
+            </button>
+            <button class="button kanban-toolbar-btn" id="kanban-add-column">
+              <i class="fas fa-columns"></i> Add Column
+            </button>
+          </div>
+        </div>
+        <div class="kanban-board-tabs" id="kanban-board-selector"></div>
+        <div class="kanban-board" id="kanban-board"></div>
+      </div>
+
+      <!-- Kanban Card Detail Modal -->
+      <div class="modal kanban-modal" id="kanban-card-modal"></div>
+
+      <!-- Personal Vault -->
+      <div class="vault-container hidden" id="vault-container">
+        <div class="section-header">
+          <h2 class="title">Vault</h2>
+          <div class="vault-toolbar">
+            <button class="button vault-toolbar-btn" id="vault-new-note">
+              <i class="fas fa-plus"></i> New Note
+            </button>
+            <div class="vault-search-wrapper">
+              <i class="fas fa-search"></i>
+              <input
+                type="text"
+                id="vault-search"
+                class="vault-search-input"
+                placeholder="Search notes..."
+              />
+            </div>
+            <select id="vault-sort" class="vault-sort-select">
+              <option value="updated">Last Updated</option>
+              <option value="created">Created</option>
+              <option value="title">Title</option>
+            </select>
+            <button
+              class="button vault-toolbar-btn"
+              id="vault-view-toggle"
+              title="Toggle view"
+            >
+              <i class="fas fa-th"></i>
+            </button>
+          </div>
+        </div>
+        <div class="vault-layout">
+          <aside class="vault-sidebar" id="vault-sidebar"></aside>
+          <div class="vault-main">
+            <div class="vault-note-list" id="vault-note-list"></div>
+            <div class="vault-editor" id="vault-editor"></div>
+          </div>
+        </div>
+      </div>
+
       <div class="tomato-footer">
         Pomodoro® and Pomodoro Technique® are registered trademarks of Francesco
         Cirillo. This site is not affiliated with Francesco Cirillo.
       </div>
     </div>
+
+    <!-- Back to Top Tomato Button -->
+    <button
+      class="back-to-top-btn"
+      id="back-to-top"
+      aria-label="Back to top"
+      title="Back to top"
+    >
+      <svg class="back-to-top-progress" viewBox="0 0 48 48">
+        <circle class="back-to-top-track" cx="24" cy="24" r="21" />
+        <circle
+          class="back-to-top-fill"
+          cx="24"
+          cy="24"
+          r="21"
+          id="scroll-progress-ring"
+        />
+      </svg>
+      <svg
+        class="back-to-top-tomato"
+        viewBox="0 0 32 32"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M16 5 Q14 2 11 3 Q14 1 16 3 Q18 1 21 3 Q18 2 16 5Z"
+          fill="#276749"
+        />
+        <ellipse cx="16" cy="17" rx="12" ry="11" fill="#e53e3e" />
+        <ellipse
+          cx="13"
+          cy="13"
+          rx="4"
+          ry="3"
+          fill="rgba(255,255,255,0.2)"
+          transform="rotate(-15 13 13)"
+        />
+        <path
+          d="M13 20 L16 16 L19 20"
+          stroke="white"
+          stroke-width="2"
+          fill="none"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    </button>
+
+    <!-- Focus Mode Enter Button -->
+    <button
+      class="focus-mode-enter-btn"
+      id="focus-mode-enter"
+      aria-label="Enter focus mode"
+      title="Focus Mode (F)"
+    >
+      <i class="fas fa-expand"></i>
+      <span class="tooltip">Focus Mode (F)</span>
+    </button>
+
+    <!-- Focus Mode Overlay -->
+    <div class="focus-mode-overlay" id="focus-mode">
+      <!-- Background animations -->
+      <div class="focus-particles" id="focus-particles">
+        <div class="focus-particle"></div>
+        <div class="focus-particle"></div>
+        <div class="focus-particle"></div>
+        <div class="focus-particle"></div>
+        <div class="focus-particle"></div>
+        <div class="focus-particle"></div>
+        <div class="focus-particle"></div>
+        <div class="focus-particle"></div>
+        <div class="focus-particle"></div>
+        <div class="focus-particle"></div>
+        <div class="focus-particle"></div>
+        <div class="focus-particle"></div>
+        <div class="focus-particle"></div>
+        <div class="focus-particle"></div>
+        <div class="focus-particle"></div>
+      </div>
+
+      <!-- Zen ripple effect -->
+      <div class="focus-zen-ripple"></div>
+
+      <!-- Orbiting dots -->
+      <div class="focus-orbit">
+        <div class="focus-orbit-dot"></div>
+        <div class="focus-orbit-dot"></div>
+        <div class="focus-orbit-dot"></div>
+        <div class="focus-orbit-dot"></div>
+      </div>
+
+      <!-- Circular progress ring -->
+      <div class="focus-progress-ring" id="focus-progress-ring">
+        <svg viewBox="0 0 400 400">
+          <circle class="ring-bg" cx="200" cy="200" r="190"></circle>
+          <circle
+            class="ring-progress"
+            cx="200"
+            cy="200"
+            r="190"
+            id="focus-ring-progress"
+          ></circle>
+        </svg>
+      </div>
+
+      <button
+        class="focus-mode-exit"
+        id="focus-mode-exit"
+        aria-label="Exit focus mode"
+      >
+        <i class="fas fa-compress"></i>
+        <span>Exit</span>
+        <span class="kbd">Esc</span>
+      </button>
+
+      <div class="focus-mode-content">
+        <!-- Mode toggle (Session/Break) -->
+        <div class="focus-mode-toggle" id="focus-mode-toggle">
+          <button class="focus-toggle-btn active" data-mode="session">
+            <i class="fas fa-brain"></i>
+            <span>Session</span>
+          </button>
+          <button class="focus-toggle-btn" data-mode="break">
+            <i class="fas fa-coffee"></i>
+            <span>Break</span>
+          </button>
+        </div>
+
+        <p class="focus-mode-status" id="focus-status">Focus Time</p>
+        <div class="focus-timer-wrapper">
+          <div class="focus-mode-timer" id="focus-timer">25:00</div>
+          <div class="focus-session-info" id="focus-session-info">
+            <span class="focus-session-count" id="focus-session-count">
+              <svg
+                viewBox="0 0 24 24"
+                width="14"
+                height="14"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="14" r="8" />
+                <path d="M12 6V2" />
+                <path d="M8 2h8" />
+              </svg>
+              <span id="focus-pomodoro-count">0</span> today
+            </span>
+            <span class="focus-session-divider">|</span>
+            <span class="focus-daily-goal" id="focus-daily-goal">
+              <svg
+                viewBox="0 0 24 24"
+                width="14"
+                height="14"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <circle cx="12" cy="12" r="6" />
+                <circle cx="12" cy="12" r="2" fill="currentColor" />
+              </svg>
+              <span id="focus-goal-text">0 / 8</span>
+            </span>
+          </div>
+        </div>
+        <p class="focus-mode-task" id="focus-task"></p>
+
+        <!-- Time adjust controls -->
+        <div class="focus-time-adjust" id="focus-time-adjust">
+          <button
+            class="focus-adjust-btn"
+            id="focus-minus"
+            aria-label="Decrease time"
+          >
+            <i class="fas fa-minus"></i>
+          </button>
+          <span class="focus-adjust-label">Adjust Time</span>
+          <button
+            class="focus-adjust-btn"
+            id="focus-plus"
+            aria-label="Increase time"
+          >
+            <i class="fas fa-plus"></i>
+          </button>
+        </div>
+
+        <div class="focus-mode-controls">
+          <button
+            class="focus-mode-btn reset"
+            id="focus-reset"
+            aria-label="Reset timer"
+          >
+            <i class="fas fa-undo"></i>
+          </button>
+          <button
+            class="focus-mode-btn play"
+            id="focus-play"
+            aria-label="Start timer"
+          >
+            <i class="fas fa-play"></i>
+          </button>
+          <button
+            class="focus-mode-btn pause hidden"
+            id="focus-pause"
+            aria-label="Pause timer"
+          >
+            <i class="fas fa-pause"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Keyboard Shortcuts Overlay -->
+    <div class="shortcuts-overlay" id="shortcuts-overlay">
+      <div class="shortcuts-content">
+        <div class="shortcuts-header">
+          <h2 class="shortcuts-title">
+            <i class="fas fa-keyboard"></i>
+            Keyboard Shortcuts
+          </h2>
+          <button
+            class="shortcuts-close"
+            id="shortcuts-close"
+            aria-label="Close"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <div class="shortcuts-section">
+          <h3 class="shortcuts-section-title">Timer</h3>
+          <div class="shortcut-item">
+            <span class="shortcut-description">Start / Pause timer</span>
+            <div class="shortcut-keys"><span class="kbd">Space</span></div>
+          </div>
+          <div class="shortcut-item">
+            <span class="shortcut-description">Reset timer</span>
+            <div class="shortcut-keys"><span class="kbd">R</span></div>
+          </div>
+          <div class="shortcut-item">
+            <span class="shortcut-description">Enter focus mode</span>
+            <div class="shortcut-keys"><span class="kbd">F</span></div>
+          </div>
+        </div>
+
+        <div class="shortcuts-section">
+          <h3 class="shortcuts-section-title">Tasks</h3>
+          <div class="shortcut-item">
+            <span class="shortcut-description">New task</span>
+            <div class="shortcut-keys"><span class="kbd">N</span></div>
+          </div>
+          <div class="shortcut-item">
+            <span class="shortcut-description">New list</span>
+            <div class="shortcut-keys"><span class="kbd">L</span></div>
+          </div>
+        </div>
+
+        <div class="shortcuts-section">
+          <h3 class="shortcuts-section-title">Views</h3>
+          <div class="shortcut-item">
+            <span class="shortcut-description">Toggle list view</span>
+            <div class="shortcut-keys"><span class="kbd">1</span></div>
+          </div>
+          <div class="shortcut-item">
+            <span class="shortcut-description">Toggle calendar view</span>
+            <div class="shortcut-keys"><span class="kbd">2</span></div>
+          </div>
+          <div class="shortcut-item">
+            <span class="shortcut-description">Toggle stats view</span>
+            <div class="shortcut-keys"><span class="kbd">3</span></div>
+          </div>
+        </div>
+
+        <div class="shortcuts-section">
+          <h3 class="shortcuts-section-title">General</h3>
+          <div class="shortcut-item">
+            <span class="shortcut-description">Toggle dark mode</span>
+            <div class="shortcut-keys"><span class="kbd">T</span></div>
+          </div>
+          <div class="shortcut-item">
+            <span class="shortcut-description">Open settings</span>
+            <div class="shortcut-keys"><span class="kbd">S</span></div>
+          </div>
+          <div class="shortcut-item">
+            <span class="shortcut-description">Show shortcuts</span>
+            <div class="shortcut-keys"><span class="kbd">?</span></div>
+          </div>
+          <div class="shortcut-item">
+            <span class="shortcut-description">Close overlay / Exit</span>
+            <div class="shortcut-keys"><span class="kbd">Esc</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Achievement Popup -->
+    <div class="achievement-popup" id="achievement-popup">
+      <span class="achievement-icon" id="achievement-icon">🏆</span>
+      <div class="achievement-text">
+        <span class="achievement-label">Achievement Unlocked!</span>
+        <span class="achievement-name" id="achievement-name">First Steps</span>
+      </div>
+    </div>
+
+    <!-- Confetti Container -->
+    <div class="confetti-container" id="confetti-container"></div>
+
     <script type="module" src="./js/app.js"></script>
+
+    <!-- Service Worker Registration -->
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("/sw.js")
+            .then((registration) => {
+              console.log("SW registered:", registration.scope);
+            })
+            .catch((error) => {
+              console.log("SW registration failed:", error);
+            });
+        });
+      }
+    </script>
   </body>
 </html>
