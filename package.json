@@ -1,0 +1,27 @@
+{
+  "name": "pomodoro",
+  "version": "1.0.0",
+  "description": "**Own your time, own your data.**",
+  "main": "sw.js",
+  "scripts": {
+    "test": "PLAYWRIGHT_BROWSERS_PATH=0 npx playwright test tests/smoke.spec.js",
+    "test:all": "PLAYWRIGHT_BROWSERS_PATH=0 npx playwright test",
+    "screenshots": "PLAYWRIGHT_BROWSERS_PATH=0 npx playwright test tests/screenshots.spec.js",
+    "serve": "npx serve . -l 3000 -s"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ShugKnight24/pomodoro.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ShugKnight24/pomodoro/issues"
+  },
+  "homepage": "https://github.com/ShugKnight24/pomodoro#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "serve": "^14.2.6"
+  }
+}
