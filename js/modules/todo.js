@@ -4,6 +4,7 @@ import { updateTasks } from "./calendar.js";
 import { confirmDelete } from "./modal.js";
 import { showSuccess, showError } from "./toast.js";
 import { setupTaskDragAndDrop } from "../utils/todoDragDrop.js";
+import { recordTaskCompleted } from "./stats.js";
 
 const archive = {
   ARCHIVE_LIST_ID: -1, // Special ID for archive list
@@ -19,6 +20,7 @@ export const elements = {
   clearSearchButton: null,
   deleteListButton: null,
   filterButtons: null,
+  statsContainer: null,
   listsContainer: null,
   listCount: null,
   newListForm: null,
@@ -31,6 +33,7 @@ export const elements = {
   taskListContainer: null,
   taskListTitle: null,
   taskPrioritySelect: null,
+  taskEstimateInput: null,
   taskSortButton: null,
   tasksContainer: null,
   taskCount: null,
@@ -65,23 +68,27 @@ export function initTodo() {
   initializeElements();
   loadFromStorage();
   createArchive();
+  createTutorialList();
   setupEventListeners();
   render();
 }
 
 function initializeElements() {
   elements.calendarContainer = document.getElementById("calendar-container");
+  elements.statsContainer = document.getElementById("stats-container");
+  elements.kanbanContainer = document.getElementById("kanban-container");
+  elements.vaultContainer = document.getElementById("vault-container");
   elements.calendarGrid = document.querySelector("[data-calendar-grid]");
   elements.calendarTitle = document.querySelector("[data-calendar-title]");
   elements.calendarPrevBtn = document.querySelector("[data-calendar-prev]");
   elements.calendarNextBtn = document.querySelector("[data-calendar-next]");
   elements.clearArchiveButton = document.querySelector("[data-clear-archive]");
   elements.clearCompletedTasks = document.querySelector(
-    "[data-clear-completed-tasks]"
+    "[data-clear-completed-tasks]",
   );
   elements.clearSearchButton = document.querySelector("[data-clear-search]");
   elements.deleteListButton = document.querySelector(
-    "[data-delete-list-button]"
+    "[data-delete-list-button]",
   );
   elements.filterButtons = document.querySelectorAll("[data-filter]");
   elements.listsContainer = document.querySelector("[data-lists]");
@@ -91,20 +98,24 @@ function initializeElements() {
   elements.newTaskForm = document.querySelector("[data-new-task-form]");
   elements.newTaskInput = document.querySelector("[data-new-task-input]");
   elements.priorityFilterButtons = document.querySelectorAll(
-    "[data-priority-filter]"
+    "[data-priority-filter]",
   );
   elements.searchInput = document.querySelector("[data-search-input]");
   elements.taskDueDateInput = document.querySelector("[data-task-due-date]");
   elements.taskListContainer = document.querySelector(
-    "[data-list-display-container]"
+    "[data-list-display-container]",
   );
   elements.taskListTitle = document.querySelector("[data-list-title]");
   elements.taskPrioritySelect = document.querySelector("[data-task-priority]");
+  elements.taskEstimateInput = document.querySelector("[data-task-estimate]");
   elements.taskSortButton = document.querySelector("[data-sort-toggle]");
   elements.tasksContainer = document.querySelector("[data-tasks]");
   elements.taskCount = document.querySelector("[data-task-count]");
   elements.todoContainer = document.querySelector(".todo-container");
-  elements.viewToggleButtons = document.querySelectorAll("[data-view]");
+  // Only get main view toggle buttons (list, calendar, stats), not calendar month/week toggle
+  elements.viewToggleButtons = document.querySelectorAll(
+    ".view-controls [data-view]",
+  );
 }
 
 /* Load data from localStorage */
@@ -132,6 +143,76 @@ function createArchive() {
   }
 }
 
+// ─── Tutorial List ─────────────────────────────────────────
+const TUTORIAL_KEY = "pomodoro.tutorialListDone";
+
+function createTutorialList() {
+  if (localStorage.getItem(TUTORIAL_KEY)) return;
+  if (state.lists.length > 0) {
+    localStorage.setItem(TUTORIAL_KEY, "done");
+    return;
+  }
+
+  const list = createList("Getting Started");
+
+  const tutorialTasks = [
+    {
+      name: "Welcome! Check this off to complete your first task",
+      priority: "high",
+      estimate: 0,
+    },
+    {
+      name: "Try editing this task — click the pencil icon",
+      priority: "medium",
+      estimate: 0,
+    },
+    {
+      name: "Set a due date on a task using the date picker",
+      priority: "medium",
+      estimate: 0,
+    },
+    {
+      name: "Add a pomodoro to a task with the + button",
+      priority: "medium",
+      estimate: 2,
+    },
+    {
+      name: "Drag tasks to reorder them (grab the handle)",
+      priority: "low",
+      estimate: 0,
+    },
+    {
+      name: "Use the search bar to filter tasks by name",
+      priority: "low",
+      estimate: 0,
+    },
+    {
+      name: "Try the priority filters — High / Medium / Low",
+      priority: "low",
+      estimate: 0,
+    },
+    {
+      name: "Create a new list using the input below the sidebar",
+      priority: "low",
+      estimate: 1,
+    },
+    {
+      name: "Clear completed tasks to send them to the Archive",
+      priority: "low",
+      estimate: 0,
+    },
+  ];
+
+  tutorialTasks.forEach(({ name, priority, estimate }) => {
+    list.tasks.push(createTask(name, priority, null, estimate));
+  });
+
+  state.lists.push(list);
+  state.selectedListId = list.id;
+  localStorage.setItem(TUTORIAL_KEY, "done");
+  save();
+}
+
 function setupEventListeners() {
   elements.clearArchiveButton?.addEventListener("click", clearArchive);
   elements.clearCompletedTasks.addEventListener("click", clearCompletedTasks);
@@ -154,6 +235,27 @@ function setupEventListeners() {
   });
 
   setupTaskDragAndDrop();
+
+  // Listen for calendar quick-add tasks
+  document.addEventListener("calendar-quick-add-task", (e) => {
+    const { name, dueDate } = e.detail;
+    if (!name || !dueDate) return;
+
+    // Add to the currently selected list (or first list)
+    const targetList = getCurrentList() || state.lists[0];
+    if (!targetList || targetList.isArchive) {
+      // If archive or no list, use first non-archive list
+      const firstList = state.lists[0];
+      if (!firstList) return;
+      const task = createTask(name, "medium", dueDate, 0);
+      firstList.tasks.push(task);
+    } else {
+      const task = createTask(name, "medium", dueDate, 0);
+      targetList.tasks.push(task);
+    }
+
+    saveAndRender();
+  });
 }
 
 function listItemClick(event) {
@@ -241,7 +343,7 @@ function clearCompletedTasks() {
   showSuccess(
     `${completedTasks.length} task${
       completedTasks.length === 1 ? "" : "s"
-    } moved to archive`
+    } moved to archive`,
   );
 }
 
@@ -256,7 +358,7 @@ async function clearArchive() {
     `${state.archive.tasks.length} archived task${
       state.archive.tasks.length === 1 ? "" : "s"
     }`,
-    "permanently delete"
+    "permanently delete",
   );
   if (!confirmed) return;
 
@@ -264,7 +366,7 @@ async function clearArchive() {
   state.archive.tasks = [];
   saveAndRender();
   showSuccess(
-    `${count} archived task${count === 1 ? "" : "s"} deleted permanently`
+    `${count} archived task${count === 1 ? "" : "s"} deleted permanently`,
   );
 }
 
@@ -297,12 +399,35 @@ function taskClick(event) {
       return;
     }
     const selectedTask = selectedList.tasks.find(
-      (task) => task.id === parseInt(event.target.id)
+      (task) => task.id === parseInt(event.target.id),
     );
     selectedTask.completed = event.target.checked;
     selectedTask.completedAt = event.target.checked
       ? new Date().toISOString()
       : null;
+
+    // Track completed tasks in statistics
+    if (event.target.checked) {
+      recordTaskCompleted();
+
+      // Dispatch task-complete event for achievements
+      document.dispatchEvent(
+        new CustomEvent("task-complete", {
+          detail: { taskName: selectedTask.name, taskId: selectedTask.id },
+        }),
+      );
+
+      // Add celebration animation to the task
+      const taskElement = document.querySelector(
+        `[data-task-item="${selectedTask.id}"]`,
+      );
+      if (taskElement) {
+        taskElement.classList.add("task-complete-animation");
+        setTimeout(() => {
+          taskElement.classList.remove("task-complete-animation");
+        }, 600);
+      }
+    }
 
     save();
     renderTaskCount(selectedList);
@@ -379,6 +504,7 @@ function newTaskSubmit(event) {
   const taskName = elements.newTaskInput.value.trim();
   const dueDate = elements.taskDueDateInput.value || null;
   const priority = elements.taskPrioritySelect.value;
+  const estimate = parseInt(elements.taskEstimateInput?.value) || 0;
 
   if (!taskName) {
     // TODO: create a validation error for the input
@@ -386,10 +512,11 @@ function newTaskSubmit(event) {
     return;
   }
 
-  const task = createTask(taskName, priority, dueDate);
+  const task = createTask(taskName, priority, dueDate, estimate);
   elements.newTaskInput.value = "";
   elements.taskDueDateInput.value = "";
   elements.taskPrioritySelect.value = "medium";
+  if (elements.taskEstimateInput) elements.taskEstimateInput.value = "";
 
   const selectedList = getCurrentList();
   if (!selectedList) {
@@ -398,10 +525,12 @@ function newTaskSubmit(event) {
   }
   selectedList.tasks.push(task);
   saveAndRender();
+
+  const estimateText = estimate > 0 ? ` (${estimate} 🍅 estimated)` : "";
   showSuccess(
-    `Task "${taskName}" added with "${priority}" priority ${
-      dueDate ? `due "${dueDate}"` : ""
-    }`
+    `Task "${taskName}" added with "${priority}" priority${
+      dueDate ? ` due "${dueDate}"` : ""
+    }${estimateText}`,
   );
 }
 
@@ -415,7 +544,7 @@ function createList(name) {
   };
 }
 
-function createTask(name, priority = "medium", dueDate = null) {
+function createTask(name, priority = "medium", dueDate = null, estimate = 0) {
   state.taskCounter++;
 
   return {
@@ -424,6 +553,7 @@ function createTask(name, priority = "medium", dueDate = null) {
     completedAt: null,
     createdAt: new Date().toISOString(),
     dueDate: dueDate,
+    estimatedPomodoros: estimate,
     name: name,
     pomodoros: 0,
     priority: priority,
@@ -444,16 +574,28 @@ function render() {
   renderLists();
   const selectedList = getCurrentList();
 
+  // Hide all containers first
+  elements.todoContainer.classList.add("hidden");
+  elements.calendarContainer.classList.add("hidden");
+  elements.statsContainer?.classList.add("hidden");
+  elements.kanbanContainer?.classList.add("hidden");
+  elements.vaultContainer?.classList.add("hidden");
+
   if (state.view === "calendar") {
-    elements.todoContainer.classList.add("hidden");
     elements.calendarContainer.classList.remove("hidden");
 
     // Collect all tasks from all lists for the calendar
     const allTasks = state.lists.flatMap((list) => list.tasks);
     updateTasks(allTasks);
+  } else if (state.view === "stats") {
+    elements.statsContainer?.classList.remove("hidden");
+  } else if (state.view === "kanban") {
+    elements.kanbanContainer?.classList.remove("hidden");
+  } else if (state.view === "vault") {
+    elements.vaultContainer?.classList.remove("hidden");
   } else {
+    // List view (default)
     elements.todoContainer.classList.remove("hidden");
-    elements.calendarContainer.classList.add("hidden");
 
     if (!selectedList) {
       elements.taskListContainer.classList.add("hidden");
@@ -527,7 +669,7 @@ function renderListCount() {
 function renderTaskCount(selectedList) {
   const filteredTasks = filterTasks(selectedList.tasks);
   const incompleteTasksCount = filteredTasks.filter(
-    (task) => !task.completed
+    (task) => !task.completed,
   ).length;
   const taskString = incompleteTasksCount === 1 ? "task" : "tasks";
 
@@ -572,15 +714,15 @@ function renderNoTasks(selectedList) {
   const noTaskMessage = isArchive
     ? "Archive is empty"
     : searchQuery
-    ? `No tasks found matching "${searchQuery}"`
-    : "No tasks found";
+      ? `No tasks found matching "${searchQuery}"`
+      : "No tasks found";
   const noTaskHint = isArchive
     ? `Completed tasks will appear here when cleared from lists`
     : searchQuery
-    ? `Try a different search term`
-    : statusFilter !== "all" || priorityFilter !== "all"
-    ? `Try adjusting your filters`
-    : `Create your first task to get started!`;
+      ? `Try a different search term`
+      : statusFilter !== "all" || priorityFilter !== "all"
+        ? `Try adjusting your filters`
+        : `Create your first task to get started!`;
 
   const noTasksHTML = `
     <div class="no-results">
@@ -685,7 +827,42 @@ function buildTaskInput(task, isArchive) {
   `;
 }
 
-function buildPomodoroDisplay(count) {
+function buildPomodoroDisplay(count, estimate = 0) {
+  if (estimate > 0) {
+    // Show progress towards estimate
+    const completed = Math.min(count, estimate);
+    const remaining = Math.max(0, estimate - count);
+    const over = Math.max(0, count - estimate);
+
+    let display = "";
+
+    // Completed pomodoros (filled)
+    if (completed <= 5) {
+      display += "🍅".repeat(completed);
+    } else {
+      display += `🍅<span class="pomodoro-count">×${completed}</span>`;
+    }
+
+    // Remaining estimate (empty/outline)
+    if (remaining > 0) {
+      if (remaining <= 3) {
+        display += `<span class="pomodoro-remaining">${"○".repeat(
+          remaining,
+        )}</span>`;
+      } else {
+        display += `<span class="pomodoro-remaining">○<span class="pomodoro-count">×${remaining}</span></span>`;
+      }
+    }
+
+    // Over estimate indicator
+    if (over > 0) {
+      display += `<span class="pomodoro-over">+${over}</span>`;
+    }
+
+    return display;
+  }
+
+  // No estimate - original display
   if (count === 0) return '<span class="pomodoro-empty">—</span>';
   if (count <= 3) return "🍅".repeat(count);
   return `🍅 <span class="pomodoro-count">${count}</span>`;
@@ -718,13 +895,22 @@ function buildPomodoroControls(taskId, count) {
 
 function buildPomodoroTracker(task, isArchive) {
   const count = task.pomodoros || 0;
-  const pomodoroDisplay = buildPomodoroDisplay(count);
-  const pomodoroText = count === 1 ? "pomodoro" : "pomodoros";
-  const pomodoroTitle =
-    count === 0 ? "No pomodoros" : `${count} ${pomodoroText} completed`;
+  const estimate = task.estimatedPomodoros || 0;
+  const pomodoroDisplay = buildPomodoroDisplay(count, estimate);
+
+  let pomodoroTitle;
+  if (estimate > 0) {
+    const status =
+      count >= estimate ? "Complete!" : `${estimate - count} remaining`;
+    pomodoroTitle = `${count}/${estimate} pomodoros (${status})`;
+  } else {
+    const pomodoroText = count === 1 ? "pomodoro" : "pomodoros";
+    pomodoroTitle =
+      count === 0 ? "No pomodoros" : `${count} ${pomodoroText} completed`;
+  }
 
   return `
-    <div class="task-pomodoro-tracker">
+    <div class="task-pomodoro-tracker${estimate > 0 ? " has-estimate" : ""}">
       <div class="pomodoro-display" title="${pomodoroTitle}" aria-label="${pomodoroTitle}">
         ${pomodoroDisplay}
       </div>
@@ -839,7 +1025,7 @@ function buildTaskHTML(
   task,
   returnHTMLOnly = false,
   searchMatched = false,
-  isArchive = false
+  isArchive = false,
 ) {
   const { completed, id } = task;
   const isCompleted = completed ? "checked" : "";
@@ -957,7 +1143,7 @@ function updateArchiveSectionVisibility() {
   const selectedList = getCurrentList();
   if (!selectedList) {
     showError(
-      `Archive isn't rendered correctly, reload the page and try again`
+      `Archive isn't rendered correctly, reload the page and try again`,
     );
     return;
   }
@@ -1009,7 +1195,7 @@ function restoreTask(taskId) {
       targetList = state.lists[0];
 
       showSuccess(
-        `Original list not found. Restored "${name}" to "${targetList.name}"`
+        `Original list not found. Restored "${name}" to "${targetList.name}"`,
       );
     } else {
       targetList = createList("Restored Tasks");
@@ -1025,7 +1211,7 @@ function restoreTask(taskId) {
 
   targetList.tasks.push(restoredTask);
   state.archive.tasks = state.archive.tasks.filter(
-    (task) => task.id !== taskId
+    (task) => task.id !== taskId,
   );
   saveAndRender();
 }
@@ -1059,10 +1245,10 @@ function editTaskName(taskId) {
   const taskElement = document.querySelector(`[data-task-item="${taskId}"]`);
   const textElement = taskElement.querySelector(`[data-task-text="${taskId}"]`);
   const editForm = taskElement.querySelector(
-    `[data-task-edit-form="${taskId}"]`
+    `[data-task-edit-form="${taskId}"]`,
   );
   const inputElement = taskElement.querySelector(
-    `[data-task-input="${taskId}"]`
+    `[data-task-input="${taskId}"]`,
   );
   const editBtn = taskElement.querySelector(`[data-edit-task="${taskId}"]`);
 
@@ -1112,13 +1298,13 @@ function editTaskName(taskId) {
 function saveTaskName(taskId) {
   const taskElement = document.querySelector(`[data-task-item="${taskId}"]`);
   const inputElement = taskElement.querySelector(
-    `[data-task-input="${taskId}"]`
+    `[data-task-input="${taskId}"]`,
   );
   const prioritySelect = taskElement.querySelector(
-    `[data-task-priority-edit="${taskId}"]`
+    `[data-task-priority-edit="${taskId}"]`,
   );
   const dueDateInput = taskElement.querySelector(
-    `[data-task-due-date-edit="${taskId}"]`
+    `[data-task-due-date-edit="${taskId}"]`,
   );
 
   const newName = inputElement.value.trim();
@@ -1178,7 +1364,7 @@ function cancelTaskEdit(taskId) {
 
   const textElement = taskElement.querySelector(`[data-task-text="${taskId}"]`);
   const editForm = taskElement.querySelector(
-    `[data-task-edit-form="${taskId}"]`
+    `[data-task-edit-form="${taskId}"]`,
   );
 
   textElement.classList.remove("hidden");
@@ -1191,7 +1377,7 @@ function editListName(listId) {
   const listElement = document.querySelector(`[data-list-id="${listId}"]`);
   const textElement = listElement.querySelector(`[data-list-text="${listId}"]`);
   const inputElement = listElement.querySelector(
-    `[data-list-input="${listId}"]`
+    `[data-list-input="${listId}"]`,
   );
   const editBtn = listElement.querySelector(`[data-edit-list="${listId}"]`);
 
@@ -1235,7 +1421,7 @@ function editListName(listId) {
 function saveListName(listId) {
   const listElement = document.querySelector(`[data-list-id="${listId}"]`);
   const inputElement = listElement.querySelector(
-    `[data-list-input="${listId}"]`
+    `[data-list-input="${listId}"]`,
   );
   const newName = inputElement.value.trim();
 
@@ -1263,7 +1449,7 @@ function cancelListEdit(listId) {
 
   const textElement = listElement.querySelector(`[data-list-text="${listId}"]`);
   const inputElement = listElement.querySelector(
-    `[data-list-input="${listId}"]`
+    `[data-list-input="${listId}"]`,
   );
 
   textElement.classList.remove("hidden");
@@ -1426,14 +1612,14 @@ function filterTasks(tasks) {
   // Filter by priority
   if (state.priorityFilter !== "all") {
     filtered = filtered.filter(
-      (task) => (task.priority || "medium") === state.priorityFilter
+      (task) => (task.priority || "medium") === state.priorityFilter,
     );
   }
 
   // Filter by search query
   if (state.searchQuery) {
     filtered = filtered.filter((task) =>
-      task.name.toLowerCase().includes(state.searchQuery)
+      task.name.toLowerCase().includes(state.searchQuery),
     );
   }
 
