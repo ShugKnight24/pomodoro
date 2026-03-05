@@ -4,8 +4,11 @@ import "../components/progress-ring.js";
 import "../components/hour-glass.js";
 
 import { formatTime, hideElements, showElements } from "./utils.js";
+import { recordPomodoro } from "./stats.js";
+import { sendNotification } from "./settings.js";
 
-// TODO: Implement custom time setting
+// Store original page title
+const originalTitle = document.title;
 
 // State
 const state = {
@@ -53,6 +56,16 @@ export function initTimer() {
   // Listen for settings change
   document.addEventListener("timer-visual-change", (event) => {
     updateVisualMode(event.detail.visualType);
+  });
+
+  // Listen for timer preset changes
+  document.addEventListener("timer-preset-change", (event) => {
+    if (!state.isRunning) {
+      state.sessionTime = event.detail.workMinutes;
+      state.breakTime = event.detail.breakMinutes;
+      elements.sessionTime.textContent = state.sessionTime;
+      elements.breakTime.textContent = state.breakTime;
+    }
   });
 }
 
@@ -153,6 +166,12 @@ async function startTimer() {
 
   state.isRunning = true;
 
+  // Dispatch state change event
+  dispatchTimerEvent("timer-state-change", {
+    isRunning: true,
+    isBreak: state.isBreak,
+  });
+
   if (state.currentSeconds === 0 || state.totalSeconds === 0) {
     state.currentSeconds = state.sessionTime * 60;
     state.totalSeconds = state.currentSeconds;
@@ -214,6 +233,12 @@ function pauseTimer() {
   hideElements([elements.stopButton]);
 
   elements.startButton.textContent = "Resume";
+
+  // Dispatch state change event
+  dispatchTimerEvent("timer-state-change", {
+    isRunning: false,
+    isBreak: state.isBreak,
+  });
 }
 
 /* Stop & Reset button click */
@@ -221,7 +246,15 @@ function resetTimer() {
   clearTimers();
   toggleSandStream(false);
   resetToDefaults();
+  resetTabTitle();
   elements.startButton.textContent = "Start";
+
+  // Dispatch state change event
+  dispatchTimerEvent("timer-state-change", {
+    isRunning: false,
+    isBreak: false,
+    isReset: true,
+  });
 }
 
 /**
@@ -233,6 +266,17 @@ function timerTick() {
 
   const total = state.totalSeconds || 1;
   const remainingPercent = (state.currentSeconds / total) * 100;
+
+  // Update tab title with remaining time
+  updateTabTitle();
+
+  // Dispatch timer tick event for focus mode and other listeners
+  dispatchTimerEvent("timer-tick", {
+    currentSeconds: state.currentSeconds,
+    totalSeconds: state.totalSeconds,
+    isBreak: state.isBreak,
+    remainingPercent,
+  });
 
   if (state.isBreak) {
     elements.breakTime.textContent = formatTime(state.currentSeconds);
@@ -250,9 +294,41 @@ function timerTick() {
   }
 }
 
+/**
+ * Update browser tab title with current timer state
+ */
+function updateTabTitle() {
+  if (state.currentSeconds >= 0) {
+    const timeString = formatTime(state.currentSeconds);
+    const mode = state.isBreak ? "☕ Break" : "🍅 Focus";
+    document.title = `${timeString} - ${mode}`;
+  } else {
+    document.title = originalTitle;
+  }
+}
+
+/**
+ * Reset tab title to original
+ */
+function resetTabTitle() {
+  document.title = originalTitle;
+}
+
 /* Handle session completion */
 async function sessionComplete() {
   playBuzzer();
+
+  // Record the completed pomodoro in stats
+  recordPomodoro(state.sessionTime);
+
+  // Send browser notification
+  sendNotification("Pomodoro Complete! 🍅", "Great work! Time for a break.");
+
+  // Dispatch pomodoro complete event for achievements
+  dispatchTimerEvent("pomodoro-complete", {
+    duration: state.sessionTime,
+    type: "session",
+  });
 
   clearInterval(state.sessionTimerId);
   state.sessionTimerId = null;
@@ -282,6 +358,10 @@ async function sessionComplete() {
 /* Handle break completion */
 function breakComplete() {
   playBuzzer();
+
+  // Send browser notification
+  sendNotification("Break Over! ☕", "Ready for another pomodoro?");
+
   clearInterval(state.breakTimerId);
   toggleSandStream(false);
   state.breakTimerId = null;
@@ -298,6 +378,9 @@ function breakComplete() {
 
   elements.startButton.textContent = "Start";
   showElements([elements.startButton]);
+
+  // Reset tab title
+  resetTabTitle();
 
   // Reset to defaults
   resetToDefaults();
@@ -344,10 +427,13 @@ function clearTimers() {
 
 /* Reset timer to default state */
 function resetToDefaults() {
-  // Reset to default values
-  // TODO: Set to initial values that user sets?
-  state.sessionTime = 25;
-  state.breakTime = 5;
+  // Load preset from storage, default to 25/5
+  const savedSession =
+    parseInt(localStorage.getItem("customSessionTime")) || 25;
+  const savedBreak = parseInt(localStorage.getItem("customBreakTime")) || 5;
+
+  state.sessionTime = savedSession;
+  state.breakTime = savedBreak;
   state.currentSeconds = 0;
   state.totalSeconds = 0;
 
@@ -394,4 +480,27 @@ function playBuzzer() {
   elements.buzzer?.play().catch((error) => {
     console.warn("Could not play buzzer:", error);
   });
+}
+
+/**
+ * Dispatch custom timer events for other modules to listen to
+ * @param {string} eventName - Name of the event
+ * @param {Object} detail - Event details
+ */
+function dispatchTimerEvent(eventName, detail) {
+  document.dispatchEvent(new CustomEvent(eventName, { detail }));
+}
+
+/**
+ * Get current timer state (for external modules)
+ */
+export function getTimerState() {
+  return {
+    isRunning: state.isRunning,
+    isBreak: state.isBreak,
+    currentSeconds: state.currentSeconds,
+    totalSeconds: state.totalSeconds,
+    sessionTime: state.sessionTime,
+    breakTime: state.breakTime,
+  };
 }
