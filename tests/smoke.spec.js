@@ -6,7 +6,7 @@ test.describe("Smoke Tests — App Loads and Core Views Work", () => {
     await seedProfile(page, "committed");
   });
 
-  test("app loads without console errors", async ({ page }) => {
+  test("app loads without uncaught exceptions", async ({ page }) => {
     const errors = [];
     page.on("pageerror", (err) => errors.push(err.message));
     await page.goto("/");

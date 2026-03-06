@@ -1,18 +1,11 @@
 "use strict";
 
-import { exportStats, importStats, getAllStats } from "./stats.js";
+import { importStats, getAllStats } from "./stats.js";
 
 const settingsPanel = document.querySelector(".side-settings");
 const openButton = document.querySelector(".open-settings");
 const closeButton = document.querySelector(".close-settings");
 const visualToggle = document.getElementById("visual-toggle");
-
-// Timer preset configurations
-const TIMER_PRESETS = {
-  "25/5": { work: 25, break: 5 },
-  "50/10": { work: 50, break: 10 },
-  "90/20": { work: 90, break: 20 },
-};
 
 export function initSettings() {
   // Panel toggle
@@ -359,13 +352,22 @@ function handleExport() {
     settings: {
       timerVisual: localStorage.getItem("timerVisual"),
       appTheme: localStorage.getItem("appTheme"),
-      timerPreset: localStorage.getItem("timerPreset"),
-      customWorkTime: localStorage.getItem("customWorkTime"),
+      timerStyle: localStorage.getItem("timerStyle"),
+      animationStyle: localStorage.getItem("animationStyle"),
+      customSessionTime: localStorage.getItem("customSessionTime"),
       customBreakTime: localStorage.getItem("customBreakTime"),
       notifications: localStorage.getItem("notifications"),
-      theme: localStorage.getItem("theme"),
+      "pomodoro-theme": localStorage.getItem("pomodoro-theme"),
+      "pomidor-lang": localStorage.getItem("pomidor-lang"),
+      buzzerVolume: localStorage.getItem("buzzerVolume"),
     },
-    todos: JSON.parse(localStorage.getItem("todo-items") || "[]"),
+    lists: JSON.parse(localStorage.getItem("pomodoro.lists") || "[]"),
+    archive: JSON.parse(localStorage.getItem("pomodoro.archive") || "null"),
+    achievements: JSON.parse(
+      localStorage.getItem("pomodoro-achievements") || "[]",
+    ),
+    vault: JSON.parse(localStorage.getItem("pomidor.vault") || "null"),
+    kanban: JSON.parse(localStorage.getItem("pomidor.kanban") || "null"),
     exportedAt: new Date().toISOString(),
   };
 
@@ -416,9 +418,28 @@ async function handleImport(e) {
       });
     }
 
-    // Import todos
-    if (data.todos) {
-      localStorage.setItem("todo-items", JSON.stringify(data.todos));
+    // Import lists and archive
+    if (data.lists) {
+      localStorage.setItem("pomodoro.lists", JSON.stringify(data.lists));
+    }
+    if (data.archive) {
+      localStorage.setItem("pomodoro.archive", JSON.stringify(data.archive));
+    }
+
+    // Import achievements
+    if (data.achievements) {
+      localStorage.setItem(
+        "pomodoro-achievements",
+        JSON.stringify(data.achievements),
+      );
+    }
+
+    // Import vault and kanban
+    if (data.vault) {
+      localStorage.setItem("pomidor.vault", JSON.stringify(data.vault));
+    }
+    if (data.kanban) {
+      localStorage.setItem("pomidor.kanban", JSON.stringify(data.kanban));
     }
 
     // Show success and reload

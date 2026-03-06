@@ -92,17 +92,17 @@ const initializeElements = () => {
 
 function setupTimerEventListeners() {
   elements.breakMinusButton.addEventListener("click", () =>
-    adjustTime("break", -5)
+    adjustTime("break", -5),
   );
   elements.breakPlusButton.addEventListener("click", () =>
-    adjustTime("break", 5)
+    adjustTime("break", 5),
   );
   elements.resetButton.addEventListener("click", resetTimer);
   elements.sessionMinusButton.addEventListener("click", () =>
-    adjustTime("session", -5)
+    adjustTime("session", -5),
   );
   elements.sessionPlusButton.addEventListener("click", () =>
-    adjustTime("session", 5)
+    adjustTime("session", 5),
   );
   elements.startButton.addEventListener("click", startTimer);
   elements.stopButton.addEventListener("click", pauseTimer);
@@ -263,6 +263,7 @@ function resetTimer() {
  */
 function timerTick() {
   state.currentSeconds--;
+  if (state.currentSeconds < 0) state.currentSeconds = 0;
 
   const total = state.totalSeconds || 1;
   const remainingPercent = (state.currentSeconds / total) * 100;
@@ -372,8 +373,6 @@ function breakComplete() {
 
   setProgress(0, elements.breakProgress);
 
-  // Show reset button
-  elements.resetButton.classList.remove("hidden");
   hideElements([elements.breakDiv, elements.stopButton, elements.resetButton]);
 
   elements.startButton.textContent = "Start";
@@ -381,6 +380,13 @@ function breakComplete() {
 
   // Reset tab title
   resetTabTitle();
+
+  // Notify other modules that break is complete
+  dispatchTimerEvent("timer-state-change", {
+    isRunning: false,
+    isBreak: false,
+    isReset: true,
+  });
 
   // Reset to defaults
   resetToDefaults();

@@ -7,8 +7,12 @@ const THEME_KEY = "pomodoro-theme";
 export function initTheme() {
   const themeToggle = document.getElementById("theme-toggle");
 
-  // Load saved theme or default to light
-  const savedTheme = localStorage.getItem(THEME_KEY) || "light";
+  // Load saved theme, or respect system preference, or default to light
+  const saved = localStorage.getItem(THEME_KEY);
+  const systemPrefersDark = window.matchMedia(
+    "(prefers-color-scheme: dark)",
+  ).matches;
+  const savedTheme = saved || (systemPrefersDark ? "dark" : "light");
   applyTheme(savedTheme);
 
   // Toggle theme on button click

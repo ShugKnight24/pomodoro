@@ -144,7 +144,7 @@ function saveAchievements() {
   try {
     localStorage.setItem(
       ACHIEVEMENTS_KEY,
-      JSON.stringify([...unlockedAchievements])
+      JSON.stringify([...unlockedAchievements]),
     );
   } catch (e) {
     console.error("Failed to save achievements:", e);
@@ -203,8 +203,9 @@ function showAchievementPopup(achievement) {
 function playAchievementSound() {
   // Create a simple tone
   try {
-    const audioContext = new (window.AudioContext ||
-      window.webkitAudioContext)();
+    const audioContext = new (
+      window.AudioContext || window.webkitAudioContext
+    )();
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
 
@@ -218,7 +219,7 @@ function playAchievementSound() {
     gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
     gainNode.gain.exponentialRampToValueAtTime(
       0.01,
-      audioContext.currentTime + 0.5
+      audioContext.currentTime + 0.5,
     );
 
     oscillator.start(audioContext.currentTime);
@@ -275,9 +276,25 @@ function handleTaskComplete(event) {
 function handleDailyGoalReached(event) {
   unlockAchievement("perfectDay");
 
-  // Check for perfect week
+  // Check for perfect week by counting consecutive goal-met days from dailyData
   const stats = getStats();
-  if (stats.dailyGoalStreak >= 7) {
+  const dailyGoal = stats.dailyGoal || 8;
+  const today = new Date();
+  let streak = 0;
+
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(today);
+    date.setDate(date.getDate() - i);
+    const key = date.toISOString().split("T")[0];
+    const dayData = stats.dailyData?.[key];
+    if (dayData && dayData.pomodoros >= dailyGoal) {
+      streak++;
+    } else {
+      break;
+    }
+  }
+
+  if (streak >= 7) {
     unlockAchievement("perfectWeek");
   }
 

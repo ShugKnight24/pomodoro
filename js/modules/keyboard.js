@@ -62,9 +62,9 @@ function handleKeyPress(e) {
       return;
     }
     // Close settings modal if open
-    const settingsModal = document.getElementById("settings-modal");
-    if (settingsModal && !settingsModal.classList.contains("hidden")) {
-      settingsModal.classList.add("hidden");
+    const settingsPanel = document.querySelector(".side-settings");
+    if (settingsPanel && settingsPanel.classList.contains("open")) {
+      settingsPanel.classList.remove("open");
       return;
     }
   }
@@ -135,7 +135,7 @@ function handleKeyPress(e) {
     const viewBtns = document.querySelectorAll(".view-btn");
     const activeBtn = document.querySelector(".view-btn.active");
     const nextBtn = Array.from(viewBtns).find(
-      (btn) => !btn.classList.contains("active")
+      (btn) => !btn.classList.contains("active"),
     );
     if (nextBtn) {
       nextBtn.click();
@@ -232,6 +232,6 @@ function showKeyboardShortcutsHelp() {
       ${helpText}
     </div>`,
     "info",
-    7000
+    7000,
   );
 }

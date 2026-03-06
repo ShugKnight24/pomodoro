@@ -77,7 +77,7 @@ export function initFocusMode() {
   // Listen for timer updates
   document.addEventListener("timer-tick", handleTimerTick);
   document.addEventListener("timer-state-change", handleTimerStateChange);
-  document.addEventListener("timer-complete", handleTimerComplete);
+  document.addEventListener("pomodoro-complete", handleTimerComplete);
   document.addEventListener("timer-preset-change", handlePresetChange);
 
   // Close on escape
@@ -457,7 +457,9 @@ function handleReset() {
  */
 function updateFocusTask() {
   // Try to get the active/selected task
-  const activeTask = document.querySelector(".task-item.active .task-name");
+  const activeTask = document.querySelector(
+    ".task:not(.completed) .task-name-text",
+  );
   const selectedList = document.querySelector(
     ".list-name.active-list .list-name-text",
   );

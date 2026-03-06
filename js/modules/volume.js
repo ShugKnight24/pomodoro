@@ -7,6 +7,8 @@ const volumePlusButton = document.getElementById("volume-up");
 const volumeDisplay = document.querySelector(".volume-display");
 
 export function initVolume() {
+  if (!volumeSlider) return;
+
   // Set initial volume from localStorage or default to 100
   const savedVolume = localStorage.getItem("buzzerVolume");
   if (savedVolume !== null) {
@@ -15,7 +17,7 @@ export function initVolume() {
 
   updateVolume();
 
-  volumeSlider?.addEventListener("input", updateVolume);
+  volumeSlider.addEventListener("input", updateVolume);
   volumeMinusButton?.addEventListener("click", decreaseVolume);
   volumePlusButton?.addEventListener("click", increaseVolume);
 }

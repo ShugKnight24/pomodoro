@@ -5,7 +5,6 @@
 import { showSuccess } from "./toast.js";
 
 const STORAGE_KEY = "pomidor.vault";
-const VAULT_FOLDER_KEY = "pomidor.vault.folders";
 
 let state = {
   notes: [],

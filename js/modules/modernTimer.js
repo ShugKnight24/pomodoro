@@ -64,7 +64,7 @@ export function initModernTimer() {
   // Listen for timer events from main timer
   document.addEventListener("timer-tick", handleTimerTick);
   document.addEventListener("timer-state-change", handleTimerStateChange);
-  document.addEventListener("timer-complete", handleTimerComplete);
+  document.addEventListener("pomodoro-complete", handleTimerComplete);
   document.addEventListener("timer-preset-change", handlePresetChange);
   document.addEventListener("timer-style-change", handleStyleChange);
 
