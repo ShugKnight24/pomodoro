@@ -7,8 +7,8 @@ import { formatTime, hideElements, showElements } from "./utils.js";
 import { recordPomodoro } from "./stats.js";
 import { sendNotification } from "./settings.js";
 
-// Store original page title
-const originalTitle = document.title;
+// Original page title — set in initTimer() after i18n runs
+let originalTitle = "";
 
 // State
 const state = {
@@ -47,6 +47,9 @@ const elements = {
 export function initTimer() {
   initializeElements();
   setupTimerEventListeners();
+  // Capture page title after i18n has run
+  originalTitle = document.title;
+
   initializeProgressRings();
 
   // Initialize visual state
@@ -60,9 +63,10 @@ export function initTimer() {
 
   // Listen for timer preset changes
   document.addEventListener("timer-preset-change", (event) => {
-    if (!state.isRunning) {
+    if (!state.isRunning && state.currentSeconds === 0) {
       state.sessionTime = event.detail.workMinutes;
       state.breakTime = event.detail.breakMinutes;
+      state.totalSeconds = state.sessionTime * 60;
       elements.sessionTime.textContent = state.sessionTime;
       elements.breakTime.textContent = state.breakTime;
     }

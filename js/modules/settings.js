@@ -246,7 +246,6 @@ function applyTimerPreset(preset) {
 
 function initNotifications() {
   const notificationToggle = document.getElementById("notifications-toggle");
-  const notificationStatus = document.querySelector(".notification-status");
 
   if (!notificationToggle) return;
 
@@ -313,7 +312,7 @@ function updateNotificationStatus() {
 function showTestNotification() {
   new Notification("Pomodoro Timer", {
     body: "Notifications are now enabled!",
-    icon: "🍅",
+    icon: "/icons/icon-192.png",
   });
 }
 
@@ -325,7 +324,7 @@ export function sendNotification(title, body) {
   if (enabled && Notification.permission === "granted") {
     new Notification(title, {
       body,
-      icon: "🍅",
+      icon: "/icons/icon-192.png",
       tag: "pomodoro-timer",
     });
   }

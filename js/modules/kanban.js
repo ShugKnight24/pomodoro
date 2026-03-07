@@ -586,10 +586,10 @@ function openCardModal(boardId, columnId, cardId) {
       showSuccess("Card updated");
     });
 
-  // Close on backdrop click
-  modal.addEventListener("click", (e) => {
+  // Close on backdrop click (assignment avoids listener accumulation)
+  modal.onclick = (e) => {
     if (e.target === modal) modal.classList.remove("active");
-  });
+  };
 }
 
 // ─── Toolbar ───────────────────────────────────────────────

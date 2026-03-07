@@ -3,7 +3,6 @@
  * Provides keyboard shortcuts for common actions
  */
 
-import { showToast } from "./toast.js";
 import {
   toggleFocusMode,
   isFocusModeActive,
@@ -209,29 +208,4 @@ function toggleShortcutsOverlay() {
   }
 }
 
-function showKeyboardShortcutsHelp() {
-  const shortcuts = [
-    { key: "Space", action: "Start/Pause timer" },
-    { key: "R", action: "Reset timer" },
-    { key: "N", action: "New task" },
-    { key: "L", action: "New list" },
-    { key: "T", action: "Toggle dark mode" },
-    { key: "S", action: "Open settings" },
-    { key: "V", action: "Switch view" },
-    { key: "F", action: "Focus mode" },
-    { key: "?", action: "Show this help" },
-  ];
 
-  const helpText = shortcuts
-    .map(({ key, action }) => `<strong>${key}</strong> - ${action}`)
-    .join("<br>");
-
-  showToast(
-    `<div style="line-height: 1.8">
-      <strong style="font-size: 1.1em; display: block; margin-bottom: 8px;">⌨️ Keyboard Shortcuts</strong>
-      ${helpText}
-    </div>`,
-    "info",
-    7000,
-  );
-}

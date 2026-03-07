@@ -76,15 +76,15 @@
   ],
   "screenshots": [
     {
-      "src": "screenshots/desktop.png",
+      "src": "screenshots/pr/01-timer-classic-dark.png",
       "sizes": "1280x720",
       "type": "image/png",
       "form_factor": "wide",
       "label": "Desktop view of Pomidor"
     },
     {
-      "src": "screenshots/mobile.png",
-      "sizes": "750x1334",
+      "src": "screenshots/pr/11-timer-mobile.png",
+      "sizes": "375x667",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Mobile view of Pomidor"
