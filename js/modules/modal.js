@@ -131,3 +131,15 @@ export function confirmDelete(itemName, itemType = "item") {
   });
 }
 
+/**
+ * Convenience function for general confirmations
+ */
+export function confirmThis(message, title = "Confirm") {
+  return showConfirmModal({
+    title,
+    message,
+    confirmText: "Yes",
+    cancelText: "No",
+    type: "info",
+  });
+}

@@ -6,6 +6,12 @@ export function initToast() {
   if (!toastContainer) {
     toastContainer = createToastContainer();
   }
+
+  // Listen for custom show-toast events
+  document.addEventListener("show-toast", (event) => {
+    const { message, type = "info", duration } = event.detail;
+    showToast(message, type, duration);
+  });
 }
 
 function createToastContainer() {

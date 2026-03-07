@@ -1,13 +1,35 @@
+import { initCalendar } from "./modules/calendar.js";
 import { initModal } from "./modules/modal.js";
 import { initPomodoro } from "./modules/pomodoro.js";
 import { initToast } from "./modules/toast.js";
 import { initTodo } from "./modules/todo.js";
 import { initSectionToggle } from "./modules/sectionToggle.js";
+import { initTheme } from "./modules/theme.js";
+import { initKeyboardShortcuts } from "./modules/keyboard.js";
+import { initStats } from "./modules/stats.js";
+import { initFocusMode } from "./modules/focusMode.js";
+import { initAchievements } from "./modules/achievements.js";
+import { initModernTimer } from "./modules/modernTimer.js";
+import { initSceneAndNav } from "./modules/sceneAndNav.js";
+import { initI18n } from "./modules/i18n.js";
+import { initVault } from "./modules/vault.js";
+import { initKanban } from "./modules/kanban.js";
 
 document.addEventListener("DOMContentLoaded", () => {
+  initI18n();
+  initTheme();
+  initStats();
+  initCalendar();
   initModal();
   initToast();
   initPomodoro();
   initTodo();
   initSectionToggle();
+  initKeyboardShortcuts();
+  initFocusMode();
+  initAchievements();
+  initModernTimer();
+  initSceneAndNav();
+  initVault();
+  initKanban();
 });

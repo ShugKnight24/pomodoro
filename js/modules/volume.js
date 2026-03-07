@@ -2,16 +2,24 @@
 
 const buzzer = document.getElementById("buzzer");
 const volumeSlider = document.getElementById("update-volume");
-const volumeMinusButton = document.querySelector(".volume-container .fa-minus");
-const volumePlusButton = document.querySelector(".volume-container .fa-plus");
+const volumeMinusButton = document.getElementById("volume-down");
+const volumePlusButton = document.getElementById("volume-up");
+const volumeDisplay = document.querySelector(".volume-display");
 
 export function initVolume() {
-  // Set initial volume
+  if (!volumeSlider) return;
+
+  // Set initial volume from localStorage or default to 100
+  const savedVolume = localStorage.getItem("buzzerVolume");
+  if (savedVolume !== null) {
+    volumeSlider.value = savedVolume;
+  }
+
   updateVolume();
 
   volumeSlider.addEventListener("input", updateVolume);
-  volumeMinusButton.addEventListener("click", decreaseVolume);
-  volumePlusButton.addEventListener("click", increaseVolume);
+  volumeMinusButton?.addEventListener("click", decreaseVolume);
+  volumePlusButton?.addEventListener("click", increaseVolume);
 }
 
 function decreaseVolume() {
@@ -28,5 +36,15 @@ function increaseVolume() {
  * Update volume based on slider value
  */
 function updateVolume() {
-  buzzer.volume = volumeSlider.value / 100;
+  if (buzzer) {
+    buzzer.volume = volumeSlider.value / 100;
+  }
+
+  // Update display
+  if (volumeDisplay) {
+    volumeDisplay.textContent = `${volumeSlider.value}%`;
+  }
+
+  // Save to localStorage
+  localStorage.setItem("buzzerVolume", volumeSlider.value);
 }
