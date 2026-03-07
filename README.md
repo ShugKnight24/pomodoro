@@ -18,7 +18,7 @@
 
 "Pomodoro" is Italian for tomato. **"Pomidor" (Помидор)** is Russian for tomato. Same technique, fresh identity — with a mission:
 
-- **Privacy-first** — All data stays in your browser (localStorage). No accounts, no tracking, no cloud dependency.
+- **Privacy-first** — All data stays in your browser (localStorage). No accounts, no cloud dependency. The hosted GitHub Pages version includes Google Analytics for usage insights; running locally has no tracking.
 - **Offline-capable** — Full PWA with service worker. Install it, use it anywhere.
 - **Bilingual** — English + Russian from day one. More languages welcome via contributions.
 - **Calendar ownership** — Roadmap includes read-only Google Calendar integration so you can visualize and own your schedule data without giving write access to any third party.

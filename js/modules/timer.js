@@ -214,13 +214,15 @@ async function startTimer() {
   }
   toggleSandStream(true);
 
+  // Render initial display before first interval tick
+  updateTimerDisplay();
+
   if (state.isBreak) {
     state.breakTimerId = setInterval(timerTick, 1000);
   } else {
     state.sessionTimerId = setInterval(timerTick, 1000);
   }
 
-  timerTick();
   elements.startButton.textContent = "Start";
 }
 
@@ -356,8 +358,33 @@ async function sessionComplete() {
     await breakHourglass.flip();
   }
 
+  updateTimerDisplay();
   state.breakTimerId = setInterval(timerTick, 1000);
-  timerTick();
+}
+
+/**
+ * Update the timer display without decrementing
+ */
+function updateTimerDisplay() {
+  const total = state.totalSeconds || 1;
+  const remainingPercent = (state.currentSeconds / total) * 100;
+
+  updateTabTitle();
+
+  dispatchTimerEvent("timer-tick", {
+    currentSeconds: state.currentSeconds,
+    totalSeconds: state.totalSeconds,
+    isBreak: state.isBreak,
+    remainingPercent,
+  });
+
+  if (state.isBreak) {
+    elements.breakTime.textContent = formatTime(state.currentSeconds);
+    setProgress(remainingPercent, elements.breakProgress);
+  } else {
+    elements.sessionTime.textContent = formatTime(state.currentSeconds);
+    setProgress(remainingPercent, elements.sessionProgress);
+  }
 }
 
 /* Handle break completion */

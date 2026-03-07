@@ -249,6 +249,12 @@ function initNotifications() {
 
   if (!notificationToggle) return;
 
+  if (!("Notification" in window)) {
+    updateNotificationStatus();
+    notificationToggle.disabled = true;
+    return;
+  }
+
   // Check current permission status
   updateNotificationStatus();
 
@@ -285,7 +291,7 @@ function initNotifications() {
 }
 
 function updateNotificationStatus() {
-  const notificationStatus = document.querySelector(".notification-status");
+  const notificationStatus = document.getElementById("notification-status");
   if (!notificationStatus) return;
 
   if (!("Notification" in window)) {
@@ -320,6 +326,7 @@ function showTestNotification() {
  * Send a notification (called from timer module)
  */
 export function sendNotification(title, body) {
+  if (!("Notification" in window)) return;
   const enabled = localStorage.getItem("notifications") === "true";
   if (enabled && Notification.permission === "granted") {
     new Notification(title, {

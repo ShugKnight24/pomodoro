@@ -21,6 +21,7 @@ function isoTimestamp(daysAgo, hour = 10) {
   return d.toISOString();
 }
 
+// TODO: possibly remove reliance on randomness in tests in favor of a happy path or a more deterministic generator, but for now this is good enough to create varied seed data without manually crafting it all. Just need to ensure the "committed" profile has enough activity to show stats and streaks in the UI and other basics. Can always add more specific profiles later if needed.
 function rand(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }

@@ -23,6 +23,6 @@ export default defineConfig({
   webServer: {
     command: "npx serve . -l 3000 -s",
     port: 3000,
-    reuseExistingServer: true,
+    reuseExistingServer: false,
   },
 });

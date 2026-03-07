@@ -1,7 +1,7 @@
 {
   "name": "Pomidor — Помидор",
   "short_name": "Pomidor",
-  "description": "Own your time, own your data. A bilingual (EN/RU) productivity suite with Pomodoro timer, task management, calendar visualization, and Google Calendar read integration — all privacy-first and offline-capable.",
+  "description": "Own your time, own your data. A bilingual (EN/RU) productivity suite with Pomodoro timer, task management, and calendar visualization — all privacy-first and offline-capable.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f172a",

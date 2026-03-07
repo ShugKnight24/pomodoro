@@ -207,5 +207,3 @@ function toggleShortcutsOverlay() {
     showShortcutsOverlay();
   }
 }
-
-
