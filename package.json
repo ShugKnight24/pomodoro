@@ -7,7 +7,7 @@
     "test": "PLAYWRIGHT_BROWSERS_PATH=0 npx playwright test tests/smoke.spec.js",
     "test:all": "PLAYWRIGHT_BROWSERS_PATH=0 npx playwright test",
     "screenshots": "PLAYWRIGHT_BROWSERS_PATH=0 npx playwright test tests/screenshots.spec.js",
-    "serve": "npx serve . -l 3000 -s"
+    "serve": "npx serve . -l 3030 -s"
   },
   "repository": {
     "type": "git",

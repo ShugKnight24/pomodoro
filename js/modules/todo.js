@@ -5,6 +5,8 @@ import { confirmDelete } from "./modal.js";
 import { showSuccess, showError } from "./toast.js";
 import { setupTaskDragAndDrop } from "../utils/todoDragDrop.js";
 import { recordTaskCompleted } from "./stats.js";
+import { getIcon, renderPomodoroBadges } from "../utils/icons.js";
+import { renderHeroDashboard } from "./gamification/heroUI.js";
 
 const archive = {
   ARCHIVE_LIST_ID: -1, // Special ID for archive list
@@ -21,6 +23,7 @@ export const elements = {
   deleteListButton: null,
   filterButtons: null,
   statsContainer: null,
+  heroContainer: null,
   listsContainer: null,
   listCount: null,
   newListForm: null,
@@ -63,6 +66,18 @@ const state = {
   taskCounter: 0,
   view: "list", // 'list' | 'calendar'
 };
+
+const openSubtasks = new Set();
+
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
 
 export function initTodo() {
   initializeElements();
@@ -112,6 +127,7 @@ function initializeElements() {
   elements.tasksContainer = document.querySelector("[data-tasks]");
   elements.taskCount = document.querySelector("[data-task-count]");
   elements.todoContainer = document.querySelector(".todo-container");
+  elements.heroContainer = document.getElementById("hero-container");
   // Only get main view toggle buttons (list, calendar, stats), not calendar month/week toggle
   elements.viewToggleButtons = document.querySelectorAll(
     ".view-controls [data-view]",
@@ -229,9 +245,18 @@ function setupEventListeners() {
   });
   elements.searchInput.addEventListener("input", handleSearch);
   elements.tasksContainer.addEventListener("click", taskClick);
+  elements.tasksContainer.addEventListener("submit", handleSubtaskSubmit);
   elements.taskSortButton.addEventListener("click", toggleSortType);
   elements.viewToggleButtons.forEach((btn) => {
     btn.addEventListener("click", handleViewToggle);
+  });
+
+  document.getElementById("header-hero-badge")?.addEventListener("click", () => {
+    state.view = "hero";
+    elements.viewToggleButtons.forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.view === "hero");
+    });
+    render();
   });
 
   setupTaskDragAndDrop();
@@ -388,7 +413,35 @@ async function deleteCurrentList() {
 }
 
 function taskClick(event) {
-  // Handle checkbox toggle
+  // Handle subtask checkbox toggle
+  if (
+    event.target.tagName.toLowerCase() === "input" &&
+    event.target.type === "checkbox" &&
+    event.target.dataset.toggleSubtask
+  ) {
+    const [taskIdStr, subtaskId] = event.target.dataset.toggleSubtask.split(":");
+    const taskId = parseInt(taskIdStr);
+    const selectedList = getCurrentList();
+    const task = selectedList?.tasks.find((t) => t.id === taskId);
+    if (task && task.subtasks) {
+      const subtask = task.subtasks.find((st) => String(st.id) === String(subtaskId));
+      if (subtask) {
+        subtask.completed = event.target.checked;
+        save();
+        updateTaskState(taskId);
+        if (subtask.completed) {
+          document.dispatchEvent(
+            new CustomEvent("subtask-complete", {
+              detail: { taskId, subtaskId },
+            }),
+          );
+        }
+      }
+    }
+    return;
+  }
+
+  // Handle main task checkbox toggle
   if (
     event.target.tagName.toLowerCase() === "input" &&
     event.target.type === "checkbox"
@@ -439,6 +492,31 @@ function taskClick(event) {
   const button = event.target.closest("button");
 
   if (button) {
+    // Handle toggle subtasks button click
+    if (button.dataset.toggleSubtasks) {
+      const taskId = parseInt(button.dataset.toggleSubtasks);
+      if (openSubtasks.has(taskId)) {
+        openSubtasks.delete(taskId);
+      } else {
+        openSubtasks.add(taskId);
+      }
+      updateTaskState(taskId);
+      return;
+    }
+
+    // Handle delete subtask button click
+    if (button.dataset.deleteSubtask) {
+      const [taskIdStr, subtaskId] = button.dataset.deleteSubtask.split(":");
+      const taskId = parseInt(taskIdStr);
+      const selectedList = getCurrentList();
+      const task = selectedList?.tasks.find((t) => t.id === taskId);
+      if (task && task.subtasks) {
+        task.subtasks = task.subtasks.filter((st) => String(st.id) !== String(subtaskId));
+        save();
+        updateTaskState(taskId);
+      }
+      return;
+    }
     // Handle restore button click (for archive)
     if (button.dataset.restoreTask) {
       const taskId = parseInt(button.dataset.restoreTask);
@@ -499,6 +577,30 @@ function taskClick(event) {
   }
 }
 
+function handleSubtaskSubmit(e) {
+  const form = e.target.closest("[data-add-subtask-form]");
+  if (!form) return;
+  e.preventDefault();
+  const taskId = parseInt(form.dataset.addSubtaskForm);
+  const input = form.querySelector(".subtask-add-input");
+  const text = input?.value.trim();
+  if (text) {
+    const selectedList = getCurrentList();
+    const task = selectedList?.tasks.find((t) => t.id === taskId);
+    if (task) {
+      task.subtasks = task.subtasks || [];
+      task.subtasks.push({
+        id: Date.now().toString(),
+        text,
+        completed: false,
+      });
+      openSubtasks.add(taskId);
+      save();
+      updateTaskState(taskId);
+    }
+  }
+}
+
 function newTaskSubmit(event) {
   event.preventDefault();
   const taskName = elements.newTaskInput.value.trim();
@@ -526,7 +628,7 @@ function newTaskSubmit(event) {
   selectedList.tasks.push(task);
   saveAndRender();
 
-  const estimateText = estimate > 0 ? ` (${estimate} 🍅 estimated)` : "";
+  const estimateText = estimate > 0 ? ` (${estimate} estimated pomodoros)` : "";
   showSuccess(
     `Task "${taskName}" added with "${priority}" priority${
       dueDate ? ` due "${dueDate}"` : ""
@@ -557,6 +659,7 @@ function createTask(name, priority = "medium", dueDate = null, estimate = 0) {
     name: name,
     pomodoros: 0,
     priority: priority,
+    subtasks: [],
   };
 }
 
@@ -580,6 +683,7 @@ function render() {
   elements.statsContainer?.classList.add("hidden");
   elements.kanbanContainer?.classList.add("hidden");
   elements.vaultContainer?.classList.add("hidden");
+  elements.heroContainer?.classList.add("hidden");
 
   if (state.view === "calendar") {
     elements.calendarContainer.classList.remove("hidden");
@@ -593,6 +697,9 @@ function render() {
     elements.kanbanContainer?.classList.remove("hidden");
   } else if (state.view === "vault") {
     elements.vaultContainer?.classList.remove("hidden");
+  } else if (state.view === "hero") {
+    elements.heroContainer?.classList.remove("hidden");
+    renderHeroDashboard();
   } else {
     // List view (default)
     elements.todoContainer.classList.remove("hidden");
@@ -629,7 +736,7 @@ function buildListHTML(list) {
   const { id, isArchive, name } = list;
   const isActive = id === state.selectedListId ? "active-list" : "";
   const archiveClass = isArchive ? "archive-list" : "";
-  const archiveIcon = archiveClass ? "🗃️" : "";
+  const archiveIcon = archiveClass ? `${getIcon("archive", { size: 14 })} ` : "";
 
   // TODO: Break into atoms / render list input edit button... etc
   let listTemplate = `
@@ -645,7 +752,7 @@ function buildListHTML(list) {
         value="${name}"
       />
       <button class="list-action-btn edit-list-btn" data-edit-list="${id}" title="Edit list name" aria-label="Edit list name">
-        <i class="fas fa-pencil-alt"></i>
+        ${getIcon("edit", { size: 13 })}
       </button>`
           : ""
       }
@@ -710,7 +817,7 @@ function renderNoTasks(selectedList) {
   const { isArchive } = selectedList;
   const { priorityFilter, searchQuery, statusFilter } = state;
 
-  const icon = isArchive ? "🗃️" : "🔍";
+  const icon = isArchive ? getIcon("archive", { size: 32 }) : getIcon("search", { size: 32 });
   const noTaskMessage = isArchive
     ? "Archive is empty"
     : searchQuery
@@ -761,7 +868,7 @@ function getTaskState(task) {
 function buildDragHandle() {
   return `
     <button class="drag-handle" data-drag-handle aria-label="Drag to reorder" title="Drag to reorder" draggable="true">
-      <i class="fas fa-grip-horizontal"></i>
+      ${getIcon("grip", { size: 14 })}
     </button>
   `;
 }
@@ -815,64 +922,27 @@ function buildTaskInput(task, isArchive) {
       >
         <option value="low" ${
           priority === "low" ? "selected" : ""
-        }>🟢 Low</option>
+        }>Low</option>
         <option value="medium" ${
           priority === "medium" || !priority ? "selected" : ""
-        }>🟡 Medium</option>
+        }>Medium</option>
         <option value="high" ${
           priority === "high" ? "selected" : ""
-        }>🔴 High</option>
+        }>High</option>
       </select>
     </div>
   `;
 }
 
 function buildPomodoroDisplay(count, estimate = 0) {
-  if (estimate > 0) {
-    // Show progress towards estimate
-    const completed = Math.min(count, estimate);
-    const remaining = Math.max(0, estimate - count);
-    const over = Math.max(0, count - estimate);
-
-    let display = "";
-
-    // Completed pomodoros (filled)
-    if (completed <= 5) {
-      display += "🍅".repeat(completed);
-    } else {
-      display += `🍅<span class="pomodoro-count">×${completed}</span>`;
-    }
-
-    // Remaining estimate (empty/outline)
-    if (remaining > 0) {
-      if (remaining <= 3) {
-        display += `<span class="pomodoro-remaining">${"○".repeat(
-          remaining,
-        )}</span>`;
-      } else {
-        display += `<span class="pomodoro-remaining">○<span class="pomodoro-count">×${remaining}</span></span>`;
-      }
-    }
-
-    // Over estimate indicator
-    if (over > 0) {
-      display += `<span class="pomodoro-over">+${over}</span>`;
-    }
-
-    return display;
-  }
-
-  // No estimate - original display
-  if (count === 0) return '<span class="pomodoro-empty">—</span>';
-  if (count <= 3) return "🍅".repeat(count);
-  return `🍅 <span class="pomodoro-count">${count}</span>`;
+  return renderPomodoroBadges(count, estimate, 16);
 }
 
 function buildPomodoroAddButton(taskId) {
   return `
     <button class="pomodoro-add-btn" data-add-pomodoro="${taskId}" 
       title="Add completed pomodoro" aria-label="Add completed pomodoro">
-      <i class="fas fa-plus"></i>
+      ${getIcon("plus", { size: 12 })}
     </button>
   `;
 }
@@ -881,7 +951,7 @@ function buildPomodoroRemoveButton(taskId) {
   return `
     <button class="pomodoro-remove-btn" data-remove-pomodoro="${taskId}"
       title="Remove pomodoro" aria-label="Remove pomodoro">
-      <i class="fas fa-minus"></i>
+      ${getIcon("minus", { size: 12 })}
     </button>
   `;
 }
@@ -925,10 +995,10 @@ function buildArchivedDates(task, dates) {
   if (!archivedAt) return "";
   return `
     <span class="task-date archived-date" title="Archived at: ${archivedAtLong}">
-      ⌛️ ${archivedAtLong}
+      ${getIcon("hourglass", { size: 13 })} ${archivedAtLong}
     </span>
     <span class="task-date original-list" title="Originally from: ${archivedFrom} list">
-      📂 ${archivedFrom}
+      ${getIcon("folder", { size: 13 })} ${archivedFrom}
     </span>
   `;
 }
@@ -937,7 +1007,7 @@ function buildCompletedDates(dates) {
   const { completedAt, completedAtLong } = dates;
   return `
     <span class="task-date completed-date" title="Completed at: ${completedAtLong}">
-      ✓ ${completedAt}
+      ${getIcon("check", { size: 13 })} ${completedAt}
     </span>
   `;
 }
@@ -947,7 +1017,7 @@ function buildDueDates(dates, isOverdue) {
   const overdueClass = isOverdue ? "overdue" : "";
   return `
     <span class="task-date due-date ${overdueClass}" title="Due at: ${dueDateLong}">
-      📅 ${dueDate}
+      ${getIcon("calendar", { size: 13 })} ${dueDate}
     </span>
   `;
 }
@@ -983,7 +1053,7 @@ function buildArchiveRestoreButton(taskId) {
   return `
       <button class="task-action-btn restore-task-btn" data-restore-task="${taskId}"
       title="Restore task">
-      <i class="fas fa-undo"></i>
+      ${getIcon("undo", { size: 14 })}
     </button>
   `;
 }
@@ -992,7 +1062,7 @@ function buildEditTaskButton(taskId) {
   return `
     <button class="task-action-btn edit-task-btn" data-edit-task="${taskId}"
       title="Edit task">
-      <i class="fas fa-pencil-alt"></i>
+      ${getIcon("edit", { size: 14 })}
     </button>
   `;
 }
@@ -1002,8 +1072,75 @@ function buildTaskDeleteButton(taskId, isArchive) {
   return `
     <button class="task-action-btn delete-task-btn" data-delete-task="${taskId}"
       title="${deleteTitle}">
-      <i class="fas fa-trash"></i>
+      ${getIcon("trash", { size: 14 })}
     </button>
+  `;
+}
+
+function buildSubtaskButton(task, isArchive) {
+  if (isArchive) return "";
+  const subtasks = task.subtasks || [];
+  const completedCount = subtasks.filter((st) => st.completed).length;
+  const hasSubtasks = subtasks.length > 0;
+  const badge = hasSubtasks
+    ? `<span class="subtask-badge">${completedCount}/${subtasks.length}</span>`
+    : "";
+
+  return `
+    <button class="task-action-btn subtasks-toggle-btn ${hasSubtasks ? "has-subtasks" : ""}" 
+      data-toggle-subtasks="${task.id}" 
+      title="${hasSubtasks ? `${completedCount}/${subtasks.length} subtasks` : "Subtasks checklist"}">
+      ${getIcon("list", { size: 13 })}
+      ${badge}
+    </button>
+  `;
+}
+
+function buildSubtasksSection(task, isArchive) {
+  if (isArchive) return "";
+  const subtasks = task.subtasks || [];
+  const isOpen = openSubtasks.has(task.id);
+  if (!isOpen && subtasks.length === 0) return "";
+
+  const completedCount = subtasks.filter((st) => st.completed).length;
+  const totalCount = subtasks.length;
+  const pct =
+    totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+
+  return `
+    <div class="task-subtasks-wrapper ${isOpen ? "" : "hidden"}" data-subtasks-section="${task.id}">
+      <div class="subtasks-header">
+        <span class="subtasks-title">Subtasks (${completedCount}/${totalCount})</span>
+        <div class="subtasks-progress"><div class="subtasks-progress-fill" style="width: ${pct}%"></div></div>
+      </div>
+      <div class="subtasks-list">
+        ${subtasks
+          .map(
+            (st) => `
+          <div class="subtask-item ${st.completed ? "completed" : ""}">
+            <input 
+              type="checkbox" 
+              class="subtask-checkbox" 
+              id="st-${task.id}-${st.id}" 
+              data-toggle-subtask="${task.id}:${st.id}" 
+              ${st.completed ? "checked" : ""} 
+            />
+            <label for="st-${task.id}-${st.id}" class="subtask-text">${escapeHtml(st.text)}</label>
+            <button class="subtask-delete-btn" data-delete-subtask="${task.id}:${st.id}" title="Delete subtask" aria-label="Delete subtask">
+              ${getIcon("close", { size: 10 })}
+            </button>
+          </div>
+        `,
+          )
+          .join("")}
+      </div>
+      <form class="subtask-add-form" data-add-subtask-form="${task.id}">
+        <input type="text" class="subtask-add-input" placeholder="Add subtask..." maxlength="100" />
+        <button type="submit" class="subtask-add-btn" aria-label="Add subtask">
+          ${getIcon("plus", { size: 12 })}
+        </button>
+      </form>
+    </div>
   `;
 }
 
@@ -1015,6 +1152,7 @@ function buildTaskActions(task, isArchive) {
 
   return `
     <div class="task-actions">
+      ${buildSubtaskButton(task, isArchive)}
       ${editOrRestore}
       ${buildTaskDeleteButton(id, isArchive)}
     </div>
@@ -1049,6 +1187,7 @@ function buildTaskHTML(
       ${buildPomodoroTracker(task, isArchive)}
       ${buildTaskDates(task, isArchive, taskDates, taskState)}
       ${buildTaskActions(task, isArchive)}
+      ${buildSubtasksSection(task, isArchive)}
     </div>
   `;
 
@@ -1098,7 +1237,7 @@ function addPomodoro(taskId) {
   task.pomodoros = (pomodoros || 0) + 1;
   save();
   updateTaskState(taskId);
-  showSuccess(`Pomodoro added! Total: ${task.pomodoros} 🍅`);
+  showSuccess(`Pomodoro added! Total: ${task.pomodoros}`);
 }
 
 function removePomodoro(taskId) {
@@ -1117,7 +1256,7 @@ function removePomodoro(taskId) {
   task.pomodoros -= 1;
   save();
   updateTaskState(taskId);
-  showSuccess(`Pomodoro removed. Total: ${task.pomodoros} 🍅`);
+  showSuccess(`Pomodoro removed. Total: ${task.pomodoros}`);
 }
 
 // TODO: Setup selection of an active task and connect to Pomodoro
@@ -1134,7 +1273,7 @@ function removePomodoro(taskId) {
 //   save();
 //   updateTaskState(activeTask.id);
 //   showSuccess(
-//     `Pomodoro completed! ${activeTask.name}: ${activeTask.pomodoros} 🍅`
+//     `Pomodoro completed! ${activeTask.name}: ${activeTask.pomodoros}`
 //   );
 //   return true;
 // }
@@ -1259,7 +1398,7 @@ function editTaskName(taskId) {
   inputElement.select();
 
   // Change edit button to save button
-  editBtn.innerHTML = '<i class="fas fa-check"></i>';
+  editBtn.innerHTML = getIcon("check", { size: 14 });
   editBtn.title = "Save task";
   editBtn.dataset.saveTask = taskId;
   delete editBtn.dataset.editTask;
@@ -1388,7 +1527,7 @@ function editListName(listId) {
   inputElement.select();
 
   // Change edit button to save button
-  editBtn.innerHTML = '<i class="fas fa-check"></i>';
+  editBtn.innerHTML = getIcon("check", { size: 14 });
   editBtn.title = "Save list";
   editBtn.dataset.saveList = listId;
   delete editBtn.dataset.editList;
@@ -1467,9 +1606,9 @@ export function getCurrentList() {
 
 function getPriorityInfo(priority) {
   const priorityData = {
-    high: { icon: "🔴", label: "High" },
-    medium: { icon: "🟡", label: "Medium" },
-    low: { icon: "🟢", label: "Low" },
+    high: { icon: getIcon("priority-high", { size: 14 }), label: "High" },
+    medium: { icon: getIcon("priority-medium", { size: 14 }), label: "Medium" },
+    low: { icon: getIcon("priority-low", { size: 14 }), label: "Low" },
   };
   return priorityData[priority] || priorityData.medium;
 }

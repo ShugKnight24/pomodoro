@@ -3,6 +3,8 @@
  * Tracks and displays pomodoro statistics, daily goals, and weekly activity
  */
 
+import { getIcon } from "../utils/icons.js";
+
 const STATS_STORAGE_KEY = "pomodoro-stats";
 
 // Default statistics structure
@@ -434,6 +436,12 @@ function renderStats() {
 
   // Render recent sessions
   renderRecentSessions();
+
+  // Render time accounting & variance
+  renderTimeAccounting();
+
+  // Render mood & energy history
+  renderMoodHistory();
 }
 
 /**
@@ -484,8 +492,8 @@ function renderTrends() {
     const isPositive =
       currentPeriod === "all" || periodData.pomodoros >= prevPeriodPomodoros;
     const icon = isPositive
-      ? '<i class="fas fa-arrow-up"></i>'
-      : '<i class="fas fa-arrow-down"></i>';
+      ? getIcon("arrow-up", { size: 12 })
+      : getIcon("arrow-down", { size: 12 });
     pomodoroTrendEl.innerHTML = `${icon} <span>${periodData.pomodoros} ${periodLabel}</span>`;
     pomodoroTrendEl.className = `stat-trend ${isPositive ? "positive" : "negative"}`;
   }
@@ -493,7 +501,7 @@ function renderTrends() {
   // Task trend
   const taskTrendEl = document.getElementById("task-trend");
   if (taskTrendEl) {
-    taskTrendEl.innerHTML = `<i class="fas fa-arrow-up"></i> <span>${periodData.tasks} ${periodLabel}</span>`;
+    taskTrendEl.innerHTML = `${getIcon("arrow-up", { size: 12 })} <span>${periodData.tasks} ${periodLabel}</span>`;
     taskTrendEl.className = `stat-trend ${periodData.tasks > 0 ? "positive" : ""}`;
   }
 
@@ -847,6 +855,246 @@ function setupEventListeners() {
     currentHeatmapMonth.setMonth(currentHeatmapMonth.getMonth() + 1);
     renderHeatmap();
   });
+
+  // Time accounting export button
+  const exportBtn = document.getElementById("export-time-audit-btn");
+  exportBtn?.addEventListener("click", () => {
+    exportTimeAuditCSV();
+  });
+
+  // Re-render mood history when new mood is checked in
+  document.addEventListener("mood-checked-in", () => {
+    renderMoodHistory();
+  });
+}
+
+/**
+ * Render Time Accounting & Estimation Variance
+ */
+function renderTimeAccounting() {
+  const estEl = document.getElementById("accounting-estimated");
+  const actEl = document.getElementById("accounting-actual");
+  const varEl = document.getElementById("accounting-variance");
+
+  if (!estEl || !actEl || !varEl) return;
+
+  let totalEstPoms = 0;
+  let totalActPoms = 0;
+
+  try {
+    const lists = JSON.parse(localStorage.getItem("pomodoro.lists") || "[]");
+    const archive = JSON.parse(localStorage.getItem("pomodoro.archive") || '{"tasks":[]}');
+
+    lists.forEach((list) => {
+      (list.tasks || []).forEach((t) => {
+        totalEstPoms += parseInt(t.estimatedPomodoros) || 0;
+        totalActPoms += parseInt(t.pomodoros) || 0;
+      });
+    });
+
+    (archive.tasks || []).forEach((t) => {
+      totalEstPoms += parseInt(t.estimatedPomodoros) || 0;
+      totalActPoms += parseInt(t.pomodoros) || 0;
+    });
+  } catch (e) {
+    console.error("Error calculating time accounting:", e);
+  }
+
+  const estHours = ((totalEstPoms * 25) / 60).toFixed(1);
+  const actHours = ((totalActPoms * 25) / 60).toFixed(1);
+
+  estEl.textContent = `${estHours}h (${totalEstPoms} poms)`;
+  actEl.textContent = `${actHours}h (${totalActPoms} poms)`;
+
+  if (totalEstPoms > 0) {
+    const diff = totalActPoms - totalEstPoms;
+    const pct = Math.round((diff / totalEstPoms) * 100);
+    const sign = pct > 0 ? "+" : "";
+    varEl.textContent = `${sign}${pct}% (${diff > 0 ? "over budget" : diff < 0 ? "under budget" : "on target"})`;
+    varEl.className = `accounting-value ${pct > 15 ? "negative" : pct < -15 ? "neutral" : "positive"}`;
+  } else {
+    varEl.textContent = "No estimates set";
+    varEl.className = "accounting-value neutral";
+  }
+}
+
+/**
+ * Export complete Time Audit Ledger as CSV
+ */
+export function exportTimeAuditCSV() {
+  const tasks = [];
+  try {
+    const lists = JSON.parse(localStorage.getItem("pomodoro.lists") || "[]");
+    const archive = JSON.parse(localStorage.getItem("pomodoro.archive") || '{"tasks":[]}');
+
+    lists.forEach((list) => {
+      (list.tasks || []).forEach((t) => {
+        tasks.push({
+          ...t,
+          listName: list.name,
+          status: t.completed ? "Completed" : "Active",
+        });
+      });
+    });
+
+    (archive.tasks || []).forEach((t) => {
+      tasks.push({
+        ...t,
+        listName: "Archive",
+        status: "Archived",
+      });
+    });
+  } catch (e) {
+    console.error("Failed to read tasks for time audit:", e);
+  }
+
+  const rows = [
+    [
+      "ID",
+      "Task Name",
+      "List",
+      "Priority",
+      "Estimated Pomodoros",
+      "Actual Pomodoros",
+      "Est. Minutes (25m)",
+      "Actual Minutes",
+      "Variance (Mins)",
+      "Status",
+      "Due Date",
+      "Completed Date",
+    ],
+  ];
+
+  tasks.forEach((t) => {
+    const estPoms = parseInt(t.estimatedPomodoros) || 0;
+    const actPoms = parseInt(t.pomodoros) || 0;
+    const estMins = estPoms * 25;
+    const actMins = actPoms * 25;
+    const variance = actMins - estMins;
+
+    rows.push([
+      t.id,
+      `"${(t.name || "").replace(/"/g, '""')}"`,
+      `"${(t.listName || "").replace(/"/g, '""')}"`,
+      t.priority || "medium",
+      estPoms,
+      actPoms,
+      estMins,
+      actMins,
+      variance,
+      t.status,
+      t.dueDate || "",
+      t.completedAt || "",
+    ]);
+  });
+
+  const csvContent =
+    "data:text/csv;charset=utf-8," +
+    rows.map((row) => row.join(",")).join("\n");
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute(
+    "download",
+    `pomidor-time-audit-${new Date().toISOString().split("T")[0]}.csv`,
+  );
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+/**
+ * Render 7-day mood & bandwidth accounting in stats view
+ */
+function renderMoodHistory() {
+  let section = document.getElementById("stats-mood-section");
+  if (!section) {
+    const statsAccounting = document.querySelector(".stats-accounting-section");
+    if (!statsAccounting) return;
+    section = document.createElement("div");
+    section.id = "stats-mood-section";
+    section.className = "stats-mood-section";
+    statsAccounting.parentNode.insertBefore(section, statsAccounting);
+  }
+
+  let moodHistory = [];
+  try {
+    moodHistory = JSON.parse(localStorage.getItem("pomidor.moods") || "[]");
+  } catch (e) {
+    console.error("Failed to parse mood history for stats:", e);
+  }
+
+  // Generate last 7 days keys
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const key = d.toISOString().split("T")[0];
+    const dayName = d.toLocaleDateString(undefined, { weekday: "short" });
+    const dayNum = d.toLocaleDateString(undefined, { month: "numeric", day: "numeric" });
+    const entry = moodHistory.find((m) => m.date === key) || null;
+    days.push({ key, dayName, dayNum, entry });
+  }
+
+  const loggedDays = days.filter((d) => d.entry);
+  const avgEnergy = loggedDays.length
+    ? (
+        loggedDays.reduce((acc, d) => acc + (d.entry.energy || 3), 0) /
+        loggedDays.length
+      ).toFixed(1)
+    : "—";
+
+  const todayEntry = days[days.length - 1].entry;
+  const currentMoodLabel = todayEntry ? todayEntry.mood : "Not assessed";
+
+  const moodColors = {
+    energized: "#f59e0b",
+    focused: "#0ea5e9",
+    neutral: "#10b981",
+    fatigued: "#8b5cf6",
+    overwhelmed: "#ef4444",
+  };
+
+  section.innerHTML = `
+    <div class="accounting-header">
+      <h3 class="stats-section-title">
+        ${getIcon("flame", { size: 18 })}
+        Mood & Bandwidth Accounting
+      </h3>
+      <span class="mood-stats-summary-pill">
+        Avg Energy: <strong>${avgEnergy}${avgEnergy !== "—" ? "/5" : ""}</strong> • Today: <strong style="text-transform: capitalize;">${currentMoodLabel}</strong>
+      </span>
+    </div>
+    <div class="stats-mood-strip">
+      ${days
+        .map((d) => {
+          if (!d.entry) {
+            return `
+              <div class="stats-mood-day-card empty">
+                <span class="stats-mood-day-name">${d.dayName}</span>
+                <span class="stats-mood-day-date">${d.dayNum}</span>
+                <div class="stats-mood-day-icon empty">—</div>
+                <span class="stats-mood-day-label">No check-in</span>
+              </div>
+            `;
+          }
+          const iconName = `mood-${d.entry.mood}`;
+          const color = moodColors[d.entry.mood] || "#10b981";
+          return `
+            <div class="stats-mood-day-card logged" style="--mood-day-color: ${color};">
+              <span class="stats-mood-day-name">${d.dayName}</span>
+              <span class="stats-mood-day-date">${d.dayNum}</span>
+              <div class="stats-mood-day-icon" title="${d.entry.mood} (${d.entry.energy}/5)">
+                ${getIcon(iconName, { size: 24 })}
+              </div>
+              <span class="stats-mood-day-label" style="text-transform: capitalize;">${d.entry.mood}</span>
+              <span class="stats-mood-energy-pill">Energy: ${d.entry.energy}/5</span>
+            </div>
+          `;
+        })
+        .join("")}
+    </div>
+  `;
 }
 
 /**

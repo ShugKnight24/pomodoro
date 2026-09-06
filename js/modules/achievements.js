@@ -5,6 +5,8 @@
 
 "use strict";
 
+import { getIcon } from "../utils/icons.js";
+
 const ACHIEVEMENTS_KEY = "pomodoro-achievements";
 
 // Achievement definitions
@@ -13,91 +15,91 @@ const ACHIEVEMENTS = {
     id: "firstSteps",
     name: "First Steps",
     description: "Complete your first pomodoro",
-    icon: "🌱",
+    iconKey: "firstSteps",
     requirement: { type: "pomodoros", count: 1 },
   },
   gettingStarted: {
     id: "gettingStarted",
     name: "Getting Started",
     description: "Complete 10 pomodoros",
-    icon: "🌿",
+    iconKey: "gettingStarted",
     requirement: { type: "pomodoros", count: 10 },
   },
   focused: {
     id: "focused",
     name: "Focused",
     description: "Complete 50 pomodoros",
-    icon: "🌳",
+    iconKey: "focused",
     requirement: { type: "pomodoros", count: 50 },
   },
   centurion: {
     id: "centurion",
     name: "Centurion",
     description: "Complete 100 pomodoros",
-    icon: "💯",
+    iconKey: "centurion",
     requirement: { type: "pomodoros", count: 100 },
   },
   taskCrusher: {
     id: "taskCrusher",
     name: "Task Crusher",
     description: "Complete 100 tasks",
-    icon: "💪",
+    iconKey: "taskCrusher",
     requirement: { type: "tasks", count: 100 },
   },
   weekWarrior: {
     id: "weekWarrior",
     name: "Week Warrior",
     description: "Maintain a 7-day streak",
-    icon: "⚔️",
+    iconKey: "weekWarrior",
     requirement: { type: "streak", count: 7 },
   },
   monthMaster: {
     id: "monthMaster",
     name: "Month Master",
     description: "Maintain a 30-day streak",
-    icon: "👑",
+    iconKey: "monthMaster",
     requirement: { type: "streak", count: 30 },
   },
   perfectDay: {
     id: "perfectDay",
     name: "Perfect Day",
     description: "Hit your daily goal",
-    icon: "⭐",
+    iconKey: "perfectDay",
     requirement: { type: "dailyGoal", count: 1 },
   },
   perfectWeek: {
     id: "perfectWeek",
     name: "Perfect Week",
     description: "Hit your daily goal 7 days in a row",
-    icon: "🏆",
+    iconKey: "perfectWeek",
     requirement: { type: "dailyGoalStreak", count: 7 },
   },
   earlyBird: {
     id: "earlyBird",
     name: "Early Bird",
     description: "Complete a pomodoro before 7am",
-    icon: "🌅",
+    iconKey: "earlyBird",
     requirement: { type: "timeOfDay", before: 7 },
   },
   nightOwl: {
     id: "nightOwl",
     name: "Night Owl",
     description: "Complete a pomodoro after 10pm",
-    icon: "🦉",
+    iconKey: "nightOwl",
     requirement: { type: "timeOfDay", after: 22 },
   },
   marathoner: {
     id: "marathoner",
     name: "Marathoner",
     description: "Complete 8 pomodoros in one day",
-    icon: "🏃",
+    iconKey: "marathoner",
     requirement: { type: "dailyPomodoros", count: 8 },
   },
   listMaster: {
     id: "listMaster",
     name: "List Master",
     description: "Create 5 different lists",
-    icon: "📋",
+    iconKey: "listMaster",
     requirement: { type: "lists", count: 5 },
   },
 };
@@ -178,7 +180,7 @@ function unlockAchievement(achievementId) {
 function showAchievementPopup(achievement) {
   if (!achievementPopup) return;
 
-  achievementIcon.textContent = achievement.icon;
+  achievementIcon.innerHTML = getIcon(achievement.iconKey || achievement.id, { size: 36, className: "svg-achievement-popup" });
   achievementName.textContent = achievement.name;
 
   achievementPopup.classList.add("show");

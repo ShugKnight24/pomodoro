@@ -3,6 +3,7 @@
 // All data stays in localStorage — privacy-first
 
 import { showSuccess } from "./toast.js";
+import { getIcon } from "../utils/icons.js";
 
 const STORAGE_KEY = "pomidor.vault";
 
@@ -196,7 +197,7 @@ function renderSidebar() {
       <span class="vault-folder-name">${escapeHtml(f.name)}</span>
       <span class="vault-folder-count">${state.notes.filter((n) => n.folderId === f.id).length}</span>
       <button class="vault-folder-delete" data-delete-folder="${f.id}" aria-label="Delete folder" title="Delete folder">
-        <i class="fas fa-times"></i>
+        ${getIcon("close", { size: 12 })}
       </button>
     </div>
   `,
@@ -205,7 +206,7 @@ function renderSidebar() {
 
   sidebar.innerHTML = `
     <div class="vault-folder-item ${state.activeFolderId === null ? "active" : ""}" data-vault-folder="all">
-      <i class="fas fa-layer-group"></i>
+      ${getIcon("layer-group", { size: 16 })}
       <span class="vault-folder-name">All Notes</span>
       <span class="vault-folder-count">${state.notes.length}</span>
     </div>
@@ -213,7 +214,7 @@ function renderSidebar() {
     <div class="vault-add-folder">
       <input type="text" class="vault-folder-input" id="vault-new-folder" placeholder="New folder..." maxlength="30" />
       <button class="vault-folder-add-btn" id="vault-add-folder-btn" aria-label="Add folder">
-        <i class="fas fa-plus"></i>
+        ${getIcon("plus", { size: 14 })}
       </button>
     </div>
   `;
@@ -261,7 +262,7 @@ function renderNoteList() {
   if (notes.length === 0) {
     container.innerHTML = `
       <div class="vault-empty">
-        <i class="fas fa-book-open"></i>
+        ${getIcon("book-open", { size: 36 })}
         <p>${state.searchQuery ? "No notes match your search" : "No notes yet. Create one!"}</p>
       </div>
     `;
@@ -274,13 +275,13 @@ function renderNoteList() {
     <div class="vault-note-card ${state.activeNoteId === n.id ? "active" : ""} ${n.pinned ? "pinned" : ""}" data-vault-note="${n.id}">
       <div class="vault-note-card-header">
         <span class="vault-note-title">${escapeHtml(n.title || "Untitled")}</span>
-        ${n.pinned ? '<i class="fas fa-thumbtack vault-pin-badge"></i>' : ""}
+        ${n.pinned ? `<span class="vault-pin-badge">${getIcon("thumbtack", { size: 14 })}</span>` : ""}
       </div>
       <div class="vault-note-preview">${escapeHtml(getPreview(n.content))}</div>
       <div class="vault-note-meta">
         <span class="vault-note-date">${timeAgo(n.updatedAt)}</span>
         ${n.tags.length ? `<span class="vault-note-tags">${n.tags.map((t) => `<span class="vault-tag">#${escapeHtml(t)}</span>`).join("")}</span>` : ""}
-        ${n.linkedNoteIds.length ? `<span class="vault-note-links"><i class="fas fa-link"></i> ${n.linkedNoteIds.length}</span>` : ""}
+        ${n.linkedNoteIds.length ? `<span class="vault-note-links">${getIcon("link", { size: 12 })} ${n.linkedNoteIds.length}</span>` : ""}
       </div>
     </div>
   `,
@@ -305,7 +306,7 @@ function renderEditor() {
   if (!note) {
     editor.innerHTML = `
       <div class="vault-editor-empty">
-        <i class="fas fa-feather-alt"></i>
+        ${getIcon("feather", { size: 36 })}
         <p>Select a note or create a new one</p>
       </div>
     `;
@@ -318,7 +319,7 @@ function renderEditor() {
   );
   const backlinkHtml = backlinks.length
     ? `<div class="vault-backlinks">
-        <h4><i class="fas fa-arrow-left"></i> Backlinks (${backlinks.length})</h4>
+        <h4>${getIcon("arrow-left", { size: 14 })} Backlinks (${backlinks.length})</h4>
         ${backlinks.map((b) => `<a class="vault-backlink" data-goto-note="${b.id}">${escapeHtml(b.title)}</a>`).join("")}
       </div>`
     : "";
@@ -329,7 +330,7 @@ function renderEditor() {
     .filter(Boolean);
   const linkedHtml = linkedNotes.length
     ? `<div class="vault-linked">
-        <h4><i class="fas fa-arrow-right"></i> Links to (${linkedNotes.length})</h4>
+        <h4>${getIcon("arrow-right", { size: 14 })} Links to (${linkedNotes.length})</h4>
         ${linkedNotes.map((l) => `<a class="vault-backlink" data-goto-note="${l.id}">${escapeHtml(l.title)}</a>`).join("")}
       </div>`
     : "";
@@ -338,21 +339,21 @@ function renderEditor() {
     <div class="vault-editor-toolbar">
       <input type="text" class="vault-title-input" id="vault-title-input" value="${escapeHtml(note.title)}" placeholder="Note title..." />
       <div class="vault-editor-actions">
-        <button class="vault-action-btn" id="vault-pin-btn" title="${note.pinned ? "Unpin" : "Pin"} note">
-          <i class="fas fa-thumbtack ${note.pinned ? "pinned" : ""}"></i>
+        <button class="vault-action-btn ${note.pinned ? "active" : ""}" id="vault-pin-btn" title="${note.pinned ? "Unpin" : "Pin"} note">
+          ${getIcon("thumbtack", { size: 14 })}
         </button>
         <select class="vault-folder-select" id="vault-note-folder">
           <option value="">No folder</option>
           ${state.folders.map((f) => `<option value="${f.id}" ${note.folderId === f.id ? "selected" : ""}>${escapeHtml(f.name)}</option>`).join("")}
         </select>
         <button class="vault-action-btn danger" id="vault-delete-btn" title="Delete note">
-          <i class="fas fa-trash"></i>
+          ${getIcon("trash", { size: 14 })}
         </button>
       </div>
     </div>
     <div class="vault-tag-bar">
       <div class="vault-tags-list" id="vault-tags-list">
-        ${note.tags.map((t, i) => `<span class="vault-tag editable">#${escapeHtml(t)} <button class="vault-tag-remove" data-remove-tag="${i}"><i class="fas fa-times"></i></button></span>`).join("")}
+        ${note.tags.map((t, i) => `<span class="vault-tag editable">#${escapeHtml(t)} <button class="vault-tag-remove" data-remove-tag="${i}">${getIcon("close", { size: 10 })}</button></span>`).join("")}
       </div>
       <input type="text" class="vault-tag-input" id="vault-tag-input" placeholder="Add tag..." maxlength="20" />
     </div>
@@ -532,8 +533,8 @@ function setupToolbar() {
     }
     viewToggle.innerHTML =
       state.viewMode === "grid"
-        ? '<i class="fas fa-th"></i>'
-        : '<i class="fas fa-list"></i>';
+        ? getIcon("grid", { size: 16 })
+        : getIcon("list", { size: 16 });
     saveState();
   });
 }
