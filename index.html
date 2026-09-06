@@ -244,6 +244,61 @@
           <p class="setting-hint volume-display">100%</p>
         </div>
 
+        <!-- Mascot & Companion Settings -->
+        <div class="setting-group">
+          <h3 class="setting-label">Mascot Companion</h3>
+          <div class="toggle-wrapper">
+            <span class="toggle-label">Hidden</span>
+            <label class="switch">
+              <input type="checkbox" id="mascot-toggle" checked />
+              <span class="slider round"></span>
+            </label>
+            <span class="toggle-label">Visible</span>
+          </div>
+          <p class="setting-hint">Shows your cute animated brand buddy on screen</p>
+        </div>
+
+        <div class="setting-group">
+          <h3 class="setting-label">Companion Character</h3>
+          <select id="mascot-select" class="setting-select" aria-label="Select mascot companion">
+            <option value="pomi">Pomi the Tomato (Pomidor Official)</option>
+            <option value="kip">Kip the Cyber-Cat (ByteCraft)</option>
+            <option value="chronos">Chronos the Time Owl (Aegis Time)</option>
+            <option value="pip">Pip the Penguin (ChillWork)</option>
+            <option value="bolt">Bolt the Clockwork Bot (Mechanica)</option>
+          </select>
+        </div>
+
+        <div class="setting-group">
+          <h3 class="setting-label">Companion Mode</h3>
+          <select id="companion-mode-select" class="setting-select" aria-label="Select companion mode">
+            <option value="follow">Follow Me Across All Apps (One Mascot)</option>
+            <option value="specialist">Dedicated Specialists (Different Mascot per App)</option>
+          </select>
+          <p class="setting-hint">Specialists place Pomi on Timer, Kip on Tasks, Chronos on Calendar, Bolt on Stats & Tactics!</p>
+        </div>
+
+        <!-- App Onboarding Tours -->
+        <div class="setting-group">
+          <h3 class="setting-label">Interactive Mascot Tours</h3>
+          <p class="setting-hint">Have your mascot guide you through each tool's features and superpowers.</p>
+          <div class="tour-quick-buttons" style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
+            <button class="button data-btn" id="restart-all-onboarding-btn" style="width: 100%; justify-content: center;">
+              🔄 Restart All Onboarding Tours
+            </button>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+              <button class="preset-btn tour-tool-btn" data-tour-tool="pomodoro">Timer Tour</button>
+              <button class="preset-btn tour-tool-btn" data-tour-tool="todo">Tasks Tour</button>
+              <button class="preset-btn tour-tool-btn" data-tour-tool="kanban">Kanban Tour</button>
+              <button class="preset-btn tour-tool-btn" data-tour-tool="vault">Vault Tour</button>
+              <button class="preset-btn tour-tool-btn" data-tour-tool="calendar">Calendar Tour</button>
+              <button class="preset-btn tour-tool-btn" data-tour-tool="stats">Stats Tour</button>
+              <button class="preset-btn tour-tool-btn" data-tour-tool="hero">Hero Tour</button>
+              <button class="preset-btn tour-tool-btn" data-tour-tool="tactics">Tactics Tour</button>
+            </div>
+          </div>
+        </div>
+
         <!-- Data Management -->
         <div class="setting-group">
           <h3 class="setting-label">Data Management</h3>
@@ -911,6 +966,9 @@
           </button>
           <button class="view-btn" data-view="hero">
             <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/></svg> Hero
+          </button>
+          <button class="view-btn" data-view="tactics" id="view-btn-tactics">
+            <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Tactics &amp; Pets
           </button>
         </div>
       </div>
@@ -1664,6 +1722,8 @@
 
       <!-- Hero & Quests Dashboard -->
       <div class="hero-container hidden" id="hero-container"></div>
+      <!-- Tactics Arena & Exploration Dashboard -->
+      <div class="tactics-container hidden" id="tactics-container"></div>
       <!-- Floating Loot Container -->
       <div class="floating-loot-container" id="floating-loot-container"></div>
 

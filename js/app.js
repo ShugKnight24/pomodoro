@@ -18,6 +18,10 @@ import { initHabits } from "./modules/habits.js";
 import { initMood } from "./modules/mood.js";
 import { initHero } from "./modules/gamification/hero.js";
 import { initHeroUI } from "./modules/gamification/heroUI.js";
+import { initCompanion } from "./modules/mascot/companion.js";
+import { initPets } from "./modules/gamification/pets.js";
+import { initExploration } from "./modules/gamification/tacticsExploration.js";
+import { initTacticsUI } from "./modules/gamification/tacticsUI.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   initI18n();
@@ -40,4 +44,8 @@ document.addEventListener("DOMContentLoaded", () => {
   initKanban();
   initHero();
   initHeroUI();
+  initPets();
+  initExploration();
+  initTacticsUI();
+  initCompanion();
 });
