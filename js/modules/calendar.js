@@ -1,6 +1,7 @@
 "use strict";
 
 import { getStatsForDate } from "./stats.js";
+import { getIcon } from "../utils/icons.js";
 
 const state = {
   currentDate: new Date(),
@@ -72,11 +73,11 @@ function createDatePicker() {
   picker.innerHTML = `
     <div class="date-picker-header">
       <button class="date-picker-nav" data-picker-prev-year aria-label="Previous year">
-        <i class="fas fa-chevron-left"></i>
+        ${getIcon("chevron-left", { size: 14 })}
       </button>
       <span class="date-picker-year" data-picker-year></span>
       <button class="date-picker-nav" data-picker-next-year aria-label="Next year">
-        <i class="fas fa-chevron-right"></i>
+        ${getIcon("chevron-right", { size: 14 })}
       </button>
     </div>
     <div class="date-picker-months" data-picker-months></div>
@@ -292,7 +293,7 @@ function showTooltip(event, task) {
     <div class="tooltip-header">${task.name}</div>
     <div class="tooltip-meta">
       <span class="tooltip-priority ${task.priority}">${task.priority}</span>
-      <span>${task.completed ? "✓ Completed" : "○ Active"}</span>
+      <span>${task.completed ? `${getIcon("check", { size: 12 })} Completed` : "Active"}</span>
     </div>
     ${estimateText}
   `;
@@ -646,7 +647,6 @@ function renderDayModalTasks(tasks) {
     .map((task) => {
       const priorityClass = `priority-${task.priority || "medium"}`;
       const completedClass = task.completed ? "completed" : "";
-      const checkIcon = task.completed ? "fa-check-circle" : "fa-circle";
       const pomodoroInfo = task.estimatedPomodoros
         ? `<span class="day-task-pomodoros">${task.pomodoros || 0}/${task.estimatedPomodoros}</span>`
         : task.pomodoros
@@ -655,7 +655,7 @@ function renderDayModalTasks(tasks) {
 
       return `
         <div class="day-task-item ${completedClass} ${priorityClass}">
-          <i class="fas ${checkIcon} day-task-check"></i>
+          ${task.completed ? getIcon("check", { size: 14, className: "day-task-check" }) : getIcon("clock", { size: 14, className: "day-task-check" })}
           <span class="day-task-name">${task.name}</span>
           ${pomodoroInfo}
         </div>

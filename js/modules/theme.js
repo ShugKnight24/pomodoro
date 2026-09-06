@@ -1,6 +1,4 @@
-/**
- * Theme Module - Dark Mode Toggle
- */
+import { getIcon } from "../utils/icons.js";
 
 const THEME_KEY = "pomodoro-theme";
 
@@ -44,15 +42,10 @@ function applyTheme(theme) {
 
   // Update theme toggle icon
   const themeToggle = document.getElementById("theme-toggle");
-  const icon = themeToggle?.querySelector("i");
-
-  if (icon) {
-    if (theme === "dark") {
-      icon.classList.remove("fa-moon");
-      icon.classList.add("fa-sun");
-    } else {
-      icon.classList.remove("fa-sun");
-      icon.classList.add("fa-moon");
-    }
+  if (themeToggle) {
+    themeToggle.innerHTML =
+      theme === "dark"
+        ? getIcon("sun", { size: 18 })
+        : getIcon("moon", { size: 18 });
   }
 }

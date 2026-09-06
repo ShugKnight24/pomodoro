@@ -3,6 +3,7 @@
 // Includes a built-in tutorial that teaches users the app on first load
 
 import { showSuccess } from "./toast.js";
+import { getIcon } from "../utils/icons.js";
 
 const STORAGE_KEY = "pomidor.kanban";
 const TUTORIAL_KEY = "pomidor.kanban.tutorialDone";
@@ -10,7 +11,7 @@ const TUTORIAL_KEY = "pomidor.kanban.tutorialDone";
 // Default tutorial board
 const TUTORIAL_BOARD = {
   id: "tutorial",
-  title: "Welcome to Pomidor! 🍅",
+  title: "Welcome to Pomidor!",
   columns: [
     {
       id: "col-start",
@@ -27,7 +28,7 @@ const TUTORIAL_BOARD = {
         },
         {
           id: "t2",
-          title: "Try the Pomodoro Timer ⏲️",
+          title: "Try the Pomodoro Timer",
           description:
             "Scroll up to the timer section. Try setting a session length and pressing Start.\n\nThe timer supports:\n• Custom durations (25/5, 50/10, 90/20)\n• Classic or Modern timer styles\n• Focus Mode (press F) for distraction-free sessions",
           labels: ["tutorial", "timer"],
@@ -35,7 +36,7 @@ const TUTORIAL_BOARD = {
         },
         {
           id: "t3",
-          title: "Create a To-Do List ✅",
+          title: "Create a To-Do List",
           description:
             "Switch to the List view and create your first list:\n1. Type a list name and press Enter\n2. Add tasks with priorities and due dates\n3. Drag tasks to reorder them\n4. Try the search and filter options",
           labels: ["tutorial", "tasks"],
@@ -43,7 +44,7 @@ const TUTORIAL_BOARD = {
         },
         {
           id: "t4",
-          title: "Explore the Calendar 📅",
+          title: "Explore the Calendar",
           description:
             "Switch to Calendar view to see your tasks over time:\n• Month and Week views\n• Click any day to see details\n• Quick-add tasks from the calendar\n• Activity heatmap shows your productivity",
           labels: ["tutorial", "calendar"],
@@ -51,7 +52,7 @@ const TUTORIAL_BOARD = {
         },
         {
           id: "t5",
-          title: "Check Your Stats 📊",
+          title: "Check Your Stats",
           description:
             "Switch to Stats view to track your progress:\n• Daily pomodoro count & goals\n• Streak tracking (keep the fire going!)\n• Weekly trends & productivity insights\n• Activity heatmap (GitHub-style)",
           labels: ["tutorial", "stats"],
@@ -59,7 +60,7 @@ const TUTORIAL_BOARD = {
         },
         {
           id: "t6",
-          title: "Try the Vault (Notes) 📝",
+          title: "Try the Vault (Notes)",
           description:
             "Switch to Vault view for your personal notes:\n• Create folders to organize\n• Tag notes for easy search\n• Link notes with [[Note Title]] syntax\n• See backlinks automatically",
           labels: ["tutorial", "vault"],
@@ -67,7 +68,7 @@ const TUTORIAL_BOARD = {
         },
         {
           id: "t7",
-          title: "Customize Everything ⚙️",
+          title: "Customize Everything",
           description:
             "Open Settings (gear icon) to personalize:\n• 4 themes: Modern, Legal Pad, Midnight, Ocean\n• Dark / Light mode\n• English / Русский language\n• Timer presets & notifications\n• Export/import your data anytime",
           labels: ["tutorial", "settings"],
@@ -344,7 +345,7 @@ function renderBoardSelector() {
           ${escapeHtml(b.title)}
           ${
             b.id !== "tutorial"
-              ? `<span class="kanban-board-delete" data-delete-board="${b.id}"><i class="fas fa-times"></i></span>`
+              ? `<span class="kanban-board-delete" data-delete-board="${b.id}">${getIcon("close", { size: 12 })}</span>`
               : ""
           }
         </button>`,
@@ -376,7 +377,7 @@ function renderBoard() {
   if (!board) {
     container.innerHTML = `
       <div class="kanban-empty">
-        <i class="fas fa-columns"></i>
+        ${getIcon("columns", { size: 36 })}
         <p>No boards yet. Create one to get started!</p>
       </div>
     `;
@@ -384,9 +385,9 @@ function renderBoard() {
   }
 
   const priority_icons = {
-    high: "🔴",
-    medium: "🟡",
-    low: "🟢",
+    high: getIcon("priority-high", { size: 14 }),
+    medium: getIcon("priority-medium", { size: 14 }),
+    low: getIcon("priority-low", { size: 14 }),
   };
 
   container.innerHTML = board.columns
@@ -398,12 +399,12 @@ function renderBoard() {
         <span class="kanban-column-count">${col.cards.length}</span>
         <div class="kanban-column-actions">
           <button class="kanban-col-btn" data-add-card="${col.id}" title="Add card">
-            <i class="fas fa-plus"></i>
+            ${getIcon("plus", { size: 12 })}
           </button>
           ${
             board.columns.length > 1
               ? `<button class="kanban-col-btn danger" data-delete-column="${col.id}" title="Delete column">
-              <i class="fas fa-trash"></i>
+              ${getIcon("trash", { size: 12 })}
             </button>`
               : ""
           }
@@ -420,9 +421,9 @@ function renderBoard() {
             <div class="kanban-card-title">${escapeHtml(card.title)}</div>
             ${card.description ? `<div class="kanban-card-desc">${escapeHtml(card.description).substring(0, 100)}${card.description.length > 100 ? "..." : ""}</div>` : ""}
             <div class="kanban-card-footer">
-              <span class="kanban-card-priority">${priority_icons[card.priority] || "🟡"}</span>
+              <span class="kanban-card-priority">${priority_icons[card.priority] || priority_icons.medium}</span>
               <button class="kanban-card-delete" data-delete-card="${card.id}" data-from-column="${col.id}">
-                <i class="fas fa-times"></i>
+                ${getIcon("close", { size: 12 })}
               </button>
             </div>
           </div>
@@ -515,7 +516,7 @@ function openCardModal(boardId, columnId, cardId) {
     <div class="kanban-modal-content">
       <div class="kanban-modal-header">
         <input type="text" class="kanban-modal-title" value="${escapeHtml(card.title)}" id="kanban-modal-title" />
-        <button class="modal-close" id="kanban-modal-close"><i class="fas fa-times"></i></button>
+        <button class="modal-close" id="kanban-modal-close">${getIcon("close", { size: 14 })}</button>
       </div>
       <div class="kanban-modal-body">
         <div class="kanban-modal-field">

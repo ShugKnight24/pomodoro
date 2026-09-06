@@ -1,4 +1,4 @@
-"use strict";
+import { getIcon } from "../utils/icons.js";
 
 let toastContainer = null;
 
@@ -35,10 +35,10 @@ export function showToast(message, type = "info", duration = 3000) {
   toast.setAttribute("role", "status");
 
   const icons = {
-    success: '<i class="fas fa-check-square"></i>',
-    error: '<i class="fas fa-times-circle"></i>',
-    warning: '<i class="fas fa-exclamation-triangle"></i>',
-    info: '<i class="fas fa-info-circle"></i>',
+    success: getIcon("toast-success", { size: 18 }),
+    error: getIcon("toast-error", { size: 18 }),
+    warning: getIcon("toast-warning", { size: 18 }),
+    info: getIcon("toast-info", { size: 18 }),
   };
 
   toast.innerHTML = `
