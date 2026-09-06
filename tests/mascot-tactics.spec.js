@@ -29,7 +29,7 @@ test.describe("Mascot Companion, App Onboarding Tours & Tactics RPG Engine", () 
     // Avatar stage with SVG
     const stage = page.locator("#companion-avatar-stage");
     await expect(stage).toBeVisible();
-    await expect(page.locator(".mascot-svg.mascot-pomi")).toBeVisible();
+    await expect(stage.locator(".mascot-svg.mascot-pomi")).toBeVisible();
   });
 
   test("petting mascot triggers heart animation and joyful reaction", async ({
@@ -86,7 +86,7 @@ test.describe("Mascot Companion, App Onboarding Tours & Tactics RPG Engine", () 
     // Badge and avatar should update to Kip the Cyber-Cat
     const mascotName = page.locator("#mascot-companion-widget .mascot-badge-tag");
     await expect(mascotName).toContainText("Kip");
-    await expect(page.locator(".mascot-svg.mascot-kip")).toBeVisible();
+    await expect(page.locator("#companion-avatar-stage .mascot-svg.mascot-kip")).toBeVisible();
   });
 
   test("onboarding tour launches spotlight overlay and advances through steps", async ({
