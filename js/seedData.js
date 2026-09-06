@@ -681,7 +681,7 @@ function generateVault(profile) {
         id: 6,
         title: "Blog Post Ideas",
         content:
-          "# Blog Ideas\n\n## Ready to Draft\n- The Strangler Fig pattern for frontend modernization\n- Why I chose vanilla JS over React for my productivity app\n\n## Needs Research\n- Local-first software: the future of privacy\n- WebRTC for peer-to-peer sync (no server needed)\n\n## Published\n- ~~My Pomodoro workflow~~ ✅",
+          "# Blog Ideas\n\n## Ready to Draft\n- The Strangler Fig pattern for frontend modernization\n- Why I chose vanilla JS over React for my productivity app\n\n## Needs Research\n- Local-first software: the future of privacy\n- WebRTC for peer-to-peer sync (no server needed)\n\n## Published\n- ~~My Pomodoro workflow~~ [Completed]",
         folderId: 3,
         tags: ["blog", "writing", "ideas"],
         pinned: false,
@@ -1005,7 +1005,7 @@ function clearAllPomidorData() {
 function loadSeedData(profile = "committed") {
   if (profile === "clean") {
     clearAllPomidorData();
-    console.log("🧹 All Pomidor data cleared from localStorage.");
+    console.log("[Clean] All Pomidor data cleared from localStorage.");
     console.log("   Reload the page to see a fresh state.");
     return;
   }
@@ -1088,19 +1088,19 @@ function loadSeedData(profile = "committed") {
   localStorage.setItem("pomidor-lang", "en");
 
   // Print summary
-  console.log(`🍅 Seed data loaded: "${profile}" — ${config.description}`);
+  console.log(`[Seed] Data loaded: "${profile}" — ${config.description}`);
   console.log(
-    `   📊 Stats: ${stats.totalPomodoros} pomodoros, ${stats.totalTasksCompleted} tasks, ${stats.currentStreak}-day streak (longest: ${stats.longestStreak})`,
+    `   Stats: ${stats.totalPomodoros} pomodoros, ${stats.totalTasksCompleted} tasks, ${stats.currentStreak}-day streak (longest: ${stats.longestStreak})`,
   );
   console.log(
-    `   📋 Todos: ${todoData.lists.length} lists, ${todoData.lists.reduce((a, l) => a + l.tasks.length, 0)} active tasks, ${todoData.archive.tasks.length} archived`,
+    `   Todos: ${todoData.lists.length} lists, ${todoData.lists.reduce((a, l) => a + l.tasks.length, 0)} active tasks, ${todoData.archive.tasks.length} archived`,
   );
-  console.log(`   🏆 Achievements: ${achievements.length}/13 unlocked`);
+  console.log(`   Achievements: ${achievements.length}/13 unlocked`);
   console.log(
-    `   📝 Vault: ${vault.notes.length} notes, ${vault.folders.length} folders`,
+    `   Vault: ${vault.notes.length} notes, ${vault.folders.length} folders`,
   );
-  console.log(`   📌 Kanban: ${kanban.boards.length} boards`);
-  console.log(`   ⏱️  Sessions spanning ${config.days} days of history`);
+  console.log(`   Kanban: ${kanban.boards.length} boards`);
+  console.log(`   Sessions spanning ${config.days} days of history`);
   console.log("");
   console.log("   Reload the page to see the seeded state.");
 
@@ -1204,7 +1204,7 @@ function loadCorruptData() {
     }),
   );
 
-  console.log("💀 Corrupt seed data loaded for resilience testing.");
+  console.log("[Corrupt] Corrupt seed data loaded for resilience testing.");
   console.log("   This simulates: wrong types, missing fields, null entries,");
   console.log("   invalid dates, negative values, and broken references.");
   console.log("   Reload the page and check the console for errors.");
@@ -1218,7 +1218,7 @@ if (typeof window !== "undefined") {
   window.loadCorruptData = loadCorruptData;
   window.clearAllPomidorData = clearAllPomidorData;
 
-  console.log("🍅 Pomidor Seed Data Loader ready!");
+  console.log("[Ready] Pomidor Seed Data Loader ready!");
   console.log("   Available commands:");
   console.log("     loadSeedData('fresh')       — Empty state");
   console.log("     loadSeedData('casual')      — 2-week light user");

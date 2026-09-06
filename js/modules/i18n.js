@@ -97,7 +97,7 @@ const translations = {
 
     // Brand
     tagline: "Own your time, own your data",
-    madeWith: "Made with 🍅 by open source contributors",
+    madeWith: "Made by open source contributors",
   },
   ru: {
     // Settings
@@ -193,7 +193,7 @@ const translations = {
 
     // Brand
     tagline: "Владей своим временем, владей своими данными",
-    madeWith: "Сделано с 🍅 участниками с открытым кодом",
+    madeWith: "Создано участниками с открытым кодом",
   },
 };
 

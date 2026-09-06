@@ -307,8 +307,8 @@ function timerTick() {
 function updateTabTitle() {
   if (state.currentSeconds >= 0) {
     const timeString = formatTime(state.currentSeconds);
-    const mode = state.isBreak ? "☕ Break" : "🍅 Focus";
-    document.title = `${timeString} - ${mode}`;
+    const mode = state.isBreak ? "Break" : "Focus";
+    document.title = `(${timeString}) ${mode} — Pomidor`;
   } else {
     document.title = originalTitle;
   }
@@ -329,7 +329,7 @@ async function sessionComplete() {
   recordPomodoro(state.sessionTime);
 
   // Send browser notification
-  sendNotification("Pomodoro Complete! 🍅", "Great work! Time for a break.");
+  sendNotification("Pomodoro Complete!", "Great work! Time for a break.");
 
   // Dispatch pomodoro complete event for achievements
   dispatchTimerEvent("pomodoro-complete", {
@@ -392,7 +392,7 @@ function breakComplete() {
   playBuzzer();
 
   // Send browser notification
-  sendNotification("Break Over! ☕", "Ready for another pomodoro?");
+  sendNotification("Break Over!", "Ready for another pomodoro?");
 
   clearInterval(state.breakTimerId);
   toggleSandStream(false);
