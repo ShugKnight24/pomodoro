@@ -1,9 +1,13 @@
 /**
  * tacticsEngine.js — Core Turn-Based Tactical Grid Combat Engine
- * Data-oriented grid battle simulation following gamedev-forge & game-feel principles.
+ * Final Fantasy Tactics-inspired data-oriented grid battle simulation.
+ * Features Job abilities, directional facing, AoE spells, Limit Breaks,
+ * reaction abilities, status effects, and rich combat juice feedback. Zero emojis.
  */
 
 "use strict";
+
+import { getJob } from "./jobs.js";
 
 export const GRID_WIDTH = 7;
 export const GRID_HEIGHT = 7;
@@ -46,11 +50,10 @@ export class TacticsBattle {
     for (let y = 0; y < GRID_HEIGHT; y++) {
       for (let x = 0; x < GRID_WIDTH; x++) {
         let terrain = "plain";
-        // Procedural terrain generation if not provided
         if (customTerrain?.[`${x},${y}`]) {
           terrain = customTerrain[`${x},${y}`];
         } else {
-          // Add interesting tactical pillars & time rifts
+          // Add tactical pillars & time rifts
           if ((x === 2 && y === 2) || (x === 4 && y === 4) || (x === 2 && y === 4) || (x === 4 && y === 2)) {
             terrain = "cover";
           } else if (x === 3 && y === 3) {
@@ -65,37 +68,48 @@ export class TacticsBattle {
   }
 
   initUnits(playerUnits, enemyUnits) {
-    // Position player units on left flank (x = 0..1)
+    // Up to 5 player squad positions
     const playerStarts = [
       { x: 1, y: 3 }, // Hero center
-      { x: 0, y: 2 }, // Pet 1
-      { x: 0, y: 4 }, // Pet 2
+      { x: 0, y: 2 }, // Ally / Pet 1
+      { x: 0, y: 4 }, // Ally / Pet 2
+      { x: 1, y: 1 }, // Ally 3
+      { x: 1, y: 5 }, // Ally 4
     ];
 
     playerUnits.forEach((u, i) => {
       const pos = playerStarts[i] || { x: 0, y: i };
+      const jobData = u.jobId ? getJob(u.jobId) : null;
       const unit = {
         ...u,
         side: "player",
         x: pos.x,
         y: pos.y,
-        hp: u.hp || u.maxHp,
-        maxHp: u.maxHp,
+        facing: "E", // Facing right towards enemy lines
+        hp: u.hp || u.maxHp || 150,
+        maxHp: u.maxHp || 150,
+        mp: u.mp !== undefined ? u.mp : 50,
+        maxMp: u.maxMp || 50,
         ap: 3,
         maxAp: 3,
+        limitGauge: 20, // Start with 20% limit break
+        statusEffects: [],
+        reaction: jobData?.reaction || null,
+        jobData,
         isDefending: false,
         alive: true,
       };
       this.units.set(unit.id, unit);
-      this.getCell(pos.x, pos.y).unitId = unit.id;
+      const cell = this.getCell(pos.x, pos.y);
+      if (cell) cell.unitId = unit.id;
     });
 
-    // Position enemy units on right flank (x = 5..6)
     const enemyStarts = [
       { x: 5, y: 3 },
       { x: 6, y: 2 },
       { x: 6, y: 4 },
       { x: 5, y: 1 },
+      { x: 5, y: 5 },
     ];
 
     enemyUnits.forEach((u, i) => {
@@ -105,15 +119,21 @@ export class TacticsBattle {
         side: "enemy",
         x: pos.x,
         y: pos.y,
-        hp: u.hp || u.maxHp,
-        maxHp: u.maxHp,
+        facing: "W", // Facing left towards player
+        hp: u.hp || u.maxHp || 120,
+        maxHp: u.maxHp || 120,
+        mp: u.mp !== undefined ? u.mp : 40,
+        maxMp: u.maxMp || 40,
         ap: 3,
         maxAp: 3,
+        limitGauge: 0,
+        statusEffects: [],
         isDefending: false,
         alive: true,
       };
       this.units.set(unit.id, unit);
-      this.getCell(pos.x, pos.y).unitId = unit.id;
+      const cell = this.getCell(pos.x, pos.y);
+      if (cell) cell.unitId = unit.id;
     });
   }
 
@@ -124,54 +144,79 @@ export class TacticsBattle {
 
   calculateTurnTimeline() {
     const living = Array.from(this.units.values()).filter((u) => u.alive);
-    // Sort by Speed descending
-    this.turnOrder = living.sort((a, b) => b.spd - a.spd).map((u) => u.id);
+    this.turnOrder = living.sort((a, b) => (b.spd || 10) - (a.spd || 10)).map((u) => u.id);
     this.currentTurnIndex = 0;
     this.startTurn();
   }
 
   getActiveUnit() {
     const id = this.turnOrder[this.currentTurnIndex];
-    return this.units.get(id);
+    return this.units.get(id) || null;
   }
 
   startTurn() {
-    if (this.isOver) return;
-
     const unit = this.getActiveUnit();
     if (!unit || !unit.alive) {
       this.nextTurn();
       return;
     }
 
-    unit.ap = unit.maxAp;
     unit.isDefending = false;
 
-    // Check terrain at unit's tile
-    const cell = this.getCell(unit.x, unit.y);
-    if (cell.terrain === "time_rift") {
-      unit.ap += 1;
-      this.addJuice("float", unit.x, unit.y, "+1 AP (Rift)", "#38bdf8");
-    } else if (cell.terrain === "healing_glyph") {
-      const heal = Math.min(unit.maxHp - unit.hp, 20);
-      if (heal > 0) {
-        unit.hp += heal;
-        this.addJuice("float", unit.x, unit.y, `+${heal} HP`, "#10b981");
+    // Process Status Effects
+    let hasStop = false;
+    const remainingStatuses = [];
+
+    for (const status of unit.statusEffects) {
+      if (status.type === "poison") {
+        const poisonDmg = Math.max(5, Math.round(unit.maxHp * 0.1));
+        unit.hp = Math.max(1, unit.hp - poisonDmg);
+        this.addJuice("float", unit.x, unit.y, `-${poisonDmg} Poison`, "#a855f7");
+      } else if (status.type === "regen") {
+        const regenHeal = Math.max(8, Math.round(unit.maxHp * 0.15));
+        unit.hp = Math.min(unit.maxHp, unit.hp + regenHeal);
+        this.addJuice("float", unit.x, unit.y, `+${regenHeal} Regen`, "#10b981");
+      } else if (status.type === "stop") {
+        hasStop = true;
+        this.addJuice("float", unit.x, unit.y, "Stopped!", "#ec4899");
+      }
+
+      status.duration -= 1;
+      if (status.duration > 0) {
+        remainingStatuses.push(status);
       }
     }
+    unit.statusEffects = remainingStatuses;
 
-    this.combatLog.unshift(`[Turn] ${unit.name}'s turn (AP: ${unit.ap})`);
+    if (hasStop) {
+      this.combatLog.unshift(`${unit.name}'s turn was skipped due to Stop!`);
+      this.nextTurn();
+      return;
+    }
 
-    // If AI turn, trigger AI execution
+    // Reset AP: Haste gives +1 AP, Slow gives -1 AP
+    const hasHaste = unit.statusEffects.some((s) => s.type === "haste");
+    const hasSlow = unit.statusEffects.some((s) => s.type === "slow");
+    unit.ap = unit.maxAp + (hasHaste ? 1 : 0) - (hasSlow ? 1 : 0);
+
+    // Terrain effect at start of turn
+    const cell = this.getCell(unit.x, unit.y);
+    if (cell?.terrain === "healing_glyph") {
+      unit.hp = Math.min(unit.maxHp, unit.hp + 20);
+      this.addJuice("float", unit.x, unit.y, "+20 Vitality", "#10b981");
+    } else if (cell?.terrain === "time_rift") {
+      unit.ap += 1;
+      this.addJuice("float", unit.x, unit.y, "+1 Rift AP", "#38bdf8");
+    }
+
+    this.combatLog.unshift(`Round ${this.round} — ${unit.name}'s turn (${unit.side.toUpperCase()}).`);
+
     if (unit.side === "enemy") {
-      setTimeout(() => this.executeEnemyAI(unit), 450);
+      setTimeout(() => this.executeEnemyAI(unit), 500);
     }
   }
 
   nextTurn() {
-    this.checkVictoryCondition();
-    if (this.isOver) return;
-
     this.currentTurnIndex++;
     if (this.currentTurnIndex >= this.turnOrder.length) {
       this.round++;
@@ -179,20 +224,37 @@ export class TacticsBattle {
       return;
     }
 
-    this.startTurn();
+    const nextUnit = this.getActiveUnit();
+    if (!nextUnit || !nextUnit.alive) {
+      this.nextTurn();
+    } else {
+      this.startTurn();
+    }
   }
 
-  // --- ACTIONS ---
+  setUnitFacing(unitId, facing) {
+    const unit = this.units.get(unitId);
+    if (!unit) return;
+    if (["N", "E", "S", "W"].includes(facing)) {
+      unit.facing = facing;
+      this.combatLog.unshift(`${unit.name} turned to face ${facing}.`);
+    }
+  }
 
   canMove(unitId, targetX, targetY) {
     const unit = this.units.get(unitId);
     if (!unit || !unit.alive || unit.ap < 1) return false;
 
-    const targetCell = this.getCell(targetX, targetY);
-    if (!targetCell || targetCell.unitId || targetCell.terrain === "cover") return false;
+    // Immobilized check
+    if (unit.statusEffects.some((s) => s.type === "immobilize")) return false;
+
+    const cell = this.getCell(targetX, targetY);
+    if (!cell || cell.unitId !== null) return false;
+    if (cell.terrain === "cover") return false;
 
     const dist = Math.abs(unit.x - targetX) + Math.abs(unit.y - targetY);
-    return dist <= (unit.moveRange || 3);
+    const maxMove = unit.jobData?.statModifiers?.mov || unit.moveRange || 3;
+    return dist <= maxMove;
   }
 
   move(unitId, targetX, targetY) {
@@ -201,6 +263,15 @@ export class TacticsBattle {
     const unit = this.units.get(unitId);
     const oldCell = this.getCell(unit.x, unit.y);
     const newCell = this.getCell(targetX, targetY);
+
+    // Auto-update facing based on move direction
+    const dx = targetX - unit.x;
+    const dy = targetY - unit.y;
+    if (Math.abs(dx) >= Math.abs(dy)) {
+      unit.facing = dx > 0 ? "E" : "W";
+    } else {
+      unit.facing = dy > 0 ? "S" : "N";
+    }
 
     oldCell.unitId = null;
     newCell.unitId = unit.id;
@@ -219,12 +290,36 @@ export class TacticsBattle {
     return true;
   }
 
+  getRelativeAngle(attacker, target) {
+    const dx = attacker.x - target.x;
+    const dy = attacker.y - target.y;
+
+    let incomingDir = "W";
+    if (Math.abs(dx) >= Math.abs(dy)) {
+      incomingDir = dx > 0 ? "E" : "W";
+    } else {
+      incomingDir = dy > 0 ? "S" : "N";
+    }
+
+    const opposite = { N: "S", S: "N", E: "W", W: "E" };
+    if (target.facing === incomingDir) {
+      return "front";
+    } else if (target.facing === opposite[incomingDir]) {
+      return "back";
+    } else {
+      return "flank";
+    }
+  }
+
   canAttack(attackerId, targetId) {
     const attacker = this.units.get(attackerId);
     const target = this.units.get(targetId);
     if (!attacker || !target || !attacker.alive || !target.alive) return false;
-    if (attacker.side === target.side) return false; // Friendly fire blocked
+    if (attacker.side === target.side) return false;
     if (attacker.ap < 1) return false;
+
+    // Vanish protection against physical attacks
+    if (target.statusEffects.some((s) => s.type === "vanish")) return false;
 
     const dist = Math.abs(attacker.x - target.x) + Math.abs(attacker.y - target.y);
     const range = attacker.attackRange || 1;
@@ -238,8 +333,21 @@ export class TacticsBattle {
     const target = this.units.get(targetId);
     attacker.ap -= 1;
 
-    // Damage calculation: (ATK * 1.5) - (DEF * 0.75)
-    const baseDamage = Math.max(8, Math.round(attacker.atk * 1.5 - target.def * 0.7));
+    // Directional calculation (FFT Style)
+    const angle = this.getRelativeAngle(attacker, target);
+    let angleMultiplier = 1.0;
+    let angleLabel = "";
+
+    if (angle === "back") {
+      angleMultiplier = 1.5;
+      angleLabel = "BACK ATTACK!";
+    } else if (angle === "flank") {
+      angleMultiplier = 1.25;
+      angleLabel = "FLANK!";
+    }
+
+    // Base damage: (ATK * 1.5) - (DEF * 0.7)
+    const baseDamage = Math.max(10, Math.round((attacker.atk || 20) * 1.5 - (target.def || 15) * 0.7));
 
     // Elemental multiplier
     let elemMultiplier = 1.0;
@@ -248,31 +356,266 @@ export class TacticsBattle {
       if (ELEMENT_CHART[attacker.element]?.weakAgainst === target.element) elemMultiplier = 0.75;
     }
 
-    // Critical strike chance (15% base + Speed difference)
-    const isCrit = Math.random() < 0.15 + Math.max(0, (attacker.spd - target.spd) * 0.015);
+    // Critical strike chance
+    const isCrit = Math.random() < 0.15 || angle === "back";
     const critMultiplier = isCrit ? 1.6 : 1.0;
 
-    // Defensive stance
+    // Protect buff reduces physical damage by 35%
+    const hasProtect = target.statusEffects.some((s) => s.type === "protect");
+    const protectMultiplier = hasProtect ? 0.65 : 1.0;
     const defMultiplier = target.isDefending ? 0.6 : 1.0;
 
-    const finalDamage = Math.max(5, Math.round(baseDamage * elemMultiplier * critMultiplier * defMultiplier));
+    const finalDamage = Math.max(
+      6,
+      Math.round(baseDamage * elemMultiplier * angleMultiplier * critMultiplier * defMultiplier * protectMultiplier),
+    );
 
     target.hp = Math.max(0, target.hp - finalDamage);
 
+    // Limit break charging
+    attacker.limitGauge = Math.min(100, (attacker.limitGauge || 0) + 15);
+    target.limitGauge = Math.min(100, (target.limitGauge || 0) + Math.round((finalDamage / target.maxHp) * 65));
+
     // Juice feedback
-    this.addJuice("float", target.x, target.y, `-${finalDamage}${isCrit ? " CRIT!" : ""}`, isCrit ? "#f59e0b" : "#ef4444");
-    this.addJuice("shake", target.x, target.y, isCrit ? 6 : 3);
+    const badgeText = `-${finalDamage}${angleLabel ? " " + angleLabel : ""}${isCrit && angle !== "back" ? " CRIT!" : ""}`;
+    this.addJuice("float", target.x, target.y, badgeText, angle === "back" || isCrit ? "#f59e0b" : "#ef4444");
+    this.addJuice("shake", target.x, target.y, angle === "back" ? 7 : 4);
 
     this.combatLog.unshift(
-      `${attacker.name} attacked ${target.name} for ${finalDamage} damage!${isCrit ? " (CRITICAL HIT)" : ""}`,
+      `${attacker.name} struck ${target.name} for ${finalDamage} damage!${angleLabel ? ` (${angleLabel})` : ""}`,
     );
+
+    // Check Reactions
+    this.handleReactions(target, attacker);
 
     if (target.hp === 0) {
       this.eliminateUnit(target);
     }
 
     this.checkVictoryCondition();
-    return { damage: finalDamage, isCrit, killed: target.hp === 0 };
+    return { damage: finalDamage, angle, isCrit, killed: target.hp === 0 };
+  }
+
+  handleReactions(target, attacker) {
+    if (!target.reaction || !target.alive) return;
+
+    if (target.reaction.id === "counter" && target.hp > 0) {
+      const dist = Math.abs(attacker.x - target.x) + Math.abs(attacker.y - target.y);
+      if (dist <= 1 && Math.random() < 0.5) {
+        const counterDmg = Math.max(8, Math.round(target.atk * 0.9));
+        attacker.hp = Math.max(0, attacker.hp - counterDmg);
+        this.addJuice("float", attacker.x, attacker.y, `-${counterDmg} Counter!`, "#38bdf8");
+        this.combatLog.unshift(`${target.name} countered ${attacker.name} for ${counterDmg} damage!`);
+        if (attacker.hp === 0) this.eliminateUnit(attacker);
+      }
+    } else if (target.reaction.id === "auto_potion" && target.hp < target.maxHp * 0.5) {
+      const healAmt = 35;
+      target.hp = Math.min(target.maxHp, target.hp + healAmt);
+      this.addJuice("float", target.x, target.y, `+${healAmt} Auto-Potion`, "#10b981");
+      this.combatLog.unshift(`${target.name} consumed an Auto-Potion (+${healAmt} HP)!`);
+    } else if (target.reaction.id === "damage_mp" && target.mp >= 10) {
+      const mpAbsorb = 15;
+      target.mp -= mpAbsorb;
+      target.hp = Math.min(target.maxHp, target.hp + 12);
+      this.addJuice("float", target.x, target.y, "MP Shield!", "#8b5cf6");
+    }
+  }
+
+  getAoETiles(centerX, centerY, aoeType = "single", facing = "E") {
+    const tiles = [];
+    switch (aoeType) {
+      case "cross":
+        [
+          { x: centerX, y: centerY },
+          { x: centerX + 1, y: centerY },
+          { x: centerX - 1, y: centerY },
+          { x: centerX, y: centerY + 1 },
+          { x: centerX, y: centerY - 1 },
+        ].forEach((p) => {
+          if (p.x >= 0 && p.x < GRID_WIDTH && p.y >= 0 && p.y < GRID_HEIGHT) tiles.push(p);
+        });
+        break;
+
+      case "diamond_3":
+        for (let dy = -2; dy <= 2; dy++) {
+          for (let dx = -2; dx <= 2; dx++) {
+            if (Math.abs(dx) + Math.abs(dy) <= 2) {
+              const tx = centerX + dx;
+              const ty = centerY + dy;
+              if (tx >= 0 && tx < GRID_WIDTH && ty >= 0 && ty < GRID_HEIGHT) {
+                tiles.push({ x: tx, y: ty });
+              }
+            }
+          }
+        }
+        break;
+
+      case "line":
+        const dirOffsets = { N: { dx: 0, dy: -1 }, S: { dx: 0, dy: 1 }, E: { dx: 1, dy: 0 }, W: { dx: -1, dy: 0 } };
+        const offset = dirOffsets[facing] || { dx: 1, dy: 0 };
+        for (let i = 1; i <= 3; i++) {
+          const lx = centerX + offset.dx * i;
+          const ly = centerY + offset.dy * i;
+          if (lx >= 0 && lx < GRID_WIDTH && ly >= 0 && ly < GRID_HEIGHT) {
+            tiles.push({ x: lx, y: ly });
+          }
+        }
+        break;
+
+      case "single":
+      default:
+        tiles.push({ x: centerX, y: centerY });
+        break;
+    }
+    return tiles;
+  }
+
+  castJobAbility(casterId, abilityId, targetX, targetY) {
+    const caster = this.units.get(casterId);
+    if (!caster || !caster.alive) return null;
+
+    const job = caster.jobData || getJob(caster.jobId || "knight");
+    const ability = job?.abilities?.find((a) => a.id === abilityId);
+    if (!ability) return null;
+
+    if (caster.ap < (ability.apCost || 1)) return null;
+    if (caster.mp < (ability.mpCost || 0)) return null;
+
+    caster.ap -= ability.apCost || 1;
+    caster.mp -= ability.mpCost || 0;
+
+    const affectedTiles = this.getAoETiles(targetX, targetY, ability.aoe || "single", caster.facing);
+    let hitCount = 0;
+
+    affectedTiles.forEach((tile) => {
+      const cell = this.getCell(tile.x, tile.y);
+      if (!cell?.unitId) return;
+
+      const target = this.units.get(cell.unitId);
+      if (!target || !target.alive) return;
+
+      if (ability.type === "heal") {
+        if (target.side === caster.side) {
+          const heal = Math.round((caster.mag || 20) * (ability.healMultiplier || 1.5));
+          target.hp = Math.min(target.maxHp, target.hp + heal);
+          this.addJuice("float", target.x, target.y, `+${heal} Cura`, "#10b981");
+          hitCount++;
+        }
+      } else if (ability.type === "buff") {
+        if (target.side === caster.side) {
+          if (ability.status) {
+            target.statusEffects.push({ type: ability.status, duration: ability.duration || 3 });
+          }
+          if (ability.buff) {
+            target.statusEffects.push({ type: ability.buff.stat, amount: ability.buff.amount, duration: ability.buff.duration });
+          }
+          this.addJuice("float", target.x, target.y, `${ability.name}!`, "#38bdf8");
+          hitCount++;
+        }
+      } else {
+        // Offensive ability (physical or magic)
+        if (target.side !== caster.side) {
+          const power = ability.damageMultiplier || 1.4;
+          const stat = ability.type === "magic" || ability.type === "holy" ? caster.mag || 20 : caster.atk || 20;
+          const targetDef = ability.type === "magic" || ability.type === "holy" ? (target.def || 10) * 0.5 : target.def || 15;
+          const rawDmg = Math.max(12, Math.round(stat * power * 1.5 - targetDef * 0.7));
+
+          target.hp = Math.max(0, target.hp - rawDmg);
+          caster.limitGauge = Math.min(100, (caster.limitGauge || 0) + 20);
+
+          if (ability.debuff) {
+            target.statusEffects.push({ type: ability.debuff.stat, amount: ability.debuff.amount, duration: ability.debuff.duration });
+          }
+          if (ability.status) {
+            target.statusEffects.push({ type: ability.status, duration: ability.duration || 2 });
+          }
+          if (ability.vampiric) {
+            const drain = Math.round(rawDmg * ability.vampiric);
+            caster.hp = Math.min(caster.maxHp, caster.hp + drain);
+            this.addJuice("float", caster.x, caster.y, `+${drain} Lancet`, "#10b981");
+          }
+
+          this.addJuice("float", target.x, target.y, `-${rawDmg} ${ability.name}`, "#f97316");
+          this.addJuice("shake", target.x, target.y, 5);
+
+          if (target.hp === 0) this.eliminateUnit(target);
+          hitCount++;
+        }
+      }
+    });
+
+    this.combatLog.unshift(`${caster.name} cast ${ability.name}!`);
+    this.checkVictoryCondition();
+    return { name: ability.name, hitCount };
+  }
+
+  canExecuteLimit(unitId) {
+    const unit = this.units.get(unitId);
+    return unit && unit.alive && (unit.limitGauge || 0) >= 100 && unit.ap >= 1;
+  }
+
+  executeLimitBreak(casterId, targetX, targetY) {
+    const caster = this.units.get(casterId);
+    if (!this.canExecuteLimit(casterId)) return null;
+
+    const job = caster.jobData || getJob(caster.jobId || "knight");
+    const limit = job?.limitBreak;
+    if (!limit) return null;
+
+    caster.limitGauge = 0; // Reset gauge
+    caster.ap = Math.max(0, caster.ap - 1);
+
+    const targetCell = this.getCell(targetX, targetY);
+    const targetUnit = targetCell?.unitId ? this.units.get(targetCell.unitId) : null;
+
+    if (limit.aoe === "all_enemies") {
+      Array.from(this.units.values())
+        .filter((u) => u.side !== caster.side && u.alive)
+        .forEach((foe) => {
+          foe.statusEffects.push({ type: limit.status, duration: limit.duration });
+          this.addJuice("float", foe.x, foe.y, "TIME FROZEN!", "#ec4899");
+        });
+      this.addJuice("shake", 3, 3, 10);
+    } else if (limit.aoe === "all_allies") {
+      Array.from(this.units.values())
+        .filter((u) => u.side === caster.side && u.alive)
+        .forEach((ally) => {
+          const heal = Math.round(ally.maxHp * 0.8);
+          ally.hp = Math.min(ally.maxHp, ally.hp + heal);
+          ally.statusEffects.push({ type: "regen", duration: 3 });
+          ally.statusEffects.push({ type: "protect", duration: 3 });
+          this.addJuice("float", ally.x, ally.y, `+${heal} Grace!`, "#10b981");
+        });
+      this.addJuice("shake", caster.x, caster.y, 8);
+    } else if (limit.aoe === "diamond_3") {
+      const tiles = this.getAoETiles(targetX, targetY, "diamond_3", caster.facing);
+      tiles.forEach((p) => {
+        const cell = this.getCell(p.x, p.y);
+        if (cell?.unitId) {
+          const foe = this.units.get(cell.unitId);
+          if (foe && foe.side !== caster.side && foe.alive) {
+            const dmg = Math.round((caster.mag || caster.atk || 25) * limit.damageMultiplier * 1.5);
+            foe.hp = Math.max(0, foe.hp - dmg);
+            this.addJuice("float", foe.x, foe.y, `-${dmg} LIMIT!`, "#f59e0b");
+            if (foe.hp === 0) this.eliminateUnit(foe);
+          }
+        }
+      });
+      this.addJuice("shake", targetX, targetY, 12);
+    } else {
+      // Single target heavy strike
+      if (targetUnit && targetUnit.side !== caster.side) {
+        const dmg = Math.round((caster.atk || 25) * limit.damageMultiplier * 1.5);
+        targetUnit.hp = Math.max(0, targetUnit.hp - dmg);
+        this.addJuice("float", targetUnit.x, targetUnit.y, `-${dmg} ${limit.name}!`, "#fbbf24");
+        this.addJuice("shake", targetUnit.x, targetUnit.y, 10);
+        if (targetUnit.hp === 0) this.eliminateUnit(targetUnit);
+      }
+    }
+
+    this.combatLog.unshift(`LIMIT BREAK! ${caster.name} unleashed ${limit.name}!`);
+    this.checkVictoryCondition();
+    return { name: limit.name };
   }
 
   castSkill(casterId, targetX, targetY) {
@@ -289,7 +632,6 @@ export class TacticsBattle {
 
     switch (caster.skill.name) {
       case "Haste Bark":
-        // Buff all allies
         Array.from(this.units.values())
           .filter((u) => u.side === caster.side && u.alive)
           .forEach((ally) => {
@@ -301,14 +643,7 @@ export class TacticsBattle {
         break;
 
       case "Pyroclast":
-        // Blast target & cross tiles
-        [
-          { x: targetX, y: targetY },
-          { x: targetX + 1, y: targetY },
-          { x: targetX - 1, y: targetY },
-          { x: targetX, y: targetY + 1 },
-          { x: targetX, y: targetY - 1 },
-        ].forEach((pos) => {
+        this.getAoETiles(targetX, targetY, "cross").forEach((pos) => {
           const cell = this.getCell(pos.x, pos.y);
           if (cell?.unitId) {
             const foe = this.units.get(cell.unitId);
@@ -335,7 +670,7 @@ export class TacticsBattle {
         if (targetUnit && targetUnit.side !== caster.side) {
           const dmg = Math.round(caster.atk * 1.2);
           targetUnit.hp = Math.max(0, targetUnit.hp - dmg);
-          targetUnit.ap = 0; // Freeze skips next action
+          targetUnit.ap = 0;
           this.addJuice("float", targetUnit.x, targetUnit.y, `-${dmg} FROZEN!`, "#67e8f9");
           if (targetUnit.hp === 0) this.eliminateUnit(targetUnit);
         }
@@ -353,7 +688,6 @@ export class TacticsBattle {
         break;
 
       default:
-        // Generic tactical strike
         if (targetUnit && targetUnit.side !== caster.side) {
           const dmg = Math.round(caster.atk * 1.6);
           targetUnit.hp = Math.max(0, targetUnit.hp - dmg);
@@ -372,7 +706,7 @@ export class TacticsBattle {
     const unit = this.units.get(unitId);
     if (!unit || unit.ap < 1) return false;
     unit.isDefending = true;
-    unit.ap = 0; // Consumes rest of turn
+    unit.ap = 0;
     this.combatLog.unshift(`${unit.name} raised defensive guard.`);
     this.addJuice("float", unit.x, unit.y, "Guard Up!", "#3b82f6");
     this.nextTurn();
@@ -404,18 +738,15 @@ export class TacticsBattle {
     }
   }
 
-  // --- ENEMY AI ---
   executeEnemyAI(unit) {
     if (!unit.alive || this.isOver) return;
 
-    // Find nearest player unit
     const players = Array.from(this.units.values()).filter((u) => u.side === "player" && u.alive);
     if (players.length === 0) {
       this.nextTurn();
       return;
     }
 
-    // Sort by Manhattan distance
     players.sort((a, b) => {
       const distA = Math.abs(unit.x - a.x) + Math.abs(unit.y - a.y);
       const distB = Math.abs(unit.x - b.x) + Math.abs(unit.y - b.y);
@@ -425,25 +756,23 @@ export class TacticsBattle {
     const target = players[0];
     const dist = Math.abs(unit.x - target.x) + Math.abs(unit.y - target.y);
 
-    // 1. If in attack range, strike!
+    // If in attack range, strike
     if (dist <= (unit.attackRange || 1) && unit.ap >= 1) {
       this.attack(unit.id, target.id);
       setTimeout(() => this.nextTurn(), 400);
       return;
     }
 
-    // 2. Otherwise, move closer
+    // Move closer
     const stepX = unit.x + (target.x > unit.x ? 1 : target.x < unit.x ? -1 : 0);
     const stepY = unit.y + (target.y > unit.y ? 1 : target.y < unit.y ? -1 : 0);
 
-    // Try horizontal step
     if (this.canMove(unit.id, stepX, unit.y)) {
       this.move(unit.id, stepX, unit.y);
     } else if (this.canMove(unit.id, unit.x, stepY)) {
       this.move(unit.id, unit.x, stepY);
     }
 
-    // Check if now in attack range after move
     const newDist = Math.abs(unit.x - target.x) + Math.abs(unit.y - target.y);
     if (newDist <= (unit.attackRange || 1) && unit.ap >= 1) {
       setTimeout(() => {
