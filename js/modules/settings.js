@@ -1,6 +1,14 @@
 "use strict";
 
 import { importStats, getAllStats } from "./stats.js";
+import {
+  setCompanionEnabled,
+  setCompanionMode,
+  setSelectedMascot,
+  getCompanionSettings,
+} from "./mascot/companion.js";
+import { restartAllTours, startTourForCurrentTool } from "./mascot/onboardingTour.js";
+import { showSuccess } from "./toast.js";
 
 const settingsPanel = document.querySelector(".side-settings");
 const openButton = document.querySelector(".open-settings");
@@ -26,6 +34,7 @@ export function initSettings() {
   initTimerPresets();
   initNotifications();
   initDataManagement();
+  initMascotSettings();
 }
 
 function handleVisualToggle(event) {
@@ -475,5 +484,59 @@ async function handleImport(e) {
   e.target.value = "";
 }
 
+// ===================================
+// MASCOT COMPANION & ONBOARDING SETTINGS
+// ===================================
+
+function initMascotSettings() {
+  const mascotToggle = document.getElementById("mascot-toggle");
+  const mascotSelect = document.getElementById("mascot-select");
+  const companionModeSelect = document.getElementById("companion-mode-select");
+  const restartAllToursBtn = document.getElementById("restart-all-onboarding-btn");
+  const tourToolButtons = document.querySelectorAll(".tour-tool-btn");
+
+  const companionConfig = getCompanionSettings();
+
+  if (mascotToggle) {
+    mascotToggle.checked = companionConfig.enabled;
+    mascotToggle.addEventListener("change", (e) => {
+      setCompanionEnabled(e.target.checked);
+    });
+  }
+
+  if (mascotSelect) {
+    mascotSelect.value = companionConfig.selectedMascotId || "pomi";
+    mascotSelect.addEventListener("change", (e) => {
+      setSelectedMascot(e.target.value);
+    });
+  }
+
+  if (companionModeSelect) {
+    companionModeSelect.value = companionConfig.mode || "follow";
+    companionModeSelect.addEventListener("change", (e) => {
+      setCompanionMode(e.target.value);
+    });
+  }
+
+  if (restartAllToursBtn) {
+    restartAllToursBtn.addEventListener("click", () => {
+      restartAllTours();
+      showSuccess("All onboarding tours restarted! Start any tour from the buttons below or your companion. 🌟");
+    });
+  }
+
+  tourToolButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const tool = btn.dataset.tourTool;
+      if (tool) {
+        startTourForCurrentTool(tool);
+        // Close settings panel so user can see the tour spotlight
+        document.querySelector(".side-settings")?.classList.remove("open");
+      }
+    });
+  });
+}
+
 // Export for timer module to use
 export { sendNotification as notify };
+
