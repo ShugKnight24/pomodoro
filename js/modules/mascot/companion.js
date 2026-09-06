@@ -139,20 +139,22 @@ export function updateCompanionView() {
   widget.innerHTML = `
     <div class="companion-speech-bubble ${state.minimized ? "hidden" : ""}" id="companion-speech-bubble" role="status" aria-live="polite">
       <div class="speech-header">
-        <span class="companion-badge-pill mascot-badge-tag" style="border-color: ${mascot.palette.primary}; color: ${mascot.palette.primary};">
-          ${escapeHtml(mascot.name)}
-        </span>
-        <span class="companion-interaction-badge" title="${escapeHtml(interaction.description)}">
-          ${escapeHtml(interaction.badge)}
-        </span>
-        <button class="speech-close-btn" id="companion-minimize-btn" title="Minimize" aria-label="Minimize companion">
-          ${getIcon("close", { size: 14 })}
-        </button>
+        <div class="speech-header-left">
+          <span class="companion-badge-pill mascot-badge-tag" style="border-color: ${mascot.palette.primary}; color: ${mascot.palette.primary};">
+            ${escapeHtml(mascot.name)}
+          </span>
+        </div>
+        <div class="speech-header-right">
+          <button class="speech-close-btn" id="companion-minimize-btn" title="Minimize" aria-label="Minimize companion">
+            ${getIcon("close", { size: 14 })}
+          </button>
+        </div>
       </div>
       <p class="speech-text" id="companion-speech-text">${escapeHtml(getGreetingForTool(mascot, state.currentTool))}</p>
       <div class="speech-actions">
         <button class="companion-action-chip interaction-trigger-chip" id="companion-interact-btn" title="${escapeHtml(interaction.description)}">
-          ${getIcon("sparkles", { size: 13 })} ${escapeHtml(interaction.name)}
+          ${getIcon("sparkles", { size: 13 })} <span>${escapeHtml(interaction.name)}</span>
+          <span class="companion-interaction-badge">${escapeHtml(interaction.badge)}</span>
         </button>
         <button class="companion-action-chip" id="companion-tour-btn" title="Take a guided tour of ${formatToolName(state.currentTool)}">
           ${getIcon("compass", { size: 13 })} Tour

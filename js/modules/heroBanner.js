@@ -1,7 +1,8 @@
 /**
- * heroBanner.js — Interactive Hero Component
- * Displays localized brand title, interactive mascot stage with custom interactions,
- * quick action launchpad, and 1-click language switcher. Zero emojis.
+ * heroBanner.js — Interactive Hero Component & Animated App Showcase
+ * Displays localized brand title, 1-click language switcher,
+ * dismissible/interactive animated scene explaining the app,
+ * interactive companion stage, and quick launchpad action cards. Zero emojis.
  */
 
 "use strict";
@@ -10,6 +11,10 @@ import { t, getLang, setLang, getAppName, SUPPORTED_LANGUAGES } from "./i18n.js"
 import { getCurrentMascot, triggerCustomInteraction } from "./mascot/companion.js";
 import { renderMascotSvg } from "./mascot/mascotSprites.js";
 import { getIcon } from "../utils/icons.js";
+
+const SHOWCASE_STORAGE_KEY = "pomidor.heroShowcase.dismissed";
+let focusEnergy = 25;
+let currentDioramaJob = "knight";
 
 export function initHeroBanner() {
   const container = document.getElementById("interactive-hero-container");
@@ -35,21 +40,37 @@ function getTimeGreeting() {
   return t("heroGreetingEvening");
 }
 
+function isShowcaseDismissed() {
+  try {
+    return localStorage.getItem(SHOWCASE_STORAGE_KEY) === "true";
+  } catch {
+    return false;
+  }
+}
+
+function setShowcaseDismissed(dismissed) {
+  try {
+    localStorage.setItem(SHOWCASE_STORAGE_KEY, dismissed ? "true" : "false");
+  } catch {}
+}
+
 export function renderHeroBanner(container) {
   const currentLang = getLang();
   const appName = getAppName();
   const tagline = t("appTagline");
   const mascot = getCurrentMascot();
   const greeting = getTimeGreeting();
-  const interaction = mascot.customInteraction || {
+  const interaction = mascot?.customInteraction || {
     name: "Focus Cheer",
-    description: "Boosts focus",
+    description: "Boosts morale",
+    speech: "Let's conquer time together!",
     badge: "+5 Focus XP",
   };
+  const isDismissed = isShowcaseDismissed();
 
   container.innerHTML = `
     <section class="interactive-hero" aria-label="Interactive Hero Stage">
-      <!-- Top Bar: Brand Badge & 1-Click Language Switcher -->
+      <!-- Top Bar: Brand Badge, Scene Reopen Pill, & 1-Click Language Switcher -->
       <div class="hero-top-bar">
         <div class="hero-brand-wrap">
           <div class="hero-tomato-badge" aria-hidden="true">
@@ -61,23 +82,127 @@ export function renderHeroBanner(container) {
           </div>
         </div>
 
-        <div class="hero-lang-pills" role="radiogroup" aria-label="Quick Language Switcher">
-          ${SUPPORTED_LANGUAGES.map(
-            (lang) => `
-            <button
-              class="hero-lang-pill ${currentLang === lang.code ? "active" : ""}"
-              data-lang-code="${lang.code}"
-              title="${escapeHtml(lang.label)} — ${escapeHtml(lang.appName)}"
-              aria-label="Switch to ${escapeHtml(lang.label)}"
-              role="radio"
-              aria-checked="${currentLang === lang.code ? "true" : "false"}"
-            >
-              ${lang.code.toUpperCase()}
+        <div class="hero-top-controls">
+          ${
+            isDismissed
+              ? `
+            <button class="hero-showcase-restore-btn" id="restore-hero-showcase-btn" title="Open animated interactive app tour">
+              ${getIcon("sparkles", { size: 13 })} <span>App Showcase</span>
             </button>
-          `,
-          ).join("")}
+          `
+              : ""
+          }
+
+          <div class="hero-lang-pills" role="radiogroup" aria-label="Quick Language Switcher">
+            ${SUPPORTED_LANGUAGES.map(
+              (lang) => `
+              <button
+                class="hero-lang-pill ${currentLang === lang.code ? "active" : ""}"
+                data-lang-code="${lang.code}"
+                title="${escapeHtml(lang.label)} — ${escapeHtml(lang.appName)}"
+                aria-label="Switch to ${escapeHtml(lang.label)}"
+                role="radio"
+                aria-checked="${currentLang === lang.code ? "true" : "false"}"
+              >
+                ${lang.code.toUpperCase()}
+              </button>
+            `,
+            ).join("")}
+          </div>
         </div>
       </div>
+
+      <!-- Animated Interactive App Showcase Diorama (Dismissible) -->
+      ${
+        !isDismissed
+          ? `
+        <div class="hero-animated-showcase" id="hero-animated-showcase">
+          <div class="showcase-header-row">
+            <div class="showcase-title-group">
+              <span class="showcase-pill-badge">${getIcon("sparkles", { size: 12 })} Interactive Overview</span>
+              <h3 class="showcase-title">Welcome to the Chrono Sanctum</h3>
+              <p class="showcase-sub">Master your time through rhythm, tasks, and Final Fantasy tactical battles!</p>
+            </div>
+            <button class="hero-showcase-dismiss-btn" id="dismiss-hero-showcase-btn" title="Dismiss animated scene">
+              ${getIcon("chevron-up", { size: 14 })} <span>Hide Scene</span>
+            </button>
+          </div>
+
+          <div class="showcase-stage-grid">
+            <!-- Pillar 1: Rhythmic Focus (Interactive Ticking Core) -->
+            <div class="showcase-pillar-card pillar-focus" id="showcase-card-focus">
+              <div class="pillar-card-header">
+                <span class="pillar-step-num">1</span>
+                <h4>Focus Rhythm</h4>
+              </div>
+              <div class="interactive-core-diorama" id="interactive-core-diorama" role="button" tabindex="0" title="Click to charge Focus Energy!">
+                <div class="core-clockwork-ring">
+                  <div class="core-orbit-dot dot-1"></div>
+                  <div class="core-orbit-dot dot-2"></div>
+                </div>
+                <div class="core-tomato-orb">
+                  ${getIcon("tomato", { size: 42, className: "core-tomato-icon" })}
+                </div>
+                <div class="core-pulse-wave"></div>
+              </div>
+              <div class="core-energy-meter">
+                <div class="energy-meter-label">
+                  <span>Flow State Energy</span>
+                  <strong id="core-energy-value">${focusEnergy}%</strong>
+                </div>
+                <div class="energy-track">
+                  <div class="energy-fill" id="core-energy-fill" style="width: ${focusEnergy}%"></div>
+                </div>
+              </div>
+              <p class="pillar-caption">25-min sprints & 5-min rest cycles. Tap the core to test flow energy!</p>
+            </div>
+
+            <!-- Pillar 2: Task Slicing & Productivity -->
+            <div class="showcase-pillar-card pillar-tasks" id="showcase-card-tasks">
+              <div class="pillar-card-header">
+                <span class="pillar-step-num">2</span>
+                <h4>Task Mastery</h4>
+              </div>
+              <div class="interactive-tasks-diorama">
+                <div class="demo-task-item ${focusEnergy >= 50 ? "sliced" : ""}" id="demo-task-item" role="button" tabindex="0">
+                  <span class="demo-task-check">${getIcon("check", { size: 14 })}</span>
+                  <span class="demo-task-text">Conquer priority objectives</span>
+                  <span class="demo-task-reward">+15g</span>
+                </div>
+                <div class="demo-slash-fx" id="demo-slash-fx"></div>
+              </div>
+              <p class="pillar-caption">Break complex projects into subtasks. Click the task above to slice and bank gold!</p>
+            </div>
+
+            <!-- Pillar 3: Final Fantasy Tactics RPG -->
+            <div class="showcase-pillar-card pillar-tactics" id="showcase-card-tactics">
+              <div class="pillar-card-header">
+                <span class="pillar-step-num">3</span>
+                <h4>Tactics RPG</h4>
+              </div>
+              <div class="interactive-rpg-diorama">
+                <div class="rpg-job-switch-row">
+                  <button class="job-mini-tab ${currentDioramaJob === "knight" ? "active" : ""}" data-diorama-job="knight">Knight</button>
+                  <button class="job-mini-tab ${currentDioramaJob === "black_mage" ? "active" : ""}" data-diorama-job="black_mage">Black Mage</button>
+                  <button class="job-mini-tab ${currentDioramaJob === "white_mage" ? "active" : ""}" data-diorama-job="white_mage">White Mage</button>
+                </div>
+                <div class="rpg-preview-unit" id="rpg-preview-unit">
+                  <div class="unit-diorama-avatar" id="unit-diorama-avatar">
+                    ${renderDioramaJobAvatar(currentDioramaJob)}
+                  </div>
+                  <div class="unit-diorama-meta">
+                    <strong id="diorama-job-name">${getDioramaJobName(currentDioramaJob)}</strong>
+                    <span id="diorama-job-skill">${getDioramaJobSkill(currentDioramaJob)}</span>
+                  </div>
+                </div>
+              </div>
+              <p class="pillar-caption">Turn focus into battle prowess: recruit party members, level jobs, and cast AoE spells!</p>
+            </div>
+          </div>
+        </div>
+      `
+          : ""
+      }
 
       <!-- Center Stage: Interactive Mascot & Speech Bubble -->
       <div class="hero-mascot-stage-row">
@@ -157,6 +282,28 @@ export function renderHeroBanner(container) {
   bindHeroEvents(container);
 }
 
+function renderDioramaJobAvatar(job) {
+  if (job === "black_mage") {
+    return `<div class="mini-job-badge elem-fire">${getIcon("sparkles", { size: 22 })}</div>`;
+  }
+  if (job === "white_mage") {
+    return `<div class="mini-job-badge elem-nature">${getIcon("heart", { size: 22 })}</div>`;
+  }
+  return `<div class="mini-job-badge elem-time">${getIcon("shield", { size: 22 })}</div>`;
+}
+
+function getDioramaJobName(job) {
+  if (job === "black_mage") return "Black Mage";
+  if (job === "white_mage") return "White Mage";
+  return "Chrono Knight";
+}
+
+function getDioramaJobSkill(job) {
+  if (job === "black_mage") return "Fira Blast (AoE Cross)";
+  if (job === "white_mage") return "Cura & Protect Barrier";
+  return "Power Break & Omnislash";
+}
+
 function bindHeroEvents(container) {
   // 1-Click Language Switcher
   container.querySelectorAll(".hero-lang-pill").forEach((pill) => {
@@ -165,6 +312,65 @@ function bindHeroEvents(container) {
       if (code) {
         setLang(code);
       }
+    });
+  });
+
+  // Dismiss Showcase Scene Button
+  container.querySelector("#dismiss-hero-showcase-btn")?.addEventListener("click", () => {
+    setShowcaseDismissed(true);
+    renderHeroBanner(container);
+  });
+
+  // Restore Showcase Scene Button
+  container.querySelector("#restore-hero-showcase-btn")?.addEventListener("click", () => {
+    setShowcaseDismissed(false);
+    renderHeroBanner(container);
+  });
+
+  // Interactive Core Tap (Catch & Hook!)
+  const coreDiorama = container.querySelector("#interactive-core-diorama");
+  coreDiorama?.addEventListener("click", () => {
+    focusEnergy = Math.min(100, focusEnergy + 15);
+    const fillEl = container.querySelector("#core-energy-fill");
+    const valEl = container.querySelector("#core-energy-value");
+    if (fillEl) fillEl.style.width = `${focusEnergy}%`;
+    if (valEl) valEl.textContent = `${focusEnergy}%`;
+
+    coreDiorama.classList.add("core-tap-active");
+    setTimeout(() => coreDiorama.classList.remove("core-tap-active"), 400);
+
+    if (focusEnergy >= 100) {
+      focusEnergy = 25; // Reset after peak
+      coreDiorama.classList.add("core-supercharge");
+      setTimeout(() => coreDiorama.classList.remove("core-supercharge"), 800);
+    }
+  });
+
+  // Interactive Demo Task Slice
+  const demoTask = container.querySelector("#demo-task-item");
+  demoTask?.addEventListener("click", () => {
+    demoTask.classList.toggle("sliced");
+    const slashFx = container.querySelector("#demo-slash-fx");
+    if (slashFx) {
+      slashFx.classList.add("active");
+      setTimeout(() => slashFx.classList.remove("active"), 500);
+    }
+  });
+
+  // Interactive RPG Job Switch
+  container.querySelectorAll(".job-mini-tab").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      currentDioramaJob = btn.dataset.dioramaJob;
+      container.querySelectorAll(".job-mini-tab").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      const avatarEl = container.querySelector("#unit-diorama-avatar");
+      const nameEl = container.querySelector("#diorama-job-name");
+      const skillEl = container.querySelector("#diorama-job-skill");
+
+      if (avatarEl) avatarEl.innerHTML = renderDioramaJobAvatar(currentDioramaJob);
+      if (nameEl) nameEl.textContent = getDioramaJobName(currentDioramaJob);
+      if (skillEl) skillEl.textContent = getDioramaJobSkill(currentDioramaJob);
     });
   });
 
