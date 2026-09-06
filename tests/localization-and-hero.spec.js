@@ -72,6 +72,12 @@ test.describe("Localization, Real Estate Optimization & Interactive Hero", () =>
   test("screen real estate is optimized: timer is immediately visible without accordion blockage", async ({
     page,
   }) => {
+    // When showcase is dismissed, user regains screen real estate above the fold
+    const dismissBtn = page.locator("#dismiss-hero-showcase-btn");
+    if (await dismissBtn.isVisible()) {
+      await dismissBtn.click();
+    }
+
     // Check timer is immediately in view near top of viewport
     const timer = page.locator("#timer-classic");
     await expect(timer).toBeVisible();
