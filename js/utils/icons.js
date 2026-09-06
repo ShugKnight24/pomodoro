@@ -547,6 +547,47 @@ const ICONS = {
       <path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"/>
     </svg>
   `,
+
+  "mood-energized": ({ size = 20, className = "" }) => `
+    <svg class="svg-icon svg-mood svg-mood-energized ${className}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="4"/>
+      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+    </svg>
+  `,
+
+  "mood-focused": ({ size = 20, className = "" }) => `
+    <svg class="svg-icon svg-mood svg-mood-focused ${className}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10"/>
+      <circle cx="12" cy="12" r="6"/>
+      <circle cx="12" cy="12" r="2"/>
+    </svg>
+  `,
+
+  "mood-neutral": ({ size = 20, className = "" }) => `
+    <svg class="svg-icon svg-mood svg-mood-neutral ${className}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="8" y1="14" x2="16" y2="14"/>
+      <line x1="9" y1="9" x2="9.01" y2="9"/>
+      <line x1="15" y1="9" x2="15.01" y2="9"/>
+    </svg>
+  `,
+
+  "mood-fatigued": ({ size = 20, className = "" }) => `
+    <svg class="svg-icon svg-mood svg-mood-fatigued ${className}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="2" y="7" width="16" height="10" rx="2" ry="2"/>
+      <line x1="22" y1="11" x2="22" y2="13"/>
+      <line x1="6" y1="11" x2="6" y2="13"/>
+    </svg>
+  `,
+
+  "mood-overwhelmed": ({ size = 20, className = "" }) => `
+    <svg class="svg-icon svg-mood svg-mood-overwhelmed ${className}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
+      <line x1="8" y1="19" x2="6" y2="23"/>
+      <line x1="12" y1="19" x2="10" y2="23"/>
+      <line x1="16" y1="19" x2="14" y2="23"/>
+    </svg>
+  `,
 };
 
 /**

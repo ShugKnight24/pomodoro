@@ -200,4 +200,63 @@ test.describe("Smoke Tests — App Loads and Core Views Work", () => {
     expect(bossHpNum).toContain("/ 150 HP");
     expect(bossHpNum).not.toContain("150 / 150 HP");
   });
+
+  test("mood tracker renders 5 SVG mood options and generates adaptive day plan", async ({ page }) => {
+    await page.goto("/");
+    await page.locator(".view-btn[data-view='list']").click();
+
+    // Verify assessment section and 5 mood tiles with SVGs
+    const moodSection = page.locator("#mood-tracker-section");
+    await expect(moodSection).toBeVisible();
+    const moodTiles = page.locator(".mood-tile");
+    await expect(moodTiles).toHaveCount(5);
+
+    // Select 'fatigued'
+    await page.locator(".mood-tile[data-mood-choice='fatigued']").click();
+    await expect(page.locator(".mood-tile[data-mood-choice='fatigued']")).toHaveClass(/selected/);
+
+    // Select energy level 2
+    await page.locator(".energy-dot-btn[data-energy-val='2']").click();
+    await expect(page.locator(".energy-dot-btn[data-energy-val='2']")).toHaveClass(/active/);
+
+    // Enter reflection note
+    await page.locator("#mood-note-input").fill("Low battery, pacing myself gently");
+
+    // Generate Adaptive Plan
+    await page.locator("#submit-mood-btn").click();
+
+    // Verify Adaptive Day Plan is displayed
+    const planCard = page.locator(".adaptive-plan-card");
+    await expect(planCard).toBeVisible();
+    await expect(page.locator(".plan-mood-name")).toHaveText("Fatigued");
+    await expect(page.locator(".plan-cadence-pill")).toContainText("15m focus / 7m break");
+    await expect(page.locator(".plan-user-note")).toHaveText('"Low battery, pacing myself gently"');
+
+    // Test timer adaptation
+    const applyTimerBtn = page.locator("#apply-plan-timer-btn");
+    await expect(applyTimerBtn).toBeVisible();
+    await expect(applyTimerBtn).toContainText("Set 15m Gentle Timer");
+    await applyTimerBtn.click();
+
+    // Confirm timer display or classic session time is calibrated to 15
+    const sessionTime = await page.locator("#session-time, #modern-timer-display").first().textContent();
+    expect(sessionTime).toMatch(/15/);
+  });
+
+  test("stats view renders 7-day mood and bandwidth accounting", async ({ page }) => {
+    await page.goto("/");
+    // First log a mood in list view
+    await page.locator(".view-btn[data-view='list']").click();
+    await page.locator(".mood-tile[data-mood-choice='energized']").click();
+    await page.locator("#submit-mood-btn").click();
+    await expect(page.locator(".adaptive-plan-card")).toBeVisible();
+
+    // Navigate to stats view
+    await page.locator(".view-btn[data-view='stats']").click();
+    const statsMood = page.locator("#stats-mood-section");
+    await expect(statsMood).toBeVisible();
+    await expect(statsMood.locator(".stats-mood-day-card.logged")).toHaveCount(1);
+    await expect(statsMood.locator(".stats-mood-day-card.logged .stats-mood-day-label")).toHaveText("energized");
+  });
 });
+

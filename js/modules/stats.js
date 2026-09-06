@@ -439,6 +439,9 @@ function renderStats() {
 
   // Render time accounting & variance
   renderTimeAccounting();
+
+  // Render mood & energy history
+  renderMoodHistory();
 }
 
 /**
@@ -858,6 +861,11 @@ function setupEventListeners() {
   exportBtn?.addEventListener("click", () => {
     exportTimeAuditCSV();
   });
+
+  // Re-render mood history when new mood is checked in
+  document.addEventListener("mood-checked-in", () => {
+    renderMoodHistory();
+  });
 }
 
 /**
@@ -993,6 +1001,100 @@ export function exportTimeAuditCSV() {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+}
+
+/**
+ * Render 7-day mood & bandwidth accounting in stats view
+ */
+function renderMoodHistory() {
+  let section = document.getElementById("stats-mood-section");
+  if (!section) {
+    const statsAccounting = document.querySelector(".stats-accounting-section");
+    if (!statsAccounting) return;
+    section = document.createElement("div");
+    section.id = "stats-mood-section";
+    section.className = "stats-mood-section";
+    statsAccounting.parentNode.insertBefore(section, statsAccounting);
+  }
+
+  let moodHistory = [];
+  try {
+    moodHistory = JSON.parse(localStorage.getItem("pomidor.moods") || "[]");
+  } catch (e) {
+    console.error("Failed to parse mood history for stats:", e);
+  }
+
+  // Generate last 7 days keys
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const key = d.toISOString().split("T")[0];
+    const dayName = d.toLocaleDateString(undefined, { weekday: "short" });
+    const dayNum = d.toLocaleDateString(undefined, { month: "numeric", day: "numeric" });
+    const entry = moodHistory.find((m) => m.date === key) || null;
+    days.push({ key, dayName, dayNum, entry });
+  }
+
+  const loggedDays = days.filter((d) => d.entry);
+  const avgEnergy = loggedDays.length
+    ? (
+        loggedDays.reduce((acc, d) => acc + (d.entry.energy || 3), 0) /
+        loggedDays.length
+      ).toFixed(1)
+    : "—";
+
+  const todayEntry = days[days.length - 1].entry;
+  const currentMoodLabel = todayEntry ? todayEntry.mood : "Not assessed";
+
+  const moodColors = {
+    energized: "#f59e0b",
+    focused: "#0ea5e9",
+    neutral: "#10b981",
+    fatigued: "#8b5cf6",
+    overwhelmed: "#ef4444",
+  };
+
+  section.innerHTML = `
+    <div class="accounting-header">
+      <h3 class="stats-section-title">
+        ${getIcon("flame", { size: 18 })}
+        Mood & Bandwidth Accounting
+      </h3>
+      <span class="mood-stats-summary-pill">
+        Avg Energy: <strong>${avgEnergy}${avgEnergy !== "—" ? "/5" : ""}</strong> • Today: <strong style="text-transform: capitalize;">${currentMoodLabel}</strong>
+      </span>
+    </div>
+    <div class="stats-mood-strip">
+      ${days
+        .map((d) => {
+          if (!d.entry) {
+            return `
+              <div class="stats-mood-day-card empty">
+                <span class="stats-mood-day-name">${d.dayName}</span>
+                <span class="stats-mood-day-date">${d.dayNum}</span>
+                <div class="stats-mood-day-icon empty">—</div>
+                <span class="stats-mood-day-label">No check-in</span>
+              </div>
+            `;
+          }
+          const iconName = `mood-${d.entry.mood}`;
+          const color = moodColors[d.entry.mood] || "#10b981";
+          return `
+            <div class="stats-mood-day-card logged" style="--mood-day-color: ${color};">
+              <span class="stats-mood-day-name">${d.dayName}</span>
+              <span class="stats-mood-day-date">${d.dayNum}</span>
+              <div class="stats-mood-day-icon" title="${d.entry.mood} (${d.entry.energy}/5)">
+                ${getIcon(iconName, { size: 24 })}
+              </div>
+              <span class="stats-mood-day-label" style="text-transform: capitalize;">${d.entry.mood}</span>
+              <span class="stats-mood-energy-pill">Energy: ${d.entry.energy}/5</span>
+            </div>
+          `;
+        })
+        .join("")}
+    </div>
+  `;
 }
 
 /**

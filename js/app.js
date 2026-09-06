@@ -15,6 +15,7 @@ import { initI18n } from "./modules/i18n.js";
 import { initVault } from "./modules/vault.js";
 import { initKanban } from "./modules/kanban.js";
 import { initHabits } from "./modules/habits.js";
+import { initMood } from "./modules/mood.js";
 import { initHero } from "./modules/gamification/hero.js";
 import { initHeroUI } from "./modules/gamification/heroUI.js";
 
@@ -27,6 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initToast();
   initPomodoro();
   initTodo();
+  initMood();
   initHabits();
   initSectionToggle();
   initKeyboardShortcuts();

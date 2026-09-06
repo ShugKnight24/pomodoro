@@ -395,7 +395,17 @@ function setupEventListeners() {
     triggerFloatingLoot(`+${xpGained} XP • +${goldGained} Gold • 🔥 ${streak}d Streak!`, "habit");
   });
 
-  // 5. Quest Chapter Completed
+  // 5. Daily Mood & Bandwidth Check-in
+  document.addEventListener("mood-checked-in", () => {
+    const xpGained = gainXp(30);
+    const goldGained = gainGold(10);
+    healHero(15);
+    saveHero();
+
+    triggerFloatingLoot(`+${xpGained} XP • +${goldGained} Gold • 💖 +15 HP Restored`, "mood");
+  });
+
+  // 6. Quest Chapter Completed
   document.addEventListener("quest-chapter-completed", (e) => {
     const { rewards } = e.detail || {};
     if (rewards) {
