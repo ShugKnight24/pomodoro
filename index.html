@@ -82,18 +82,17 @@
 
         <!-- Language Selector -->
         <div class="setting-group">
-          <h3 class="setting-label" data-i18n="language">Language / Язык</h3>
+          <h3 class="setting-label" data-i18n="language">Language</h3>
           <select
             id="language-select"
             class="setting-select"
             aria-label="Select language"
           >
-            <option value="en">English</option>
-            <option value="ru">Русский</option>
+            <option value="en">English (Pomidor)</option>
+            <option value="ru">Русский (Помидор)</option>
+            <option value="az">Azərbaycanca (Pomidor)</option>
+            <option value="he">עברית (עגבנייה)</option>
           </select>
-          <p class="setting-hint" data-i18n="moreLangsComing">
-            More languages coming soon / Больше языков скоро
-          </p>
         </div>
 
         <!-- App Theme Selector -->
@@ -276,6 +275,9 @@
             <option value="specialist">Dedicated Specialists (Different Mascot per App)</option>
           </select>
           <p class="setting-hint">Specialists place Pomi on Timer, Kip on Tasks, Chronos on Calendar, Bolt on Stats & Tactics!</p>
+          <button class="button data-btn" id="open-experience-assign-btn" style="width: 100%; justify-content: center; margin-top: 8px;">
+            <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Assign Companions to Experiences
+          </button>
         </div>
 
         <!-- App Onboarding Tours -->
@@ -285,6 +287,9 @@
           <div class="tour-quick-buttons" style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
             <button class="button data-btn" id="restart-all-onboarding-btn" style="width: 100%; justify-content: center;">
               <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg> Restart All Onboarding Tours
+            </button>
+            <button class="button data-btn" id="clear-all-tutorial-data-btn" style="width: 100%; justify-content: center;">
+              <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg> Clear Tutorial Sample Data
             </button>
             <div style="display: flex; gap: 6px; flex-wrap: wrap;">
               <button class="preset-btn tour-tool-btn" data-tour-tool="pomodoro">Timer Tour</button>
@@ -314,176 +319,11 @@
         </div>
       </div>
       <main class="timer-body">
-        <!-- Brand Banner -->
-        <div class="brand-banner">
-          <picture>
-            <source
-              srcset="icons/brand/pomidor_en.webp"
-              type="image/webp"
-              media="(min-width: 1px)"
-              data-lang="en"
-            />
-            <img
-              src="icons/brand/pomidor_en_clean.png"
-              alt="Pomidor — Own your time, own your data"
-              class="brand-hero"
-              data-lang="en"
-            />
-          </picture>
-          <picture class="brand-hero-ru" style="display: none">
-            <source
-              srcset="icons/brand/помидор_ru.webp"
-              type="image/webp"
-              media="(min-width: 1px)"
-            />
-            <img
-              src="icons/brand/помидор_ru_clean.png"
-              alt="Помидор — Владей своим временем, владей своими данными"
-              class="brand-hero"
-            />
-          </picture>
-        </div>
-        <div class="section-header">
-          <h1>Pomidor <span class="brand-subtitle">Помидор</span></h1>
-          <button
-            class="section-toggle"
-            data-section-toggle="pomodoro"
-            aria-label="Toggle Pomodoro section"
-          >
-            <svg class="section-toggle-icon svg-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="8 10 12 14 16 10"/></svg>
-          </button>
-        </div>
+        <!-- Interactive Hero Stage -->
+        <div id="interactive-hero-container"></div>
+
         <div class="collapsible-section" data-section="pomodoro">
           <div class="section-content-wrapper">
-            <div class="accordion-wrapper">
-              <div class="accordion description-accordion">
-                <button
-                  aria-label="open description accordion"
-                  class="accordion-heading"
-                >
-                  What is the Pomodoro Technique?
-                  <span class="accordion-icon">+</span>
-                </button>
-              </div>
-              <div class="accordion-body">
-                <p>
-                  Do you find yourself regularly procrastinating your most
-                  important tasks?
-                </p>
-                <p>
-                  <a
-                    href="https://en.wikipedia.org/wiki/Pomodoro_Technique"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                    >The Pomodoro Technique</a
-                  >
-                  is a time management system created by
-                  <a
-                    href="https://francescocirillo.com"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                    >Francesco Cirillo</a
-                  >. It is a great method that you can use to overcome your
-                  procrastination / resistance and get things done. Breaking up
-                  your tasks into smaller more manageable chunks will allow you
-                  to work more effectively and productively.
-                </p>
-                <h2>Conquer time or time will conquer you</h2>
-              </div>
-            </div>
-            <div class="accordion-wrapper">
-              <div class="accordion how-to-accordion">
-                <button
-                  aria-label="open how to accordion"
-                  class="accordion-heading"
-                >
-                  How to Use the Pomodoro Technique?
-                  <span class="accordion-icon">+</span>
-                </button>
-              </div>
-              <div class="accordion-body">
-                <p>
-                  Choose a task you want to get done and set the timer for how
-                  long you estimate that task will take. This counts as a single
-                  "Pomodoro"
-                </p>
-                <p>
-                  Note: Traditional Pomodoros are 25 minutes long and allow you
-                  to break your tasks into more manageable chunks
-                </p>
-                <ol>
-                  <li>Set your first Pomodoro</li>
-                  <li>
-                    Focus and work solely on that task until the timer runs out
-                  </li>
-                  <li>
-                    After timer completion, put a checkmark on your to-do list
-                  </li>
-                  <li>Take a short break (typically 5 minutes)</li>
-                  <li>
-                    Keep working on your tasks until you've done four Pomodoros
-                  </li>
-                  <li>
-                    After four Pomodoros, take a longer break (typically 10
-                    minutes)
-                  </li>
-                  <li>Repeat step 1 until all of your tasks are done</li>
-                  <li>Kick back and relax!</li>
-                </ol>
-              </div>
-            </div>
-            <div class="accordion-wrapper">
-              <div class="accordion additional-info-accordion">
-                <button
-                  aria-label="open additional information accordion"
-                  class="accordion-heading"
-                >
-                  Additional Information
-                  <span class="accordion-icon">+</span>
-                </button>
-              </div>
-              <div class="accordion-body">
-                <p>
-                  Watch this video to get more information about The Pomodoro
-                  Technique from
-                  <a
-                    href="https://barbaraoakley.com/"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                    >Dr. Barbara Oakley</a
-                  >
-                  creator of
-                  <a
-                    href="https://www.coursera.org/learn/learning-how-to-learn"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                    >Learning How to Learn</a
-                  >, the most popular open online course in the world, which
-                  teaches students the techniques to learn in a more effective
-                  manner.
-                </p>
-                <div class="embeded-video-container">
-                  <iframe
-                    width="560"
-                    height="315"
-                    src="https://www.youtube-nocookie.com/embed/dTQDaUQ9MAU?si=JI44Y5eX-faXKZGs"
-                    title="Brain Training to Beat Procrastination with the World's Easiest Learning Technique | Barbara Oakley"
-                    frameborder="0"
-                    allow="
-                      accelerometer;
-                      autoplay;
-                      clipboard-write;
-                      encrypted-media;
-                      gyroscope;
-                      picture-in-picture;
-                      web-share;
-                    "
-                    referrerpolicy="strict-origin-when-cross-origin"
-                    allowfullscreen
-                  ></iframe>
-                </div>
-              </div>
-            </div>
             <div class="time-container" id="timer-classic">
               <div class="container">
                 <div class="session-div">

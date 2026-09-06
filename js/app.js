@@ -22,9 +22,13 @@ import { initCompanion } from "./modules/mascot/companion.js";
 import { initPets } from "./modules/gamification/pets.js";
 import { initExploration } from "./modules/gamification/tacticsExploration.js";
 import { initTacticsUI } from "./modules/gamification/tacticsUI.js";
+import { initHeroBanner } from "./modules/heroBanner.js";
+import { initSampleData } from "./modules/sampleData.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   initI18n();
+  initSampleData();
+  initHeroBanner();
   initTheme();
   initStats();
   initCalendar();
