@@ -295,4 +295,63 @@ test.describe("Mascot Companion, App Onboarding Tours & Tactics RPG Engine", () 
     const tabSvgs = await page.locator(".tactics-tab-btn svg.svg-icon").count();
     expect(tabSvgs).toBe(5);
   });
+
+  test("daily mood assessment renders flame SVG icon without literal text 'flame'", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    const badge = page.locator(".mood-icon-badge");
+    await expect(badge).toBeVisible();
+
+    // Verify SVG icon exists
+    const flameSvg = badge.locator("svg.svg-icon-flame");
+    await expect(flameSvg).toBeVisible();
+
+    // Verify raw fallback text "flame" does NOT appear
+    const badgeText = (await badge.innerText()).trim();
+    expect(badgeText).toBe("");
+  });
+
+  test("decorative tomato divider and footer with non-overlapping flank SVGs render properly", async ({
+    page,
+  }) => {
+    await page.goto("/");
+
+    // Verify tomato divider
+    const divider = page.locator(".tomato-divider");
+    await expect(divider).toBeVisible();
+    await expect(divider.locator(".tomato-divider-line.left")).toBeVisible();
+    await expect(divider.locator(".tomato-divider-line.right")).toBeVisible();
+    await expect(divider.locator(".tomato-divider-tomato")).toBeVisible();
+    await expect(divider.locator(".tomato-leaf-icon.left")).toBeVisible();
+    await expect(divider.locator(".tomato-leaf-icon.right")).toBeVisible();
+
+    // Verify footer structure
+    const footer = page.locator(".tomato-footer");
+    await expect(footer).toBeVisible();
+    const flankLeft = footer.locator(".tomato-footer-flank.left svg");
+    const flankRight = footer.locator(".tomato-footer-flank.right svg");
+    await expect(flankLeft).toBeVisible();
+    await expect(flankRight).toBeVisible();
+
+    // Verify no emoji in footer
+    const footerText = await footer.innerText();
+    const emojiRegex = /[\u{1F300}-\u{1F9FF}\u{2600}-\u{27BF}]/u;
+    expect(emojiRegex.test(footerText)).toBe(false);
+
+    // Verify flanking SVGs do not overlap with footer text bounding box
+    const textEl = footer.locator(".tomato-footer-text");
+    const textBbox = await textEl.boundingBox();
+    const leftBbox = await flankLeft.boundingBox();
+    const rightBbox = await flankRight.boundingBox();
+
+    expect(textBbox).not.toBeNull();
+    expect(leftBbox).not.toBeNull();
+    expect(rightBbox).not.toBeNull();
+
+    // Left tomato is strictly to the left of the text
+    expect(leftBbox.x + leftBbox.width).toBeLessThanOrEqual(textBbox.x + 2);
+    // Right tomato is strictly to the right of the text
+    expect(rightBbox.x).toBeGreaterThanOrEqual(textBbox.x + textBbox.width - 2);
+  });
 });

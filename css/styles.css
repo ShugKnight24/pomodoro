@@ -2789,7 +2789,8 @@ form {
 /* Footer */
 .tomato-footer {
   width: fit-content;
-  padding: var(--spacing-lg);
+  max-width: 900px;
+  padding: 10px 20px;
   text-align: center;
   color: var(--color-text-secondary);
   background: var(--glass-bg);
@@ -2798,8 +2799,7 @@ form {
   border: 1px solid var(--glass-border);
   font-size: 0.9rem;
   font-weight: 500;
-  max-width: 1400px;
-  margin: var(--spacing-xl) auto;
+  margin: 0 auto var(--spacing-2xl, 48px);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-md);
   transition: all var(--transition-base);
@@ -7742,36 +7742,180 @@ h1 {
     box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Footer enhancement */
+/* ==========================================================================
+   Decorative Tomato Divider (HR) & Enhanced Footer
+   ========================================================================== */
+
+.tomato-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md, 16px);
+  max-width: 900px;
+  width: 90%;
+  margin: var(--spacing-2xl, 48px) auto var(--spacing-md, 16px);
+  padding: 0 var(--spacing-sm, 12px);
+  position: relative;
+  user-select: none;
+}
+
+.tomato-divider-line {
+  flex: 1;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(239, 68, 68, 0.25) 50%,
+    rgba(16, 185, 129, 0.45) 100%
+  );
+  position: relative;
+}
+
+.tomato-divider-line.right {
+  background: linear-gradient(
+    90deg,
+    rgba(16, 185, 129, 0.45) 0%,
+    rgba(239, 68, 68, 0.25) 50%,
+    transparent 100%
+  );
+}
+
+.tomato-divider-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: var(--glass-bg, rgba(255, 255, 255, 0.65));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.25));
+  border-radius: 999px;
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+  transition: transform var(--transition-base, 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)),
+              box-shadow var(--transition-base, 0.2s ease),
+              border-color var(--transition-base, 0.2s ease);
+  cursor: default;
+}
+
+.tomato-divider-badge:hover {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 8px 24px rgba(239, 68, 68, 0.16), 0 2px 8px rgba(16, 185, 129, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.tomato-divider-tomato {
+  filter: drop-shadow(0 2px 4px rgba(239, 68, 68, 0.3));
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: block;
+}
+
+.tomato-divider-badge:hover .tomato-divider-tomato {
+  transform: rotate(8deg) scale(1.12);
+}
+
+.tomato-leaf-icon {
+  opacity: 0.8;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+  display: block;
+}
+
+.tomato-leaf-icon.left {
+  transform: rotate(-25deg);
+}
+
+.tomato-leaf-icon.right {
+  transform: rotate(25deg) scaleX(-1);
+}
+
+.tomato-divider-badge:hover .tomato-leaf-icon.left {
+  transform: rotate(-35deg) scale(1.18);
+  opacity: 1;
+}
+
+.tomato-divider-badge:hover .tomato-leaf-icon.right {
+  transform: rotate(35deg) scaleX(-1) scale(1.18);
+  opacity: 1;
+}
+
+/* Enhanced Footer with inline flanking SVG tomatoes (no text overlap) */
 .tomato-footer {
   background: linear-gradient(
     135deg,
     var(--glass-bg) 0%,
-    rgba(var(--color-primary-rgb), 0.05) 100%
+    rgba(var(--color-primary-rgb), 0.04) 100%
   );
   border: 1px solid var(--glass-border);
   position: relative;
-  overflow: hidden;
+  overflow: visible;
+  padding: 10px 20px;
+  max-width: 900px;
+  width: 90%;
+  margin: 0 auto var(--spacing-2xl, 48px);
 }
 
-.tomato-footer::before {
-  content: "🍅";
-  position: absolute;
-  top: 50%;
-  left: var(--spacing-lg);
-  transform: translateY(-50%);
-  font-size: 1.2rem;
-  opacity: 0.4;
+.tomato-footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  line-height: 1.5;
 }
 
-.tomato-footer::after {
-  content: "🍅";
-  position: absolute;
-  top: 50%;
-  right: var(--spacing-lg);
-  transform: translateY(-50%);
-  font-size: 1.2rem;
-  opacity: 0.4;
+.tomato-footer-flank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  opacity: 0.75;
+  transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.footer-flank-svg {
+  filter: drop-shadow(0 1px 3px rgba(239, 68, 68, 0.25));
+  display: block;
+}
+
+.tomato-footer:hover .tomato-footer-flank {
+  opacity: 1;
+}
+
+.tomato-footer:hover .tomato-footer-flank.left {
+  transform: rotate(-10deg) scale(1.12);
+}
+
+.tomato-footer:hover .tomato-footer-flank.right {
+  transform: rotate(10deg) scale(1.12);
+}
+
+.tomato-footer-text {
+  margin: 0;
+  font-size: 0.825rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.01em;
+  text-align: center;
+  flex: 1 1 auto;
+}
+
+@media (max-width: 640px) {
+  .tomato-divider {
+    width: 95%;
+    margin-top: var(--spacing-xl, 32px);
+    margin-bottom: var(--spacing-sm, 12px);
+  }
+  .tomato-footer {
+    width: 95%;
+    padding: 10px 14px;
+    margin-bottom: var(--spacing-xl, 32px);
+  }
+  .tomato-footer-inner {
+    gap: 10px;
+  }
+  .tomato-footer-text {
+    font-size: 0.775rem;
+  }
 }
 
 /* ===========================
