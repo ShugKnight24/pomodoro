@@ -14,6 +14,9 @@ import { initSceneAndNav } from "./modules/sceneAndNav.js";
 import { initI18n } from "./modules/i18n.js";
 import { initVault } from "./modules/vault.js";
 import { initKanban } from "./modules/kanban.js";
+import { initHabits } from "./modules/habits.js";
+import { initHero } from "./modules/gamification/hero.js";
+import { initHeroUI } from "./modules/gamification/heroUI.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   initI18n();
@@ -24,6 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initToast();
   initPomodoro();
   initTodo();
+  initHabits();
   initSectionToggle();
   initKeyboardShortcuts();
   initFocusMode();
@@ -32,4 +36,6 @@ document.addEventListener("DOMContentLoaded", () => {
   initSceneAndNav();
   initVault();
   initKanban();
+  initHero();
+  initHeroUI();
 });
