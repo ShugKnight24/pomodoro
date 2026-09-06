@@ -588,6 +588,125 @@ const ICONS = {
       <line x1="16" y1="19" x2="14" y2="23"/>
     </svg>
   `,
+
+  refresh: ({ size = 16, className = "" }) => `
+    <svg class="svg-icon ${className}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+    </svg>
+  `,
+
+  map: ({ size = 16, className = "" }) => `
+    <svg class="svg-icon ${className}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
+      <line x1="8" y1="2" x2="8" y2="18"/>
+      <line x1="16" y1="6" x2="16" y2="22"/>
+    </svg>
+  `,
+
+  castle: ({ size = 16, className = "" }) => `
+    <svg class="svg-icon ${className}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M2 20h20"/>
+      <path d="M5 20V8l2-2 2 2v12"/>
+      <path d="M15 20V8l2-2 2 2v12"/>
+      <path d="M9 20V12h6v8"/>
+      <path d="M9 7h6"/>
+      <path d="M12 4v3"/>
+    </svg>
+  `,
+
+  tower: ({ size = 16, className = "" }) => `
+    <svg class="svg-icon ${className}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M6 22h12M7 22l1-14h8l1 14M9 8V4l3-2 3 2v4M12 11v3M10 18h4"/>
+    </svg>
+  `,
+
+  paw: ({ size = 16, className = "" }) => `
+    <svg class="svg-icon ${className}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="15" r="4"/>
+      <ellipse cx="7" cy="9.5" rx="2" ry="2.5"/>
+      <ellipse cx="17" cy="9.5" rx="2" ry="2.5"/>
+      <ellipse cx="11" cy="6" rx="1.8" ry="2.2"/>
+      <ellipse cx="14" cy="6" rx="1.8" ry="2.2"/>
+    </svg>
+  `,
+
+  treat: ({ size = 16, className = "" }) => `
+    <svg class="svg-icon ${className}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M18 4a2.5 2.5 0 0 0-4.3 1.8L9.2 10.3A2.5 2.5 0 1 0 5 14.5a2.5 2.5 0 0 0 4.3-1.8l4.5-4.5A2.5 2.5 0 0 0 18 4z"/>
+    </svg>
+  `,
+
+  gem: ({ size = 16, className = "" }) => `
+    <svg class="svg-icon ${className}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M6 3h12l4 6-10 12L2 9z"/>
+      <path d="M2 9h20M10 3l-2 6 4 12 4-12-2-6"/>
+    </svg>
+  `,
+
+  fountain: ({ size = 16, className = "" }) => `
+    <svg class="svg-icon ${className}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M4 19h16M6 19v-2a6 6 0 0 1 12 0v2M12 13V3m-4 4 4-4 4 4"/>
+      <path d="M9 10a3 3 0 0 0-6 0v2M15 10a3 3 0 0 1 6 0v2"/>
+    </svg>
+  `,
+
+  portal: ({ size = 16, className = "" }) => `
+    <svg class="svg-icon ${className}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="9"/>
+      <path d="M12 3a9 9 0 0 1 6.36 15.36M12 21a9 9 0 0 1-6.36-15.36"/>
+      <circle cx="12" cy="12" r="3"/>
+    </svg>
+  `,
+
+  skull: ({ size = 16, className = "" }) => `
+    <svg class="svg-icon ${className}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M12 2a8 8 0 0 0-8 8c0 3 1.8 5.7 4.5 7v3h7v-3c2.7-1.3 4.5-4 4.5-7a8 8 0 0 0-8-8z"/>
+      <circle cx="9" cy="10" r="1.5"/>
+      <circle cx="15" cy="10" r="1.5"/>
+      <line x1="10" y1="18" x2="10" y2="20"/>
+      <line x1="14" y1="18" x2="14" y2="20"/>
+    </svg>
+  `,
+
+  gift: ({ size = 16, className = "" }) => `
+    <svg class="svg-icon ${className}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <polyline points="20 12 20 22 4 22 4 12"/>
+      <rect x="2" y="7" width="20" height="5"/>
+      <line x1="12" y1="22" x2="12" y2="7"/>
+      <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
+    </svg>
+  `,
+
+  lock: ({ size = 16, className = "" }) => `
+    <svg class="svg-icon ${className}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+    </svg>
+  `,
+
+  zap: ({ size = 16, className = "" }) => `
+    <svg class="svg-icon ${className}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+    </svg>
+  `,
+
+  move: ({ size = 16, className = "" }) => `
+    <svg class="svg-icon ${className}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <polyline points="5 9 2 12 5 15"/>
+      <polyline points="9 5 12 2 15 5"/>
+      <polyline points="15 19 12 22 9 19"/>
+      <polyline points="19 9 22 12 19 15"/>
+      <line x1="2" y1="12" x2="22" y2="12"/>
+      <line x1="12" y1="2" x2="12" y2="22"/>
+    </svg>
+  `,
+
+  rock: ({ size = 16, className = "" }) => `
+    <svg class="svg-icon ${className}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M4 18l3-10 6-4 7 5 1 9H4z"/>
+      <path d="M7 8l5 4 8-3"/>
+    </svg>
+  `,
 };
 
 /**

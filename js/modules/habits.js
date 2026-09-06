@@ -171,7 +171,7 @@ export function toggleHabitToday(id) {
 
   if (nextCompleted) {
     const streak = calculateHabitStreak(habit);
-    showSuccess(`Habit "${habit.title}" completed! 🔥 ${streak} day streak`);
+    showSuccess(`Habit "${habit.title}" completed! ${streak} day streak`);
     document.dispatchEvent(
       new CustomEvent("habit-completed", {
         detail: { habit, streak },

@@ -521,7 +521,7 @@ function initMascotSettings() {
   if (restartAllToursBtn) {
     restartAllToursBtn.addEventListener("click", () => {
       restartAllTours();
-      showSuccess("All onboarding tours restarted! Start any tour from the buttons below or your companion. 🌟");
+      showSuccess("All onboarding tours restarted! Start any tour from the buttons below or your companion.");
     });
   }
 

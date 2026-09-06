@@ -49,24 +49,24 @@ export function renderTacticsContainer() {
     <!-- Tactics Top Navigation Header -->
     <div class="tactics-header-bar">
       <div class="tactics-title-group">
-        <h2 class="tactics-main-title">⚔️ Tactics Arena & Chrono Realm</h2>
+        <h2 class="tactics-main-title">${getIcon("sword", { size: 20 })} Tactics Arena & Chrono Realm</h2>
         <span class="tactics-subtitle">Assemble your squad, train pets, and conquer the realm!</span>
       </div>
       <div class="tactics-mode-tabs" id="tactics-modes-tabs">
         <button class="tactics-tab-btn ${exploration.activeMode === "world" ? "active" : ""}" data-tactics-mode="world">
-          🗺️ World Map
+          ${getIcon("map", { size: 15 })} World Map
         </button>
         <button class="tactics-tab-btn ${exploration.activeMode === "dungeon" ? "active" : ""}" data-tactics-mode="dungeon">
-          🏰 Dungeons
+          ${getIcon("castle", { size: 15 })} Dungeons
         </button>
         <button class="tactics-tab-btn ${exploration.activeMode === "tower" ? "active" : ""}" data-tactics-mode="tower">
-          🗼 Chrono Tower
+          ${getIcon("tower", { size: 15 })} Chrono Tower
         </button>
         <button class="tactics-tab-btn ${exploration.activeMode === "squad" ? "active" : ""}" data-tactics-mode="squad">
-          🐾 Squad & Pets
+          ${getIcon("paw", { size: 15 })} Squad & Pets
         </button>
         <button class="tactics-tab-btn ${exploration.activeMode === "battle" ? "active" : ""}" data-tactics-mode="battle" id="btn-tab-battle">
-          ⚔️ Battle Arena
+          ${getIcon("sword", { size: 15 })} Battle Arena
         </button>
       </div>
     </div>
@@ -115,14 +115,14 @@ function renderSquadView() {
       <div class="tactics-card squad-roster-card">
         <div class="card-header-row">
           <h3>Active Deployment Squad (Max 3 Units)</h3>
-          <span class="treats-pill">🍖 Treats: <strong>${treats}</strong></span>
+          <span class="treats-pill">${getIcon("treat", { size: 14 })} Treats: <strong>${treats}</strong></span>
         </div>
         <div class="squad-slots-grid">
           <!-- Hero Slot -->
           <div class="squad-unit-card hero-slot">
             <span class="slot-badge">LEADER</span>
             <div class="squad-unit-avatar">
-              <span class="unit-icon-large">🛡️</span>
+              <span class="unit-icon-large">${getIcon("shield", { size: 28 })}</span>
             </div>
             <div class="squad-unit-meta">
               <h4>${escapeHtml(hero.name)}</h4>
@@ -206,7 +206,7 @@ function renderPetCollectionCard(pet, activePets) {
 
       ${
         isLocked
-          ? `<div class="pet-locked-notice">🔒 Discover in World Exploration & Dungeons</div>`
+          ? `<div class="pet-locked-notice">${getIcon("lock", { size: 14 })} Discover in World Exploration & Dungeons</div>`
           : `
           <div class="pet-stats-bars">
             <div class="pet-stat-row">
@@ -225,10 +225,10 @@ function renderPetCollectionCard(pet, activePets) {
 
           <div class="pet-actions-row">
             <button class="tactics-btn-sm feed-pet-btn" data-pet-id="${pet.id}">
-              🍖 Feed Treat (+XP/Bond)
+              ${getIcon("treat", { size: 13 })} Feed Treat (+XP/Bond)
             </button>
             <button class="tactics-btn-sm assign-pet-btn ${isAssigned ? "assigned" : ""}" data-pet-id="${pet.id}">
-              ${isAssigned ? "✓ In Squad" : "Deploy in Squad"}
+              ${isAssigned ? `${getIcon("check", { size: 12 })} In Squad` : "Deploy in Squad"}
             </button>
           </div>
         `
@@ -266,7 +266,7 @@ function renderWorldMapView() {
           <h3>${currentRegion.name}</h3>
           <p>${currentRegion.description}</p>
           <div class="region-loot-tags">
-            ${currentRegion.loot.map((l) => `<span class="loot-tag">🎁 ${l}</span>`).join("")}
+            ${currentRegion.loot.map((l) => `<span class="loot-tag">${getIcon("gift", { size: 12 })} ${l}</span>`).join("")}
           </div>
         </div>
 
@@ -275,10 +275,18 @@ function renderWorldMapView() {
           ${currentRegion.nodes
             .map((node, i) => {
               const isCleared = exploration.completedNodes[node.id];
+              const nodeIcon =
+                node.type === "treasure"
+                  ? getIcon("gem", { size: 18 })
+                  : node.type === "shrine"
+                  ? getIcon("fountain", { size: 18 })
+                  : node.type === "boss"
+                  ? getIcon("crown", { size: 18 })
+                  : getIcon("sword", { size: 18 });
               return `
               <div class="world-node-card node-type-${node.type} ${isCleared ? "is-cleared" : ""}">
                 <div class="node-icon-bubble">
-                  ${node.type === "treasure" ? "💎" : node.type === "shrine" ? "⛲" : node.type === "boss" ? "👑" : "⚔️"}
+                  ${nodeIcon}
                 </div>
                 <div class="node-info">
                   <h4>${escapeHtml(node.name)}</h4>
@@ -287,7 +295,7 @@ function renderWorldMapView() {
                 <div class="node-action-col">
                   ${
                     isCleared
-                      ? `<span class="cleared-badge">✓ Completed</span>`
+                      ? `<span class="cleared-badge">${getIcon("check", { size: 12 })} Completed</span>`
                       : `<button class="tactics-btn-primary launch-node-btn" data-node-id="${node.id}" data-node-type="${node.type}">
                           ${node.type === "treasure" ? "Open Chest" : "Enter Battle"}
                          </button>`
@@ -313,7 +321,7 @@ function renderDungeonView() {
       <div class="tactics-card dungeon-banner-card">
         <div class="dungeon-meta-row">
           <div>
-            <h3>🏰 The Clockwork Crypts</h3>
+            <h3>${getIcon("castle", { size: 18 })} The Clockwork Crypts</h3>
             <p>Branching subterranean chambers filled with ancient traps, brass guardians, and treasure vaults.</p>
           </div>
           <div class="dungeon-progress-pill">
@@ -325,7 +333,7 @@ function renderDungeonView() {
 
       <div class="dungeon-rooms-flow">
         <div class="dungeon-room-card active">
-          <div class="room-icon">⚔️</div>
+          <div class="room-icon">${getIcon("sword", { size: 22 })}</div>
           <h4>Chamber ${exploration.dungeonRoomsCleared + 1}</h4>
           <p>Lurking shadows block the corridor ahead.</p>
           <button class="tactics-btn-primary start-dungeon-battle-btn">
@@ -334,13 +342,13 @@ function renderDungeonView() {
         </div>
 
         <div class="dungeon-room-card next">
-          <div class="room-icon">💎</div>
+          <div class="room-icon">${getIcon("gem", { size: 22 })}</div>
           <h4>Sealed Relic Chamber</h4>
           <p>Unlocks after clearing the current room.</p>
         </div>
 
         <div class="dungeon-room-card boss">
-          <div class="room-icon">👑</div>
+          <div class="room-icon">${getIcon("crown", { size: 22 })}</div>
           <h4>Floor Boss: Gear Titan</h4>
           <p>Guards the stairs to Floor ${exploration.dungeonFloor + 1}.</p>
         </div>
@@ -360,7 +368,7 @@ function renderTowerView() {
       <div class="tactics-card tower-header-card">
         <div class="tower-meta-row">
           <div>
-            <h3>🗼 The Chrono Spire</h3>
+            <h3>${getIcon("tower", { size: 18 })} The Chrono Spire</h3>
             <p>Ascend the infinite spire of temporal trials. Each floor introduces unique combat mutators!</p>
           </div>
           <div class="tower-floor-badge">
@@ -381,17 +389,17 @@ function renderTowerView() {
               </div>
               <div class="floor-details-col">
                 <h4>${escapeHtml(floor.name)}</h4>
-                <span class="floor-mutator">⚡ Mutator: ${floor.modifier}</span>
+                <span class="floor-mutator">${getIcon("zap", { size: 13 })} Mutator: ${floor.modifier}</span>
               </div>
               <div class="floor-action-col">
                 ${
                   isCleared
-                    ? `<span class="cleared-tag">✓ Conquered</span>`
+                    ? `<span class="cleared-tag">${getIcon("check", { size: 12 })} Conquered</span>`
                     : isUnlocked
                       ? `<button class="tactics-btn-primary launch-tower-btn" data-floor="${floor.floor}">
                           Ascend Floor
                          </button>`
-                      : `<span class="locked-tag">🔒 Locked</span>`
+                      : `<span class="locked-tag">${getIcon("lock", { size: 12 })} Locked</span>`
                 }
               </div>
             </div>
@@ -410,11 +418,11 @@ function renderBattleArenaView() {
     return `
       <div class="tactics-battle-empty-state">
         <div class="empty-battle-card">
-          <span class="empty-icon">⚔️</span>
+          <span class="empty-icon">${getIcon("sword", { size: 40 })}</span>
           <h3>No Active Battle</h3>
           <p>Select a battle from the <strong>World Map</strong>, <strong>Dungeons</strong>, or <strong>Chrono Tower</strong> to deploy your squad!</p>
           <button class="tactics-btn-primary" id="btn-quick-skirmish">
-            ⚡ Quick Skirmish (Training)
+            ${getIcon("zap", { size: 15 })} Quick Skirmish (Training)
           </button>
         </div>
       </div>
@@ -469,7 +477,7 @@ function renderBattleArenaView() {
                   <div class="hp-bar-mini">
                     <div class="hp-fill-mini" style="width: ${(activeUnit.hp / activeUnit.maxHp) * 100}%"></div>
                   </div>
-                  <span>AP: ${"⚡".repeat(activeUnit.ap)} (${activeUnit.ap}/${activeUnit.maxAp})</span>
+                  <span>AP: ${Array.from({ length: activeUnit.ap }).map(() => getIcon("zap", { size: 13, className: "ap-bolt" })).join("")} (${activeUnit.ap}/${activeUnit.maxAp})</span>
                 </div>
               </div>
             `
@@ -483,25 +491,25 @@ function renderBattleArenaView() {
               ? `
             <div class="combat-action-buttons">
               <button class="tactics-action-btn ${activeCombatAction === "move" ? "selected" : ""}" data-action="move" ${activeUnit.ap < 1 ? "disabled" : ""}>
-                👟 Move (1 AP)
+                ${getIcon("move", { size: 14 })} Move (1 AP)
               </button>
               <button class="tactics-action-btn ${activeCombatAction === "attack" ? "selected" : ""}" data-action="attack" ${activeUnit.ap < 1 ? "disabled" : ""}>
-                ⚔️ Strike (1 AP)
+                ${getIcon("sword", { size: 14 })} Strike (1 AP)
               </button>
               ${
                 activeUnit.skill
                   ? `
                 <button class="tactics-action-btn ${activeCombatAction === "skill" ? "selected" : ""}" data-action="skill" ${activeUnit.ap < (activeUnit.skill.cost || 2) ? "disabled" : ""}>
-                  ✨ ${activeUnit.skill.name} (${activeUnit.skill.cost || 2} AP)
+                  ${getIcon("sparkles", { size: 14 })} ${activeUnit.skill.name} (${activeUnit.skill.cost || 2} AP)
                 </button>
               `
                   : ""
               }
               <button class="tactics-action-btn" id="btn-combat-defend" ${activeUnit.ap < 1 ? "disabled" : ""}>
-                🛡️ Defend (End)
+                ${getIcon("shield", { size: 14 })} Defend (End)
               </button>
               <button class="tactics-action-btn secondary" id="btn-combat-wait">
-                ⏳ End Turn
+                ${getIcon("hourglass", { size: 14 })} End Turn
               </button>
             </div>
           `
@@ -545,14 +553,16 @@ function renderGridCell(cell) {
   return `
     <div class="grid-cell terrain-${cell.terrain} ${isSelected ? "selected" : ""} ${isMoveHighlight ? "highlight-move" : ""} ${isAttackHighlight ? "highlight-attack" : ""}"
          data-grid-x="${cell.x}" data-grid-y="${cell.y}">
-      ${cell.terrain === "cover" ? `<span class="terrain-icon">🪨</span>` : ""}
-      ${cell.terrain === "time_rift" ? `<span class="terrain-icon">🌀</span>` : ""}
-      ${cell.terrain === "healing_glyph" ? `<span class="terrain-icon">✨</span>` : ""}
+      ${cell.terrain === "cover" ? `<span class="terrain-icon">${getIcon("rock", { size: 14 })}</span>` : ""}
+      ${cell.terrain === "time_rift" ? `<span class="terrain-icon">${getIcon("portal", { size: 14 })}</span>` : ""}
+      ${cell.terrain === "healing_glyph" ? `<span class="terrain-icon">${getIcon("sparkles", { size: 14 })}</span>` : ""}
       ${
         unit
           ? `
         <div class="cell-unit-sprite ${unit.side}">
-          <span class="unit-token-avatar">${unit.side === "player" ? (unit.element ? "🐾" : "🛡️") : "👾"}</span>
+          <span class="unit-token-avatar ${unit.side === "player" ? (unit.element ? "unit-pet" : "unit-hero") : "unit-enemy"}">
+            ${unit.side === "player" ? (unit.element ? getIcon("paw", { size: 18 }) : getIcon("shield", { size: 18 })) : getIcon("skull", { size: 18 })}
+          </span>
           <div class="unit-tile-hp-bar">
             <div class="unit-tile-hp-fill" style="width: ${(unit.hp / unit.maxHp) * 100}%"></div>
           </div>
@@ -596,7 +606,7 @@ function bindModeNavEvents(container) {
       if (type === "treasure") {
         const result = openTreasureNode(node);
         if (result.success) {
-          showSuccess(`Opened Chest! Received +${result.gold} Gold & +${result.treats} Treats! 🎁`);
+          showSuccess(`Opened chest! Received +${result.gold} Gold and +${result.treats} Treats!`);
           renderTacticsContainer();
         }
       } else {
@@ -611,7 +621,7 @@ function bindModeNavEvents(container) {
       const petId = btn.dataset.petId;
       const result = feedPet(petId);
       if (result.success) {
-        showSuccess(`Fed treat! Bond increased to ${result.bond}%! ❤️`);
+        showSuccess(`Fed treat! Bond increased to ${result.bond}%!`);
         renderTacticsContainer();
       } else {
         showError(result.message);
@@ -699,7 +709,7 @@ export function startTacticsBattle(tier = 1, encounterId = null, petReward = nul
 
   setExplorationMode("battle");
   renderTacticsContainer();
-  showInfo("⚔️ Tactical Engagement Commenced!");
+  showInfo("Tactical engagement commenced!");
 }
 
 function bindBattleArenaEvents() {
@@ -766,7 +776,7 @@ function handleGridCellClick(x, y) {
 function setupTacticsEventListeners() {
   document.addEventListener("tactics-battle-won", (e) => {
     const { round } = e.detail || {};
-    showSuccess(`🏆 VICTORY in ${round} rounds! Rewards deposited into your vault.`);
+    showSuccess(`Victory in ${round} rounds! Rewards deposited into your vault.`);
 
     if (currentBattle?.encounterId) {
       if (currentBattle.encounterId.startsWith("tower_")) {
@@ -780,7 +790,7 @@ function setupTacticsEventListeners() {
   });
 
   document.addEventListener("tactics-battle-lost", () => {
-    showError("💀 Squad defeated! Retreat and recover your Resolve (HP).");
+    showError("Squad defeated! Retreat and recover your Resolve (HP).");
   });
 }
 

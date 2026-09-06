@@ -159,7 +159,7 @@ export function renderHeroDashboard() {
             ${getIcon("archive", { size: 16 })} Inventory (${hero.inventory.length})
           </button>
           <button class="hero-tab-btn" id="hero-launch-tactics-btn" style="background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(59,130,246,0.15)); border-color: rgba(16,185,129,0.4);">
-            ${getIcon("sparkles", { size: 16 })} ⚔️ Tactics &amp; Pets Arena
+            ${getIcon("sword", { size: 16 })} Tactics &amp; Pets Arena
           </button>
         </div>
 
@@ -496,7 +496,7 @@ export function openCharacterCreator() {
           ${renderHeroPaperDoll(tempHero, { size: 180 })}
         </div>
         <button class="button random-name-btn" id="creator-random-name-btn">
-          🎲 Random Name
+          ${getIcon("refresh", { size: 14 })} Random Name
         </button>
       </div>
 

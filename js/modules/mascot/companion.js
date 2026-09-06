@@ -8,6 +8,7 @@
 import { getMascot, TOOL_SPECIALISTS, getAllMascots } from "./mascotRegistry.js";
 import { renderMascotSvg } from "./mascotSprites.js";
 import { startTourForCurrentTool } from "./onboardingTour.js";
+import { getIcon } from "../../utils/icons.js";
 
 const STORAGE_KEY = "pomidor.companionSettings";
 
@@ -83,7 +84,7 @@ export function setSelectedMascot(mascotId) {
   saveSettings();
   updateCompanionView();
   const mascot = getMascot(mascotId);
-  speak(`Hi! I am ${mascot.name}. Ready to accompany your journey! 🌟`, 4000);
+  speak(`Hi! I am ${mascot.name}. Ready to accompany your journey!`, 4000);
 }
 
 export function getCurrentMascot() {
@@ -124,19 +125,19 @@ export function updateCompanionView() {
       <div class="speech-header">
         <span class="mascot-badge-tag">${escapeHtml(mascot.name)}</span>
         <button class="speech-close-btn" id="companion-minimize-btn" title="Minimize / Expand" aria-label="Minimize companion">
-          ${state.minimized ? "▲" : "▼"}
+          ${state.minimized ? getIcon("chevron-up", { size: 14 }) : getIcon("chevron-down", { size: 14 })}
         </button>
       </div>
       <p class="speech-text" id="companion-speech-text">${getGreetingForTool(mascot, state.currentTool)}</p>
       <div class="speech-actions">
         <button class="companion-action-chip" id="companion-tour-btn">
-          ✨ Tour ${formatToolName(state.currentTool)}
+          ${getIcon("sparkles", { size: 13, className: "chip-icon" })} Tour ${formatToolName(state.currentTool)}
         </button>
         <button class="companion-action-chip" id="companion-tip-btn">
-          💡 Tip
+          ${getIcon("lightbulb", { size: 13, className: "chip-icon" })} Tip
         </button>
         <button class="companion-action-chip" id="companion-swap-btn" title="Swap companion">
-          🔄 Swap
+          ${getIcon("refresh", { size: 13, className: "chip-icon" })} Swap
         </button>
       </div>
     </div>
@@ -200,7 +201,7 @@ function bindWidgetEvents(widget) {
     const randomTip =
       mascot.tips[Math.floor(Math.random() * mascot.tips.length)] ||
       "Focus on one small milestone at a time.";
-    speak(`💡 ${randomTip}`, 5000);
+    speak(randomTip, 5000);
   });
 
   widget.querySelector("#companion-swap-btn")?.addEventListener("click", openMascotPicker);
@@ -212,10 +213,10 @@ function handlePetting() {
   spawnHearts();
 
   const petResponses = [
-    `*purr* Thank you! Ready to power through! ❤️`,
-    `Aww, you're the best! Focus morale +10! ✨`,
-    `I believe in you! Let's crush this next session! 🚀`,
-    `*happy tomato bounce* You're making awesome progress! 🍅`,
+    "*purr* Thank you! Ready to power through!",
+    "Aww, you're the best! Focus morale boosted!",
+    "I believe in you! Let's crush this next session!",
+    "*happy tomato bounce* You're making awesome progress!",
   ];
   const response = petResponses[Math.floor(Math.random() * petResponses.length)];
   speak(response, 3000);
@@ -229,7 +230,7 @@ function spawnHearts() {
     setTimeout(() => {
       const heart = document.createElement("span");
       heart.className = "floating-pet-heart";
-      heart.textContent = "💖";
+      heart.innerHTML = getIcon("heart", { size: 16, className: "pet-heart-svg" });
       heart.style.left = `${30 + Math.random() * 40}%`;
       emitter.appendChild(heart);
       setTimeout(() => heart.remove(), 1200);
@@ -290,7 +291,7 @@ function openMascotPicker() {
     <div class="mascot-picker-dialog">
       <div class="dialog-header">
         <h3>Choose Your Companion</h3>
-        <button class="dialog-close-btn" id="close-mascot-picker">✕</button>
+        <button class="dialog-close-btn" id="close-mascot-picker" aria-label="Close dialog">${getIcon("close", { size: 16 })}</button>
       </div>
       <p class="dialog-sub">Select your primary sidekick or brand mascot:</p>
       <div class="mascot-grid">
@@ -315,7 +316,7 @@ function openMascotPicker() {
           <span>Assign different companions automatically to each tool (Pomi on Timer, Kip on Tasks, Chronos on Calendar, Bolt on Stats)</span>
         </label>
         <button class="companion-action-chip ${state.mode === "specialist" ? "active" : ""}" id="toggle-specialist-mode">
-          ${state.mode === "specialist" ? "✓ Specialist Active" : "Enable Specialists"}
+          ${state.mode === "specialist" ? `${getIcon("check", { size: 13 })} Specialist Active` : "Enable Specialists"}
         </button>
       </div>
     </div>
@@ -345,32 +346,32 @@ function setupEventListeners() {
   // 1. Pomodoro Started
   document.addEventListener("pomodoro-started", () => {
     setAnimState("think", 3000);
-    speak("Focus sprint initiated! Let's eliminate all distractions! 🎯", 3500);
+    speak("Focus sprint initiated! Let's eliminate all distractions!", 3500);
   });
 
   // 2. Pomodoro Completed
   document.addEventListener("pomodoro-complete", () => {
     setAnimState("cheer", 5000);
-    speak("Incredible job! Another focus session successfully banked! 🍅🎉", 5000);
+    speak("Incredible job! Another focus session successfully banked!", 5000);
   });
 
   // 3. Break Started
   document.addEventListener("break-started", () => {
     setAnimState("sleep", 6000);
-    speak("Time to recharge! Rest your eyes, take a sip of water. ☕", 4500);
+    speak("Time to recharge! Rest your eyes, take a sip of water.", 4500);
   });
 
   // 4. Task Checked
   document.addEventListener("task-complete", (e) => {
     setAnimState("cheer", 2000);
-    speak(`Task checked off! Keep this unstoppable momentum going! ⚔️`, 3000);
+    speak("Task checked off! Keep this unstoppable momentum going!", 3000);
   });
 
   // 5. Habit Completed
   document.addEventListener("habit-completed", (e) => {
     setAnimState("cheer", 2000);
     const streak = e.detail?.streak || 1;
-    speak(`Habit verified! You are on a ${streak}-day streak! 🔥`, 3500);
+    speak(`Habit verified! You are on a ${streak}-day streak!`, 3500);
   });
 }
 

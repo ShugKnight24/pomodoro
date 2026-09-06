@@ -7,6 +7,7 @@
 
 import { renderMascotSvg } from "./mascotSprites.js";
 import { TOOL_SPECIALISTS, getMascot } from "./mascotRegistry.js";
+import { getIcon } from "../../utils/icons.js";
 
 const TOURS_STORAGE_KEY = "pomidor.completedTours";
 
@@ -223,16 +224,16 @@ function renderTourStep() {
           <span class="tour-mascot-name">${escapeHtml(currentTour.mascot.name)}</span>
           <span class="tour-step-counter">Step ${currentStepIndex + 1} of ${currentTour.steps.length}</span>
         </div>
-        <button class="tour-close-btn" id="tour-skip-btn" title="Exit Tour">✕</button>
+        <button class="tour-close-btn" id="tour-skip-btn" title="Exit Tour" aria-label="Exit tour">${getIcon("close", { size: 16 })}</button>
       </div>
       <h3 class="tour-step-title">${escapeHtml(step.title)}</h3>
       <p class="tour-step-body">${escapeHtml(step.body)}</p>
       <div class="tour-card-footer">
         <button class="tour-nav-btn secondary" id="tour-prev-btn" ${currentStepIndex === 0 ? "disabled" : ""}>
-          ◀ Previous
+          ${getIcon("chevron-left", { size: 14 })} Previous
         </button>
         <button class="tour-nav-btn primary" id="tour-next-btn">
-          ${currentStepIndex === currentTour.steps.length - 1 ? "Finish Tour ✓" : "Next Step ▶"}
+          ${currentStepIndex === currentTour.steps.length - 1 ? `Finish Tour ${getIcon("check", { size: 14 })}` : `Next Step ${getIcon("chevron-right", { size: 14 })}`}
         </button>
       </div>
     </div>

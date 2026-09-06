@@ -264,7 +264,7 @@ export class TacticsBattle {
     this.addJuice("shake", target.x, target.y, isCrit ? 6 : 3);
 
     this.combatLog.unshift(
-      `⚔️ ${attacker.name} attacked ${target.name} for ${finalDamage} damage!${isCrit ? " (CRITICAL HIT)" : ""}`,
+      `${attacker.name} attacked ${target.name} for ${finalDamage} damage!${isCrit ? " (CRITICAL HIT)" : ""}`,
     );
 
     if (target.hp === 0) {
@@ -327,7 +327,7 @@ export class TacticsBattle {
         if (targetUnit && targetUnit.side === caster.side) {
           targetUnit.isDefending = true;
           targetUnit.def += 15;
-          this.addJuice("float", targetUnit.x, targetUnit.y, "Shielded! 🛡️", "#10b981");
+          this.addJuice("float", targetUnit.x, targetUnit.y, "Shielded!", "#10b981");
         }
         break;
 
@@ -336,7 +336,7 @@ export class TacticsBattle {
           const dmg = Math.round(caster.atk * 1.2);
           targetUnit.hp = Math.max(0, targetUnit.hp - dmg);
           targetUnit.ap = 0; // Freeze skips next action
-          this.addJuice("float", targetUnit.x, targetUnit.y, `-${dmg} FROZEN! ❄️`, "#67e8f9");
+          this.addJuice("float", targetUnit.x, targetUnit.y, `-${dmg} FROZEN!`, "#67e8f9");
           if (targetUnit.hp === 0) this.eliminateUnit(targetUnit);
         }
         break;
@@ -348,7 +348,7 @@ export class TacticsBattle {
           targetCell.unitId = caster.id;
           caster.x = targetX;
           caster.y = targetY;
-          this.addJuice("float", targetX, targetY, "Blink! ✨", "#a855f7");
+          this.addJuice("float", targetX, targetY, "Blink!", "#a855f7");
         }
         break;
 
@@ -363,7 +363,7 @@ export class TacticsBattle {
         break;
     }
 
-    this.combatLog.unshift(`✨ ${caster.name} unleashed ${caster.skill.name}!`);
+    this.combatLog.unshift(`${caster.name} unleashed ${caster.skill.name}!`);
     this.checkVictoryCondition();
     return skillResult;
   }
@@ -373,8 +373,8 @@ export class TacticsBattle {
     if (!unit || unit.ap < 1) return false;
     unit.isDefending = true;
     unit.ap = 0; // Consumes rest of turn
-    this.combatLog.unshift(`🛡️ ${unit.name} raised defensive guard.`);
-    this.addJuice("float", unit.x, unit.y, "Guard Up! 🛡️", "#3b82f6");
+    this.combatLog.unshift(`${unit.name} raised defensive guard.`);
+    this.addJuice("float", unit.x, unit.y, "Guard Up!", "#3b82f6");
     this.nextTurn();
     return true;
   }
@@ -384,7 +384,7 @@ export class TacticsBattle {
     unit.hp = 0;
     const cell = this.getCell(unit.x, unit.y);
     if (cell) cell.unitId = null;
-    this.combatLog.unshift(`💀 ${unit.name} was defeated!`);
+    this.combatLog.unshift(`${unit.name} was defeated!`);
   }
 
   checkVictoryCondition() {
@@ -394,12 +394,12 @@ export class TacticsBattle {
     if (!enemyAlive) {
       this.isOver = true;
       this.winner = "player";
-      this.combatLog.unshift("🏆 VICTORY! All enemies vanquished!");
+      this.combatLog.unshift("VICTORY! All enemies vanquished!");
       document.dispatchEvent(new CustomEvent("tactics-battle-won", { detail: { round: this.round } }));
     } else if (!playerAlive) {
       this.isOver = true;
       this.winner = "enemy";
-      this.combatLog.unshift("💀 DEFEAT! Your squad has fallen.");
+      this.combatLog.unshift("DEFEAT! Your squad has fallen.");
       document.dispatchEvent(new CustomEvent("tactics-battle-lost", { detail: { round: this.round } }));
     }
   }

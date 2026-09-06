@@ -258,4 +258,41 @@ test.describe("Mascot Companion, App Onboarding Tours & Tactics RPG Engine", () 
     // Should navigate into tactics container
     await expect(page.locator("#tactics-container")).toBeVisible();
   });
+
+  test("companion widget positioning avoids overlapping bottom floating controls", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    const widget = page.locator("#mascot-companion-widget");
+    await expect(widget).toBeVisible();
+
+    const bottom = await widget.evaluate((el) => {
+      return parseInt(window.getComputedStyle(el).bottom, 10);
+    });
+    // Expected to be at least 80px from bottom to clear bottom buttons
+    expect(bottom).toBeGreaterThanOrEqual(80);
+  });
+
+  test("companion and tactics navigation use crisp SVGs with zero raw emojis in buttons or tabs", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    const emojiRegex = /[\u{1F300}-\u{1F9FF}\u{2600}-\u{27BF}]/u;
+
+    // Check companion action chips
+    const chipsText = await page.locator(".speech-actions").innerText();
+    expect(emojiRegex.test(chipsText)).toBe(false);
+
+    // Verify SVG icons exist inside companion chips
+    const chipSvgs = await page.locator(".companion-action-chip svg.svg-icon").count();
+    expect(chipSvgs).toBeGreaterThanOrEqual(3);
+
+    // Open tactics
+    await page.locator("[data-view='tactics']").click();
+    const tabsText = await page.locator("#tactics-modes-tabs").innerText();
+    expect(emojiRegex.test(tabsText)).toBe(false);
+
+    const tabSvgs = await page.locator(".tactics-tab-btn svg.svg-icon").count();
+    expect(tabSvgs).toBe(5);
+  });
 });

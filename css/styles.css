@@ -11186,7 +11186,7 @@ h1 {
 
 .mascot-companion-widget {
   position: fixed;
-  bottom: 24px;
+  bottom: 96px;
   right: 24px;
   display: flex;
   flex-direction: column;
@@ -11194,6 +11194,14 @@ h1 {
   gap: 10px;
   z-index: 1250;
   pointer-events: none;
+  transition: bottom 0.2s ease, right 0.2s ease;
+}
+
+@media screen and (max-width: 768px) {
+  .mascot-companion-widget {
+    bottom: 84px;
+    right: 16px;
+  }
 }
 
 .companion-speech-bubble {
@@ -11251,6 +11259,21 @@ h1 {
   font-size: 0.8rem;
   cursor: pointer;
   color: var(--color-text-tertiary, #64748b);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 4px;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.speech-close-btn:hover {
+  color: var(--color-text-primary, #0f172a);
+  background: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .speech-close-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .speech-text {
@@ -11267,6 +11290,9 @@ h1 {
 }
 
 .companion-action-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   background: var(--color-gray-100, #f1f5f9);
   border: 1px solid var(--color-gray-200, #e2e8f0);
   border-radius: 8px;
@@ -11276,6 +11302,10 @@ h1 {
   cursor: pointer;
   color: var(--color-text-secondary, #475569);
   transition: all 0.15s ease;
+}
+
+.companion-action-chip .chip-icon {
+  flex-shrink: 0;
 }
 
 [data-theme="dark"] .companion-action-chip {
@@ -11336,9 +11366,18 @@ h1 {
 .floating-pet-heart {
   position: absolute;
   top: -10px;
-  font-size: 1.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #ef4444;
   animation: float-heart 1.2s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
   pointer-events: none;
+  z-index: 10;
+}
+
+.floating-pet-heart svg {
+  fill: #ef4444;
+  stroke: #ef4444;
 }
 
 @keyframes float-heart {
@@ -11644,6 +11683,9 @@ h1 {
 }
 
 .tactics-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 8px 14px;
   border-radius: 10px;
   border: 1px solid var(--color-gray-200, #e2e8f0);
@@ -11693,6 +11735,9 @@ h1 {
 }
 
 .treats-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   background: rgba(245, 158, 11, 0.12);
   color: #d97706;
   padding: 4px 12px;
@@ -12204,8 +12249,56 @@ h1 {
 }
 
 .unit-token-avatar {
-  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+.unit-token-avatar.unit-hero {
+  color: #38bdf8;
+}
+
+.unit-token-avatar.unit-pet {
+  color: #34d399;
+}
+
+.unit-token-avatar.unit-enemy {
+  color: #f87171;
+}
+
+.terrain-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.9;
+}
+
+.ap-display {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.ap-bolt {
+  color: #f59e0b;
+  fill: #f59e0b;
+}
+
+.room-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-gray-200, #e2e8f0);
+  margin-right: 14px;
+  flex-shrink: 0;
+}
+
+[data-theme="dark"] .room-icon {
+  background: #334155;
 }
 
 .unit-tile-hp-bar {
@@ -12255,6 +12348,9 @@ h1 {
 }
 
 .tactics-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 10px 14px;
   border-radius: 10px;
   font-size: 0.86rem;
