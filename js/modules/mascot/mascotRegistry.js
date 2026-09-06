@@ -20,6 +20,13 @@ export const MASCOTS = {
       highlight: "#fca5a5",
     },
     defaultTool: "pomodoro",
+    customInteraction: {
+      name: "Juicy Bounce & Cheer",
+      description: "Sparks joyful focus energy with floating tomato glow",
+      speech: "Pomi is full of energy! Let's conquer this focus sprint together!",
+      fxType: "tomato-sparkle",
+      badge: "+5 Focus XP"
+    },
     greetings: {
       pomodoro: "Ready to conquer time together? Let's start a juicy focus session!",
       todo: "Look at all these milestones! We'll slice right through them.",
@@ -51,6 +58,13 @@ export const MASCOTS = {
       highlight: "#67e8f9",
     },
     defaultTool: "kanban",
+    customInteraction: {
+      name: "Holographic Cyber-Purr",
+      description: "Pulses neon holographic data rings and shares agile agility",
+      speech: "Kip initialized productivity overclock! Pro tip: Press 'F' for instant distraction-free focus.",
+      fxType: "cyber-rings",
+      badge: "Agile Boost"
+    },
     greetings: {
       pomodoro: "Purr-fect focus time! No distractions allowed on my watch.",
       todo: "Got your claws ready? Let's check these items off fast.",
@@ -81,6 +95,13 @@ export const MASCOTS = {
       highlight: "#c4b5fd",
     },
     defaultTool: "calendar",
+    customInteraction: {
+      name: "Chrono Dial Gaze",
+      description: "Spins ancient brass gears with golden temporal resonance",
+      speech: "Chronos bends the flow of time. 25 minutes of deep presence outweighs hours of fractured attention.",
+      fxType: "time-dial",
+      badge: "Temporal Clarity"
+    },
     greetings: {
       pomodoro: "Wisdom dictates focused effort. Channel the hours carefully.",
       todo: "Structure brings serenity. Prioritize with intention.",
@@ -111,6 +132,13 @@ export const MASCOTS = {
       highlight: "#93c5fd",
     },
     defaultTool: "vault",
+    customInteraction: {
+      name: "Frost Glide & Breathe",
+      description: "Glides gracefully leaving tranquil snowflake crystal trails",
+      speech: "Deep breath in... hold... and release. Pip reminds you: calm consistency beats frantic rushing.",
+      fxType: "frost-snow",
+      badge: "Zen State"
+    },
     greetings: {
       pomodoro: "Deep breath. Cold breeze. Let's glide smoothly into focus.",
       todo: "One step at a time, just like walking on the ice.",
@@ -141,6 +169,13 @@ export const MASCOTS = {
       highlight: "#fde047",
     },
     defaultTool: "stats",
+    customInteraction: {
+      name: "Overclock Gears",
+      description: "Whirs high-precision brass cogs and sparks kinetic telemetry",
+      speech: "Systems operational! Efficiency calculation: complete 2 more Pomodoros to hit peak flow velocity!",
+      fxType: "cogs-spark",
+      badge: "Overclocked"
+    },
     greetings: {
       pomodoro: "BEEP-BOOP! Clockwork gears synced for optimal focus cycle.",
       todo: "Task checklist parsed. Operational efficiency at 99.8%.",
@@ -159,7 +194,7 @@ export const MASCOTS = {
   },
 };
 
-// Specialist tool assignments
+// Default specialist tool assignments
 export const TOOL_SPECIALISTS = {
   pomodoro: "pomi",
   todo: "kip",
@@ -171,10 +206,24 @@ export const TOOL_SPECIALISTS = {
   tactics: "pomi",
 };
 
-/**
- * Register or override a brand mascot.
- * Allows future developers/companies to easily integrate their brand character.
- */
+const EXPERIENCE_ASSIGNMENTS_KEY = "pomidor.mascot.experienceAssignments";
+
+export function getExperienceAssignments() {
+  try {
+    const saved = localStorage.getItem(EXPERIENCE_ASSIGNMENTS_KEY);
+    if (saved) return { ...TOOL_SPECIALISTS, ...JSON.parse(saved) };
+  } catch {}
+  return { ...TOOL_SPECIALISTS };
+}
+
+export function setExperienceMascot(experienceId, mascotId) {
+  const current = getExperienceAssignments();
+  current[experienceId] = mascotId;
+  localStorage.setItem(EXPERIENCE_ASSIGNMENTS_KEY, JSON.stringify(current));
+  window.dispatchEvent(new CustomEvent("mascotassignmentchange", { detail: { experienceId, mascotId } }));
+  return current;
+}
+
 export function registerMascot(customMascot) {
   if (!customMascot?.id) throw new Error("Mascot requires an id");
   MASCOTS[customMascot.id] = {

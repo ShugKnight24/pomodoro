@@ -1,32 +1,45 @@
 /**
- * companion.js — Interactive On-Brand Desktop Companion Widget
- * Manages companion state, reactive speech, lifecycle events, and companion modes.
+ * companion.js — Floating Mascot Companion Widget & Experience Manager
+ * Zero emojis, SVG only, customizable interactions, and per-experience assignee support.
  */
 
 "use strict";
 
-import { getMascot, TOOL_SPECIALISTS, getAllMascots } from "./mascotRegistry.js";
+import {
+  MASCOTS,
+  getAllMascots,
+  getMascot,
+  getExperienceAssignments,
+  setExperienceMascot,
+} from "./mascotRegistry.js";
 import { renderMascotSvg } from "./mascotSprites.js";
 import { startTourForCurrentTool } from "./onboardingTour.js";
 import { getIcon } from "../../utils/icons.js";
 
-const STORAGE_KEY = "pomidor.companionSettings";
+const STORAGE_KEY = "pomidor.mascot.settings";
 
-const state = {
+let state = {
   enabled: true,
-  mode: "follow", // 'follow' (one mascot everywhere) | 'specialist' (different companion per tool)
+  mode: "follow", // "follow" | "specialist"
   selectedMascotId: "pomi",
-  currentTool: "pomodoro",
-  animState: "idle", // 'idle' | 'cheer' | 'think' | 'sleep' | 'heart'
   minimized: false,
+  animState: "idle",
+  currentTool: "pomodoro",
   speechTimeout: null,
 };
 
 export function initCompanion() {
   loadSettings();
   createCompanionDOM();
-  setupEventListeners();
   updateCompanionView();
+  setupEventListeners();
+
+  window.addEventListener("mascotassignmentchange", () => {
+    updateCompanionView();
+  });
+  window.addEventListener("langchange", () => {
+    updateCompanionView();
+  });
 }
 
 function loadSettings() {
@@ -34,17 +47,14 @@ function loadSettings() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       const parsed = JSON.parse(saved);
-      state.enabled = parsed.enabled !== undefined ? parsed.enabled : true;
-      state.mode = parsed.mode || "follow";
-      state.selectedMascotId = parsed.selectedMascotId || "pomi";
-      state.minimized = Boolean(parsed.minimized);
+      state = { ...state, ...parsed };
     }
   } catch (e) {
     console.warn("Error loading companion settings:", e);
   }
 }
 
-export function saveSettings() {
+function saveSettings() {
   try {
     localStorage.setItem(
       STORAGE_KEY,
@@ -89,7 +99,9 @@ export function setSelectedMascot(mascotId) {
 
 export function getCurrentMascot() {
   if (state.mode === "specialist") {
-    const specialistId = TOOL_SPECIALISTS[state.currentTool] || "pomi";
+    const assignments = getExperienceAssignments();
+    const normalizedTool = state.currentTool === "list" ? "todo" : state.currentTool;
+    const specialistId = assignments[normalizedTool] || assignments[state.currentTool] || "pomi";
     return getMascot(specialistId);
   }
   return getMascot(state.selectedMascotId);
@@ -113,39 +125,52 @@ export function updateCompanionView() {
     widget.style.display = "none";
     return;
   }
-
   widget.style.display = "flex";
-  widget.classList.toggle("is-minimized", state.minimized);
 
   const mascot = getCurrentMascot();
+  const interaction = mascot.customInteraction || {
+    name: "Focus Cheer",
+    description: "Boosts morale",
+    speech: "Let's conquer time together!",
+    badge: "+5 Focus XP",
+    fxType: "tomato-sparkle",
+  };
 
   widget.innerHTML = `
-    <!-- Speech Bubble -->
-    <div class="companion-speech-bubble" id="companion-speech-bubble">
+    <div class="companion-speech-bubble ${state.minimized ? "hidden" : ""}" id="companion-speech-bubble" role="status" aria-live="polite">
       <div class="speech-header">
-        <span class="mascot-badge-tag">${escapeHtml(mascot.name)}</span>
-        <button class="speech-close-btn" id="companion-minimize-btn" title="Minimize / Expand" aria-label="Minimize companion">
-          ${state.minimized ? getIcon("chevron-up", { size: 14 }) : getIcon("chevron-down", { size: 14 })}
+        <span class="companion-badge-pill mascot-badge-tag" style="border-color: ${mascot.palette.primary}; color: ${mascot.palette.primary};">
+          ${escapeHtml(mascot.name)}
+        </span>
+        <span class="companion-interaction-badge" title="${escapeHtml(interaction.description)}">
+          ${escapeHtml(interaction.badge)}
+        </span>
+        <button class="speech-close-btn" id="companion-minimize-btn" title="Minimize" aria-label="Minimize companion">
+          ${getIcon("close", { size: 14 })}
         </button>
       </div>
-      <p class="speech-text" id="companion-speech-text">${getGreetingForTool(mascot, state.currentTool)}</p>
+      <p class="speech-text" id="companion-speech-text">${escapeHtml(getGreetingForTool(mascot, state.currentTool))}</p>
       <div class="speech-actions">
-        <button class="companion-action-chip" id="companion-tour-btn">
-          ${getIcon("sparkles", { size: 13, className: "chip-icon" })} Tour ${formatToolName(state.currentTool)}
+        <button class="companion-action-chip interaction-trigger-chip" id="companion-interact-btn" title="${escapeHtml(interaction.description)}">
+          ${getIcon("sparkles", { size: 13 })} ${escapeHtml(interaction.name)}
         </button>
-        <button class="companion-action-chip" id="companion-tip-btn">
-          ${getIcon("lightbulb", { size: 13, className: "chip-icon" })} Tip
+        <button class="companion-action-chip" id="companion-tour-btn" title="Take a guided tour of ${formatToolName(state.currentTool)}">
+          ${getIcon("compass", { size: 13 })} Tour
         </button>
-        <button class="companion-action-chip" id="companion-swap-btn" title="Swap companion">
-          ${getIcon("refresh", { size: 13, className: "chip-icon" })} Swap
+        <button class="companion-action-chip" id="companion-tip-btn" title="Get a tip">
+          ${getIcon("lightbulb", { size: 13 })} Tip
+        </button>
+        <button class="companion-action-chip" id="companion-swap-btn" title="Change companion or assignments">
+          ${getIcon("refresh", { size: 13 })} Swap
         </button>
       </div>
     </div>
 
-    <!-- Interactive Character Avatar -->
-    <div class="companion-avatar-stage" id="companion-avatar-stage" role="button" tabindex="0" title="Click to interact / pet ${mascot.name}" aria-label="Pet ${mascot.name}">
-      ${renderMascotSvg(mascot.id, state.animState, 110)}
-      <div class="pet-heart-emitter" id="pet-heart-emitter"></div>
+    <div class="companion-body">
+      <div class="companion-avatar-stage" id="companion-avatar-stage" role="button" tabindex="0" title="Click for signature interaction" aria-label="${escapeHtml(mascot.name)} - Click to interact">
+        ${renderMascotSvg(mascot.id, state.animState, 110)}
+        <div class="pet-heart-emitter" id="pet-heart-emitter"></div>
+      </div>
     </div>
   `;
 
@@ -178,12 +203,16 @@ function getGreetingForTool(mascot, tool) {
 
 function bindWidgetEvents(widget) {
   const stage = widget.querySelector("#companion-avatar-stage");
-  stage?.addEventListener("click", handlePetting);
+  stage?.addEventListener("click", () => triggerCustomInteraction());
   stage?.addEventListener("keydown", (e) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
-      handlePetting();
+      triggerCustomInteraction();
     }
+  });
+
+  widget.querySelector("#companion-interact-btn")?.addEventListener("click", () => {
+    triggerCustomInteraction();
   });
 
   widget.querySelector("#companion-minimize-btn")?.addEventListener("click", () => {
@@ -207,34 +236,48 @@ function bindWidgetEvents(widget) {
   widget.querySelector("#companion-swap-btn")?.addEventListener("click", openMascotPicker);
 }
 
-function handlePetting() {
-  const mascot = getCurrentMascot();
-  setAnimState("heart", 1800);
-  spawnHearts();
+export function triggerCustomInteraction(targetMascot = null) {
+  const mascot = targetMascot || getCurrentMascot();
+  const interaction = mascot.customInteraction || {
+    name: "Focus Cheer",
+    speech: "Let's conquer time together!",
+    fxType: "tomato-sparkle",
+  };
 
-  const petResponses = [
-    "*purr* Thank you! Ready to power through!",
-    "Aww, you're the best! Focus morale boosted!",
-    "I believe in you! Let's crush this next session!",
-    "*happy tomato bounce* You're making awesome progress!",
-  ];
-  const response = petResponses[Math.floor(Math.random() * petResponses.length)];
-  speak(response, 3000);
+  setAnimState("cheer", 2200);
+  spawnCustomParticles(interaction.fxType);
+  speak(interaction.speech, 4500);
+
+  window.dispatchEvent(
+    new CustomEvent("mascot-interaction", { detail: { mascot, interaction } }),
+  );
 }
 
-function spawnHearts() {
+function spawnCustomParticles(fxType) {
   const emitter = document.getElementById("pet-heart-emitter");
   if (!emitter) return;
 
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < 4; i++) {
     setTimeout(() => {
-      const heart = document.createElement("span");
-      heart.className = "floating-pet-heart";
-      heart.innerHTML = getIcon("heart", { size: 16, className: "pet-heart-svg" });
-      heart.style.left = `${30 + Math.random() * 40}%`;
-      emitter.appendChild(heart);
-      setTimeout(() => heart.remove(), 1200);
-    }, i * 150);
+      const particle = document.createElement("span");
+      particle.className = `floating-fx-particle fx-${fxType}`;
+
+      if (fxType === "cyber-rings") {
+        particle.innerHTML = getIcon("zap", { size: 16, className: "fx-cyber-svg" });
+      } else if (fxType === "time-dial") {
+        particle.innerHTML = getIcon("clock", { size: 16, className: "fx-dial-svg" });
+      } else if (fxType === "frost-snow") {
+        particle.innerHTML = getIcon("sparkles", { size: 16, className: "fx-frost-svg" });
+      } else if (fxType === "cogs-spark") {
+        particle.innerHTML = getIcon("settings", { size: 16, className: "fx-cogs-svg" });
+      } else {
+        particle.innerHTML = getIcon("tomato", { size: 16, className: "fx-tomato-svg" });
+      }
+
+      particle.style.left = `${25 + Math.random() * 50}%`;
+      emitter.appendChild(particle);
+      setTimeout(() => particle.remove(), 1400);
+    }, i * 140);
   }
 }
 
@@ -277,8 +320,9 @@ export function notifyToolChange(toolName) {
   updateCompanionView();
 }
 
-function openMascotPicker() {
+export function openMascotPicker() {
   const allMascots = getAllMascots();
+  const assignments = getExperienceAssignments();
   let modal = document.getElementById("mascot-picker-modal");
   if (!modal) {
     modal = document.createElement("div");
@@ -287,42 +331,117 @@ function openMascotPicker() {
     document.body.appendChild(modal);
   }
 
+  const experiences = [
+    { id: "pomodoro", name: "Focus Timer" },
+    { id: "todo", name: "To-Do Lists" },
+    { id: "kanban", name: "Kanban Board" },
+    { id: "vault", name: "Notes Vault" },
+    { id: "calendar", name: "Calendar" },
+    { id: "stats", name: "Productivity Stats" },
+    { id: "hero", name: "Hero RPG" },
+    { id: "tactics", name: "Tactics & Arena" },
+  ];
+
   modal.innerHTML = `
     <div class="mascot-picker-dialog">
       <div class="dialog-header">
-        <h3>Choose Your Companion</h3>
+        <h3>Companion Manager & Experience Assignee</h3>
         <button class="dialog-close-btn" id="close-mascot-picker" aria-label="Close dialog">${getIcon("close", { size: 16 })}</button>
       </div>
-      <p class="dialog-sub">Select your primary sidekick or brand mascot:</p>
-      <div class="mascot-grid">
-        ${allMascots
-          .map(
-            (m) => `
-          <div class="mascot-card ${state.selectedMascotId === m.id ? "active" : ""}" data-mascot-id="${m.id}">
-            <div class="mascot-card-svg">${renderMascotSvg(m.id, "idle", 70)}</div>
-            <div class="mascot-card-info">
-              <h4>${escapeHtml(m.name)}</h4>
-              <span class="mascot-brand-badge">${escapeHtml(m.brand)}</span>
-              <p>${escapeHtml(m.title)}</p>
-            </div>
-          </div>
-        `,
-          )
-          .join("")}
+
+      <div class="picker-tabs-nav">
+        <button class="picker-tab-btn active" id="tab-btn-primary">Primary Companion</button>
+        <button class="picker-tab-btn" id="tab-btn-experiences">Assign to Experiences</button>
       </div>
+
+      <!-- Tab 1: Primary Companion Selection -->
+      <div class="picker-tab-pane active" id="pane-primary">
+        <p class="dialog-sub">Select your active companion and tap to preview their signature interaction:</p>
+        <div class="mascot-grid">
+          ${allMascots
+            .map(
+              (m) => `
+            <div class="mascot-card ${state.selectedMascotId === m.id ? "active" : ""}" data-mascot-id="${m.id}">
+              <div class="mascot-card-svg">${renderMascotSvg(m.id, "idle", 70)}</div>
+              <div class="mascot-card-info">
+                <h4>${escapeHtml(m.name)}</h4>
+                <span class="mascot-brand-badge">${escapeHtml(m.brand)}</span>
+                <p class="mascot-card-title">${escapeHtml(m.title)}</p>
+                <span class="mascot-interaction-tag">
+                  ${getIcon("sparkles", { size: 12 })} ${escapeHtml(m.customInteraction?.name || "Focus Morale")}
+                </span>
+              </div>
+            </div>
+          `,
+            )
+            .join("")}
+        </div>
+      </div>
+
+      <!-- Tab 2: Per-Experience Assignee -->
+      <div class="picker-tab-pane" id="pane-experiences" style="display: none;">
+        <p class="dialog-sub">Customize which mascot specialist guards each tool:</p>
+        <div class="experience-assign-grid">
+          ${experiences
+            .map((exp) => {
+              const assignedMascotId = assignments[exp.id] || "pomi";
+              return `
+              <div class="experience-assign-row">
+                <div class="exp-info">
+                  <strong>${escapeHtml(exp.name)}</strong>
+                </div>
+                <div class="exp-select-wrap">
+                  <select class="exp-mascot-select" data-exp-id="${exp.id}">
+                    ${allMascots
+                      .map(
+                        (m) => `
+                      <option value="${m.id}" ${assignedMascotId === m.id ? "selected" : ""}>
+                        ${escapeHtml(m.name)} (${escapeHtml(m.brand)})
+                      </option>
+                    `,
+                      )
+                      .join("")}
+                  </select>
+                </div>
+              </div>
+            `;
+            })
+            .join("")}
+        </div>
+      </div>
+
       <div class="mascot-mode-toggle-box">
         <label class="toggle-mode-label">
-          <strong>Specialist Mode:</strong>
-          <span>Assign different companions automatically to each tool (Pomi on Timer, Kip on Tasks, Chronos on Calendar, Bolt on Stats)</span>
+          <strong>Behavior Mode:</strong>
+          <span>${state.mode === "specialist" ? "Specialist Active: tools show their assigned mascot" : "Follow Me Active: your chosen companion stays with you everywhere"}</span>
         </label>
         <button class="companion-action-chip ${state.mode === "specialist" ? "active" : ""}" id="toggle-specialist-mode">
-          ${state.mode === "specialist" ? `${getIcon("check", { size: 13 })} Specialist Active` : "Enable Specialists"}
+          ${state.mode === "specialist" ? `${getIcon("check", { size: 13 })} Specialist Mode` : "Switch to Specialist Mode"}
         </button>
       </div>
     </div>
   `;
 
   modal.style.display = "flex";
+
+  const tabBtnPrimary = modal.querySelector("#tab-btn-primary");
+  const tabBtnExp = modal.querySelector("#tab-btn-experiences");
+  const panePrimary = modal.querySelector("#pane-primary");
+  const paneExp = modal.querySelector("#pane-experiences");
+
+  tabBtnPrimary?.addEventListener("click", () => {
+    tabBtnPrimary.classList.add("active");
+    tabBtnExp.classList.remove("active");
+    panePrimary.style.display = "block";
+    paneExp.style.display = "none";
+  });
+
+  tabBtnExp?.addEventListener("click", () => {
+    tabBtnExp.classList.add("active");
+    tabBtnPrimary.classList.remove("active");
+    panePrimary.style.display = "none";
+    paneExp.style.display = "block";
+  });
 
   modal.querySelector("#close-mascot-picker")?.addEventListener("click", () => {
     modal.style.display = "none";
@@ -332,7 +451,17 @@ function openMascotPicker() {
     card.addEventListener("click", () => {
       const id = card.dataset.mascotId;
       setSelectedMascot(id);
+      triggerCustomInteraction(getMascot(id));
       modal.style.display = "none";
+    });
+  });
+
+  modal.querySelectorAll(".exp-mascot-select").forEach((select) => {
+    select.addEventListener("change", (e) => {
+      const expId = select.dataset.expId;
+      const mascotId = e.target.value;
+      setExperienceMascot(expId, mascotId);
+      updateCompanionView();
     });
   });
 
@@ -343,31 +472,26 @@ function openMascotPicker() {
 }
 
 function setupEventListeners() {
-  // 1. Pomodoro Started
   document.addEventListener("pomodoro-started", () => {
     setAnimState("think", 3000);
     speak("Focus sprint initiated! Let's eliminate all distractions!", 3500);
   });
 
-  // 2. Pomodoro Completed
   document.addEventListener("pomodoro-complete", () => {
     setAnimState("cheer", 5000);
     speak("Incredible job! Another focus session successfully banked!", 5000);
   });
 
-  // 3. Break Started
   document.addEventListener("break-started", () => {
     setAnimState("sleep", 6000);
     speak("Time to recharge! Rest your eyes, take a sip of water.", 4500);
   });
 
-  // 4. Task Checked
-  document.addEventListener("task-complete", (e) => {
+  document.addEventListener("task-complete", () => {
     setAnimState("cheer", 2000);
     speak("Task checked off! Keep this unstoppable momentum going!", 3000);
   });
 
-  // 5. Habit Completed
   document.addEventListener("habit-completed", (e) => {
     setAnimState("cheer", 2000);
     const streak = e.detail?.streak || 1;

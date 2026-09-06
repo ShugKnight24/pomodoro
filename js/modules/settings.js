@@ -6,8 +6,10 @@ import {
   setCompanionMode,
   setSelectedMascot,
   getCompanionSettings,
+  openMascotPicker,
 } from "./mascot/companion.js";
 import { restartAllTours, startTourForCurrentTool } from "./mascot/onboardingTour.js";
+import { clearExperienceData } from "./sampleData.js";
 import { showSuccess } from "./toast.js";
 
 const settingsPanel = document.querySelector(".side-settings");
@@ -522,6 +524,24 @@ function initMascotSettings() {
     restartAllToursBtn.addEventListener("click", () => {
       restartAllTours();
       showSuccess("All onboarding tours restarted! Start any tour from the buttons below or your companion.");
+    });
+  }
+
+  const openExperienceAssignBtn = document.getElementById("open-experience-assign-btn");
+  if (openExperienceAssignBtn) {
+    openExperienceAssignBtn.addEventListener("click", () => {
+      openMascotPicker();
+      // Switch directly to experiences tab
+      setTimeout(() => {
+        document.getElementById("tab-btn-experiences")?.click();
+      }, 50);
+    });
+  }
+
+  const clearAllTutorialDataBtn = document.getElementById("clear-all-tutorial-data-btn");
+  if (clearAllTutorialDataBtn) {
+    clearAllTutorialDataBtn.addEventListener("click", () => {
+      clearExperienceData("all");
     });
   }
 

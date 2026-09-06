@@ -1,191 +1,212 @@
 /**
- * onboardingTour.js — Interactive Mascot-Led Onboarding Tours
- * Guided spotlights for all apps & tools with customizable brand mascots.
+ * onboardingTour.js — Interactive Spotlight Guided Tours
+ * Fixed scroll coordinate tracking and tutorial sample data clearing. Zero emojis.
  */
 
 "use strict";
 
 import { renderMascotSvg } from "./mascotSprites.js";
-import { TOOL_SPECIALISTS, getMascot } from "./mascotRegistry.js";
 import { getIcon } from "../../utils/icons.js";
+import { showSuccess } from "../toast.js";
 
-const TOURS_STORAGE_KEY = "pomidor.completedTours";
-
-export const TOUR_STEPS = {
-  pomodoro: [
-    {
-      target: "#timer-classic, #timer-modern",
-      title: "The Focus Engine",
-      body: "Welcome to the heart of Pomidor! Here you focus in dedicated intervals (typically 25 minutes) punctuated by restorative breaks.",
-    },
-    {
-      target: ".preset-buttons, [data-session='25']",
-      title: "Sprint Presets",
-      body: "Switch effortlessly between standard 25/5 intervals, 50/10 deep work blocks, or extended 90/20 ultradian rhythms.",
-    },
-    {
-      target: "#timer-controls, #start-btn, #start-modern",
-      title: "Take Command",
-      body: "Hit Start to ignite your session. All distractions fade away and temporal momentum begins!",
-    },
-  ],
-  todo: [
-    {
-      target: "[data-new-list-form], #new-list-input",
-      title: "Organized Workspaces",
-      body: "Create focused project lists to keep work, learning, and personal milestones clearly segregated.",
-    },
-    {
-      target: "[data-new-task-form], #new-task-input",
-      title: "Capture & Estimate",
-      body: "Add tasks with priority flags and estimated tomato intervals so your day stays realistic and achievable.",
-    },
-    {
-      target: "[data-tasks]",
-      title: "Subtasks & Checklists",
-      body: "Break giant intimidating projects into digestible subtasks. Every checkmark heals your focus!",
-    },
-  ],
-  kanban: [
-    {
-      target: "#kanban-container, .kanban-board",
-      title: "Visual Agile Workflow",
-      body: "Transform your tasks into an agile board. Drag cards smoothly between To Do, In Progress, and Completed columns.",
-    },
-    {
-      target: ".kanban-column:first-child",
-      title: "WIP Protection",
-      body: "Limit Work In Progress to maintain smooth cognitive flow without multitasking burnout.",
-    },
-  ],
-  vault: [
-    {
-      target: "#vault-container, .vault-container",
-      title: "Private Knowledge Vault",
-      body: "A markdown-powered offline notebook. Capture meeting notes, code snippets, and journal entries with 100% privacy.",
-    },
-    {
-      target: "#vault-search, .vault-search",
-      title: "Lightning Search",
-      body: "Find anything instantly. Your data never leaves your browser — own your time, own your data!",
-    },
-  ],
-  calendar: [
-    {
-      target: "#calendar-container, .calendar-container",
-      title: "Time-Blocking Calendar",
-      body: "See your planned tasks plotted across days and weeks. Perfect for realistic capacity planning.",
-    },
-    {
-      target: "#gcal-connect-btn, .calendar-header",
-      title: "Google Calendar Sync (Read-Only)",
-      body: "Connect your Google Calendar with complete peace of mind: read-only architecture means we never touch or alter your calendar.",
-    },
-  ],
-  stats: [
-    {
-      target: ".stats-grid, #stats-container",
-      title: "Productivity Telemetry",
-      body: "Track focused minutes, completed tasks, and streak continuity across days, weeks, and all time.",
-    },
-    {
-      target: ".stats-period-toggle",
-      title: "Deep Analytics & Heatmaps",
-      body: "Analyze your peak hours and mood correlations to discover your natural productivity rhythm.",
-    },
-  ],
-  hero: [
-    {
-      target: ".hero-header-banner, .hero-level-ring",
-      title: "The Hero's Journey",
-      body: "Every pomodoro and task completed grants Focus XP and Chrono-Coins to level up your character!",
-    },
-    {
-      target: "#paperdoll-stage, .hero-paperdoll-wrapper",
-      title: "Equipment & Style",
-      body: "Equip weapons, tunics, headgear, and legendary mounts unlocked through discipline and the Bazaar shop.",
-    },
-    {
-      target: "#tab-quests, .hero-tabs-nav",
-      title: "Story Quests & Bosses",
-      body: "Defeat procrastination bosses like the Shade of Delay and the Sloth Drake by finishing your real-life tasks!",
-    },
-  ],
-  tactics: [
-    {
-      target: "#tactics-squad-panel, .tactics-squad-section",
-      title: "Tactical Squad Building",
-      body: "Assemble your battle team! Combine your Hero with trained Pet Companions (Chrono Pup, Ember Drake, Moss Golem, Voidling).",
-    },
-    {
-      target: "#tactics-grid-stage, .tactics-battlefield",
-      title: "Grid Combat & Action Points",
-      body: "Move across the 7x7 grid, manage Action Points (AP), exploit elemental strengths, and strike down temporal aberrations.",
-    },
-    {
-      target: "#tactics-modes-tabs, .tactics-navigation",
-      title: "Dungeons, Towers & World Map",
-      body: "Choose your path: explore mysterious Dungeons, conquer the ascending Chrono Tower, or venture into the vast Overworld!",
-    },
-  ],
+const TOURS = {
+  pomodoro: {
+    tool: "pomodoro",
+    title: "Focus Timer Tour",
+    mascot: { id: "pomi", name: "Pomi the Tomato" },
+    steps: [
+      {
+        target: "#session-progress, #timer-classic",
+        title: "The Heart of Focus: Pomodoro Timer",
+        body: "Work in dedicated 25-minute sprints separated by 5-minute restorative breaks. This rhythmic pacing preserves mental clarity.",
+      },
+      {
+        target: "#pomodoro-actions, .timer-btn-primary, #start",
+        title: "One-Click Controls",
+        body: "Start, pause, skip, or reset your sessions with instant keyboard shortcuts or these quick buttons.",
+      },
+      {
+        target: "#theme-toggle, .settings-controls",
+        title: "Ambient Focus & Focus Mode",
+        body: "Toggle dark mode, ambient soundscapes, or press 'F' to enter an immersive fullscreen focus experience.",
+      },
+    ],
+  },
+  todo: {
+    tool: "todo",
+    title: "Tasks & To-Do Tour",
+    mascot: { id: "kip", name: "Kip the Cyber-Cat" },
+    steps: [
+      {
+        target: "#todo-controls, .todo-header",
+        title: "Task Slicing & Priorities",
+        body: "Add tasks, assign High/Medium/Low priority, set due dates, and estimate your Pomodoro tomatoes.",
+      },
+      {
+        target: "#task-list-container, .task-list",
+        title: "Subtasks & Checklists",
+        body: "Break down complex objectives into manageable subtasks. Complete them to earn Hero XP and damage bosses!",
+      },
+    ],
+  },
+  kanban: {
+    tool: "kanban",
+    title: "Visual Kanban Tour",
+    mascot: { id: "bolt", name: "Bolt the Clockwork Bot" },
+    steps: [
+      {
+        target: "#kanban-container, .kanban-board",
+        title: "Visual Workflow & WIP Limits",
+        body: "Drag cards between Start Here, In Progress, and Done to keep tasks moving swiftly without bottlenecks.",
+      },
+    ],
+  },
+  vault: {
+    tool: "vault",
+    title: "Notes Vault Tour",
+    mascot: { id: "pip", name: "Pip the Penguin" },
+    steps: [
+      {
+        target: "#vault-container, .vault-wrapper",
+        title: "Markdown & Connected Knowledge",
+        body: "Create private offline notes, organize with tags, and link concepts together using [[wikilinks]].",
+      },
+    ],
+  },
+  calendar: {
+    tool: "calendar",
+    title: "Calendar & Time Audit Tour",
+    mascot: { id: "chronos", name: "Chronos the Time Owl" },
+    steps: [
+      {
+        target: "#calendar-container, .calendar-section",
+        title: "Temporal Auditing & Schedules",
+        body: "Visualize deadlines and sync Google Calendar read-only. Audit your focus minutes against planned blocks.",
+      },
+    ],
+  },
+  stats: {
+    tool: "stats",
+    title: "Productivity Stats Tour",
+    mascot: { id: "bolt", name: "Bolt the Clockwork Bot" },
+    steps: [
+      {
+        target: "#stats-container, .stats-overview",
+        title: "Productivity Telemetry",
+        body: "Review completed tomatoes, daily streaks, activity heatmaps, and bandwidth accounting.",
+      },
+    ],
+  },
+  tactics: {
+    tool: "tactics",
+    title: "Tactics & Pets Tour",
+    mascot: { id: "pomi", name: "Pomi the Tomato" },
+    steps: [
+      {
+        target: "#tactics-container, .tactics-arena",
+        title: "Turn-Based 7x7 Grid Combat",
+        body: "Lead your Hero and Pet Companions across tactical terrain, spend Action Points, and conquer dungeons!",
+      },
+    ],
+  },
 };
+
+const COMPLETED_TOURS_KEY = "pomidor.onboarding.completed";
 
 let currentTour = null;
 let currentStepIndex = 0;
+let scrollTrackingInterval = null;
 
-export function getCompletedTours() {
+function isTourCompleted(tool) {
   try {
-    const saved = localStorage.getItem(TOURS_STORAGE_KEY);
-    return saved ? JSON.parse(saved) : {};
-  } catch (e) {
-    return {};
+    const list = JSON.parse(localStorage.getItem(COMPLETED_TOURS_KEY) || "[]");
+    return list.includes(tool);
+  } catch {
+    return false;
   }
 }
 
-export function isTourCompleted(tool) {
-  const completed = getCompletedTours();
-  return Boolean(completed[tool]);
-}
-
 export function markTourCompleted(tool) {
-  const completed = getCompletedTours();
-  completed[tool] = true;
-  localStorage.setItem(TOURS_STORAGE_KEY, JSON.stringify(completed));
-  document.dispatchEvent(new CustomEvent("tour-completed", { detail: { tool } }));
+  try {
+    const list = JSON.parse(localStorage.getItem(COMPLETED_TOURS_KEY) || "[]");
+    if (!list.includes(tool)) {
+      list.push(tool);
+      localStorage.setItem(COMPLETED_TOURS_KEY, JSON.stringify(list));
+    }
+  } catch {}
 }
 
-export function restartTour(tool) {
-  const completed = getCompletedTours();
-  delete completed[tool];
-  localStorage.setItem(TOURS_STORAGE_KEY, JSON.stringify(completed));
-  startTourForCurrentTool(tool);
+export function resetAllTours() {
+  localStorage.removeItem(COMPLETED_TOURS_KEY);
+  localStorage.removeItem("pomodoro.tutorialListDone");
+  localStorage.removeItem("pomidor.kanban.tutorialDone");
 }
 
-export function restartAllTours() {
-  localStorage.removeItem(TOURS_STORAGE_KEY);
-  document.dispatchEvent(new CustomEvent("tours-reset"));
+export const restartAllTours = resetAllTours;
+
+export function clearExperienceTutorialData(tool) {
+  try {
+    if (tool === "todo" || tool === "list") {
+      const savedLists = JSON.parse(localStorage.getItem("pomodoro-todo-lists") || "[]");
+      const filtered = savedLists.filter(l => l.name !== "Getting Started");
+      localStorage.setItem("pomodoro-todo-lists", JSON.stringify(filtered));
+      localStorage.setItem("pomodoro.tutorialListDone", "done");
+      window.dispatchEvent(new CustomEvent("todo-data-cleared"));
+    } else if (tool === "kanban") {
+      localStorage.removeItem("pomidor.kanban");
+      localStorage.setItem("pomidor.kanban.tutorialDone", "done");
+      window.dispatchEvent(new CustomEvent("kanban-data-cleared"));
+    } else if (tool === "vault") {
+      const vaultData = JSON.parse(localStorage.getItem("pomidor.vault") || "{}");
+      if (vaultData.notes) {
+        vaultData.notes = vaultData.notes.filter(n => !n.title.toLowerCase().includes("getting started") && !n.title.toLowerCase().includes("tutorial"));
+        localStorage.setItem("pomidor.vault", JSON.stringify(vaultData));
+        window.dispatchEvent(new CustomEvent("vault-data-cleared"));
+      }
+    }
+    showSuccess("Tutorial sample data cleared! Fresh slate ready.");
+  } catch (e) {
+    console.warn("Could not clear tutorial data:", e);
+  }
 }
 
-export function startTourForCurrentTool(tool = "pomodoro", customMascot = null) {
+export function startTourForCurrentTool(tool, forcedMascot = null) {
   const norm = tool === "list" ? "todo" : tool;
-  const steps = TOUR_STEPS[norm] || TOUR_STEPS[tool];
-  if (!steps || steps.length === 0) return;
+  const tour = TOURS[norm];
+  if (!tour) return;
 
-  const mascot = customMascot || getMascot(TOOL_SPECIALISTS[norm] || TOOL_SPECIALISTS[tool] || "pomi");
-
-  currentTour = { tool: norm, steps, mascot };
+  currentTour = { ...tour };
+  if (forcedMascot) {
+    currentTour.mascot = forcedMascot;
+  }
   currentStepIndex = 0;
 
   renderTourStep();
 }
 
-function renderTourStep() {
-  if (!currentTour) return;
+function updateSpotlightPosition() {
+  const overlay = document.getElementById("mascot-tour-overlay");
+  if (!overlay || !currentTour) return;
   const step = currentTour.steps[currentStepIndex];
-  if (!step) {
-    finishTour();
-    return;
-  }
+  if (!step) return;
+
+  const targetEl = document.querySelector(step.target);
+  const spotlightBox = overlay.querySelector(".tour-spotlight-box");
+  if (!targetEl || !spotlightBox) return;
+
+  // Crucial fix: Overlay is position: fixed (viewport coordinates).
+  // Do NOT add window.scrollY / window.scrollX!
+  const rect = targetEl.getBoundingClientRect();
+  const padding = 8;
+  spotlightBox.style.top = `${Math.max(0, rect.top - padding)}px`;
+  spotlightBox.style.left = `${Math.max(0, rect.left - padding)}px`;
+  spotlightBox.style.width = `${rect.width + padding * 2}px`;
+  spotlightBox.style.height = `${rect.height + padding * 2}px`;
+}
+
+function renderTourStep() {
+  const step = currentTour.steps[currentStepIndex];
+  if (!step) return finishTour();
 
   let overlay = document.getElementById("mascot-tour-overlay");
   if (!overlay) {
@@ -197,20 +218,24 @@ function renderTourStep() {
 
   overlay.style.display = "block";
 
-  // Target element calculation
   const targetEl = document.querySelector(step.target);
   let spotlightStyle = "";
   if (targetEl) {
+    // Scroll element into view safely
+    targetEl.scrollIntoView({ behavior: "auto", block: "center" });
+
     const rect = targetEl.getBoundingClientRect();
-    targetEl.scrollIntoView({ behavior: "smooth", block: "center" });
     const padding = 8;
+    // Pure viewport coordinates for position:fixed container
     spotlightStyle = `
-      top: ${Math.max(0, rect.top + window.scrollY - padding)}px;
-      left: ${Math.max(0, rect.left + window.scrollX - padding)}px;
+      top: ${Math.max(0, rect.top - padding)}px;
+      left: ${Math.max(0, rect.left - padding)}px;
       width: ${rect.width + padding * 2}px;
       height: ${rect.height + padding * 2}px;
     `;
   }
+
+  const isLastStep = currentStepIndex === currentTour.steps.length - 1;
 
   overlay.innerHTML = `
     <div class="tour-backdrop"></div>
@@ -224,28 +249,70 @@ function renderTourStep() {
           <span class="tour-mascot-name">${escapeHtml(currentTour.mascot.name)}</span>
           <span class="tour-step-counter">Step ${currentStepIndex + 1} of ${currentTour.steps.length}</span>
         </div>
-        <button class="tour-close-btn" id="tour-skip-btn" title="Exit Tour" aria-label="Exit tour">${getIcon("close", { size: 16 })}</button>
+        <button class="tour-skip-btn" id="tour-skip-btn" title="End tour" aria-label="End tour">
+          ${getIcon("close", { size: 14 })}
+        </button>
       </div>
-      <h3 class="tour-step-title">${escapeHtml(step.title)}</h3>
-      <p class="tour-step-body">${escapeHtml(step.body)}</p>
+
+      <div class="tour-step-content">
+        <h3 class="tour-step-title">${escapeHtml(step.title)}</h3>
+        <p class="tour-step-body">${escapeHtml(step.body)}</p>
+      </div>
+
+      ${
+        isLastStep
+          ? `
+        <div class="tour-demo-data-prompt">
+          <div class="demo-prompt-text">
+            ${getIcon("database", { size: 14 })}
+            <span>Ready to start fresh? You can clear tutorial demo data now or anytime from Settings.</span>
+          </div>
+          <button class="tour-clear-sample-btn" id="tour-clear-sample-btn">
+            ${getIcon("trash", { size: 13 })} Clear Tutorial Sample Data
+          </button>
+        </div>
+      `
+          : ""
+      }
+
       <div class="tour-card-footer">
         <button class="tour-nav-btn secondary" id="tour-prev-btn" ${currentStepIndex === 0 ? "disabled" : ""}>
           ${getIcon("chevron-left", { size: 14 })} Previous
         </button>
         <button class="tour-nav-btn primary" id="tour-next-btn">
-          ${currentStepIndex === currentTour.steps.length - 1 ? `Finish Tour ${getIcon("check", { size: 14 })}` : `Next Step ${getIcon("chevron-right", { size: 14 })}`}
+          ${isLastStep ? `Finish Tour ${getIcon("check", { size: 14 })}` : `Next Step ${getIcon("chevron-right", { size: 14 })}`}
         </button>
       </div>
     </div>
   `;
 
+  // Attach live scroll and resize listeners for rock-solid tracking
+  window.removeEventListener("scroll", updateSpotlightPosition, true);
+  window.removeEventListener("resize", updateSpotlightPosition);
+  window.addEventListener("scroll", updateSpotlightPosition, { passive: true, capture: true });
+  window.addEventListener("resize", updateSpotlightPosition, { passive: true });
+
+  // Continuously track for 600ms while smooth scroll completes
+  if (scrollTrackingInterval) clearInterval(scrollTrackingInterval);
+  let frames = 0;
+  scrollTrackingInterval = setInterval(() => {
+    updateSpotlightPosition();
+    frames++;
+    if (frames > 20) clearInterval(scrollTrackingInterval);
+  }, 30);
+
   overlay.querySelector("#tour-skip-btn")?.addEventListener("click", finishTour);
+  overlay.querySelector("#tour-clear-sample-btn")?.addEventListener("click", () => {
+    clearExperienceTutorialData(currentTour.tool);
+  });
+
   overlay.querySelector("#tour-prev-btn")?.addEventListener("click", () => {
     if (currentStepIndex > 0) {
       currentStepIndex--;
       renderTourStep();
     }
   });
+
   overlay.querySelector("#tour-next-btn")?.addEventListener("click", () => {
     currentStepIndex++;
     if (currentStepIndex < currentTour.steps.length) {
@@ -260,6 +327,11 @@ function finishTour() {
   const overlay = document.getElementById("mascot-tour-overlay");
   if (overlay) overlay.remove();
 
+  window.removeEventListener("scroll", updateSpotlightPosition, true);
+  window.removeEventListener("scroll", updateSpotlightPosition);
+  window.removeEventListener("resize", updateSpotlightPosition);
+  if (scrollTrackingInterval) clearInterval(scrollTrackingInterval);
+
   if (currentTour) {
     markTourCompleted(currentTour.tool);
     currentTour = null;
@@ -271,5 +343,7 @@ function escapeHtml(str) {
   return String(str)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
