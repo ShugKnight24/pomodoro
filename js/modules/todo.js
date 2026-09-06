@@ -7,6 +7,8 @@ import { setupTaskDragAndDrop } from "../utils/todoDragDrop.js";
 import { recordTaskCompleted } from "./stats.js";
 import { getIcon, renderPomodoroBadges } from "../utils/icons.js";
 import { renderHeroDashboard } from "./gamification/heroUI.js";
+import { renderTacticsContainer } from "./gamification/tacticsUI.js";
+import { notifyToolChange } from "./mascot/companion.js";
 
 const archive = {
   ARCHIVE_LIST_ID: -1, // Special ID for archive list
@@ -24,6 +26,7 @@ export const elements = {
   filterButtons: null,
   statsContainer: null,
   heroContainer: null,
+  tacticsContainer: null,
   listsContainer: null,
   listCount: null,
   newListForm: null,
@@ -128,6 +131,7 @@ function initializeElements() {
   elements.taskCount = document.querySelector("[data-task-count]");
   elements.todoContainer = document.querySelector(".todo-container");
   elements.heroContainer = document.getElementById("hero-container");
+  elements.tacticsContainer = document.getElementById("tactics-container");
   // Only get main view toggle buttons (list, calendar, stats), not calendar month/week toggle
   elements.viewToggleButtons = document.querySelectorAll(
     ".view-controls [data-view]",
@@ -684,6 +688,10 @@ function render() {
   elements.kanbanContainer?.classList.add("hidden");
   elements.vaultContainer?.classList.add("hidden");
   elements.heroContainer?.classList.add("hidden");
+  elements.tacticsContainer?.classList.add("hidden");
+
+  // Notify companion of view context
+  notifyToolChange(state.view);
 
   if (state.view === "calendar") {
     elements.calendarContainer.classList.remove("hidden");
@@ -700,6 +708,9 @@ function render() {
   } else if (state.view === "hero") {
     elements.heroContainer?.classList.remove("hidden");
     renderHeroDashboard();
+  } else if (state.view === "tactics") {
+    elements.tacticsContainer?.classList.remove("hidden");
+    renderTacticsContainer();
   } else {
     // List view (default)
     elements.todoContainer.classList.remove("hidden");

@@ -158,6 +158,9 @@ export function renderHeroDashboard() {
           <button class="hero-tab-btn ${activeTab === "inventory" ? "active" : ""}" data-hero-tab="inventory">
             ${getIcon("archive", { size: 16 })} Inventory (${hero.inventory.length})
           </button>
+          <button class="hero-tab-btn" id="hero-launch-tactics-btn" style="background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(59,130,246,0.15)); border-color: rgba(16,185,129,0.4);">
+            ${getIcon("sparkles", { size: 16 })} ⚔️ Tactics &amp; Pets Arena
+          </button>
         </div>
 
         <div class="hero-tab-content" id="hero-tab-content-area">
@@ -619,6 +622,10 @@ function bindTabButtons() {
       activeTab = btn.getAttribute("data-hero-tab");
       renderHeroDashboard();
     });
+  });
+
+  container.querySelector("#hero-launch-tactics-btn")?.addEventListener("click", () => {
+    document.querySelector(".view-controls [data-view='tactics']")?.click();
   });
 }
 
