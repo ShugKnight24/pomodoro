@@ -3,6 +3,8 @@
  * Tracks and displays pomodoro statistics, daily goals, and weekly activity
  */
 
+import { getIcon } from "../utils/icons.js";
+
 const STATS_STORAGE_KEY = "pomodoro-stats";
 
 // Default statistics structure
@@ -434,6 +436,9 @@ function renderStats() {
 
   // Render recent sessions
   renderRecentSessions();
+
+  // Render time accounting & variance
+  renderTimeAccounting();
 }
 
 /**
@@ -484,8 +489,8 @@ function renderTrends() {
     const isPositive =
       currentPeriod === "all" || periodData.pomodoros >= prevPeriodPomodoros;
     const icon = isPositive
-      ? '<i class="fas fa-arrow-up"></i>'
-      : '<i class="fas fa-arrow-down"></i>';
+      ? getIcon("arrow-up", { size: 12 })
+      : getIcon("arrow-down", { size: 12 });
     pomodoroTrendEl.innerHTML = `${icon} <span>${periodData.pomodoros} ${periodLabel}</span>`;
     pomodoroTrendEl.className = `stat-trend ${isPositive ? "positive" : "negative"}`;
   }
@@ -493,7 +498,7 @@ function renderTrends() {
   // Task trend
   const taskTrendEl = document.getElementById("task-trend");
   if (taskTrendEl) {
-    taskTrendEl.innerHTML = `<i class="fas fa-arrow-up"></i> <span>${periodData.tasks} ${periodLabel}</span>`;
+    taskTrendEl.innerHTML = `${getIcon("arrow-up", { size: 12 })} <span>${periodData.tasks} ${periodLabel}</span>`;
     taskTrendEl.className = `stat-trend ${periodData.tasks > 0 ? "positive" : ""}`;
   }
 
@@ -847,6 +852,147 @@ function setupEventListeners() {
     currentHeatmapMonth.setMonth(currentHeatmapMonth.getMonth() + 1);
     renderHeatmap();
   });
+
+  // Time accounting export button
+  const exportBtn = document.getElementById("export-time-audit-btn");
+  exportBtn?.addEventListener("click", () => {
+    exportTimeAuditCSV();
+  });
+}
+
+/**
+ * Render Time Accounting & Estimation Variance
+ */
+function renderTimeAccounting() {
+  const estEl = document.getElementById("accounting-estimated");
+  const actEl = document.getElementById("accounting-actual");
+  const varEl = document.getElementById("accounting-variance");
+
+  if (!estEl || !actEl || !varEl) return;
+
+  let totalEstPoms = 0;
+  let totalActPoms = 0;
+
+  try {
+    const lists = JSON.parse(localStorage.getItem("pomodoro.lists") || "[]");
+    const archive = JSON.parse(localStorage.getItem("pomodoro.archive") || '{"tasks":[]}');
+
+    lists.forEach((list) => {
+      (list.tasks || []).forEach((t) => {
+        totalEstPoms += parseInt(t.estimatedPomodoros) || 0;
+        totalActPoms += parseInt(t.pomodoros) || 0;
+      });
+    });
+
+    (archive.tasks || []).forEach((t) => {
+      totalEstPoms += parseInt(t.estimatedPomodoros) || 0;
+      totalActPoms += parseInt(t.pomodoros) || 0;
+    });
+  } catch (e) {
+    console.error("Error calculating time accounting:", e);
+  }
+
+  const estHours = ((totalEstPoms * 25) / 60).toFixed(1);
+  const actHours = ((totalActPoms * 25) / 60).toFixed(1);
+
+  estEl.textContent = `${estHours}h (${totalEstPoms} poms)`;
+  actEl.textContent = `${actHours}h (${totalActPoms} poms)`;
+
+  if (totalEstPoms > 0) {
+    const diff = totalActPoms - totalEstPoms;
+    const pct = Math.round((diff / totalEstPoms) * 100);
+    const sign = pct > 0 ? "+" : "";
+    varEl.textContent = `${sign}${pct}% (${diff > 0 ? "over budget" : diff < 0 ? "under budget" : "on target"})`;
+    varEl.className = `accounting-value ${pct > 15 ? "negative" : pct < -15 ? "neutral" : "positive"}`;
+  } else {
+    varEl.textContent = "No estimates set";
+    varEl.className = "accounting-value neutral";
+  }
+}
+
+/**
+ * Export complete Time Audit Ledger as CSV
+ */
+export function exportTimeAuditCSV() {
+  const tasks = [];
+  try {
+    const lists = JSON.parse(localStorage.getItem("pomodoro.lists") || "[]");
+    const archive = JSON.parse(localStorage.getItem("pomodoro.archive") || '{"tasks":[]}');
+
+    lists.forEach((list) => {
+      (list.tasks || []).forEach((t) => {
+        tasks.push({
+          ...t,
+          listName: list.name,
+          status: t.completed ? "Completed" : "Active",
+        });
+      });
+    });
+
+    (archive.tasks || []).forEach((t) => {
+      tasks.push({
+        ...t,
+        listName: "Archive",
+        status: "Archived",
+      });
+    });
+  } catch (e) {
+    console.error("Failed to read tasks for time audit:", e);
+  }
+
+  const rows = [
+    [
+      "ID",
+      "Task Name",
+      "List",
+      "Priority",
+      "Estimated Pomodoros",
+      "Actual Pomodoros",
+      "Est. Minutes (25m)",
+      "Actual Minutes",
+      "Variance (Mins)",
+      "Status",
+      "Due Date",
+      "Completed Date",
+    ],
+  ];
+
+  tasks.forEach((t) => {
+    const estPoms = parseInt(t.estimatedPomodoros) || 0;
+    const actPoms = parseInt(t.pomodoros) || 0;
+    const estMins = estPoms * 25;
+    const actMins = actPoms * 25;
+    const variance = actMins - estMins;
+
+    rows.push([
+      t.id,
+      `"${(t.name || "").replace(/"/g, '""')}"`,
+      `"${(t.listName || "").replace(/"/g, '""')}"`,
+      t.priority || "medium",
+      estPoms,
+      actPoms,
+      estMins,
+      actMins,
+      variance,
+      t.status,
+      t.dueDate || "",
+      t.completedAt || "",
+    ]);
+  });
+
+  const csvContent =
+    "data:text/csv;charset=utf-8," +
+    rows.map((row) => row.join(",")).join("\n");
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute(
+    "download",
+    `pomidor-time-audit-${new Date().toISOString().split("T")[0]}.csv`,
+  );
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
 
 /**
