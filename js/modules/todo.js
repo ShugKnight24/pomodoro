@@ -8,6 +8,8 @@ import { recordTaskCompleted } from "./stats.js";
 import { getIcon, renderPomodoroBadges } from "../utils/icons.js";
 import { renderHeroDashboard } from "./gamification/heroUI.js";
 import { renderTacticsContainer } from "./gamification/tacticsUI.js";
+import { renderSocialUi } from "./social/socialUi.js";
+import { renderAdminDashboard } from "./admin/adminDashboard.js";
 import { notifyToolChange } from "./mascot/companion.js";
 
 const archive = {
@@ -132,6 +134,8 @@ function initializeElements() {
   elements.todoContainer = document.querySelector(".todo-container");
   elements.heroContainer = document.getElementById("hero-container");
   elements.tacticsContainer = document.getElementById("tactics-container");
+  elements.socialContainer = document.getElementById("social-container");
+  elements.adminContainer = document.getElementById("admin-container");
   // Only get main view toggle buttons (list, calendar, stats), not calendar month/week toggle
   elements.viewToggleButtons = document.querySelectorAll(
     ".view-controls [data-view]",
@@ -284,6 +288,12 @@ function setupEventListeners() {
     }
 
     saveAndRender();
+  });
+
+  // Listen for multi-tenant switches to reload active state
+  window.addEventListener("tenant-switched", () => {
+    loadFromStorage();
+    render();
   });
 }
 
@@ -689,6 +699,8 @@ function render() {
   elements.vaultContainer?.classList.add("hidden");
   elements.heroContainer?.classList.add("hidden");
   elements.tacticsContainer?.classList.add("hidden");
+  elements.socialContainer?.classList.add("hidden");
+  elements.adminContainer?.classList.add("hidden");
 
   // Notify companion of view context
   notifyToolChange(state.view);
@@ -711,6 +723,12 @@ function render() {
   } else if (state.view === "tactics") {
     elements.tacticsContainer?.classList.remove("hidden");
     renderTacticsContainer();
+  } else if (state.view === "social") {
+    elements.socialContainer?.classList.remove("hidden");
+    renderSocialUi();
+  } else if (state.view === "admin") {
+    elements.adminContainer?.classList.remove("hidden");
+    renderAdminDashboard();
   } else {
     // List view (default)
     elements.todoContainer.classList.remove("hidden");

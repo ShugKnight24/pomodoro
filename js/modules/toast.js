@@ -16,6 +16,7 @@ export function initToast() {
 
 function createToastContainer() {
   const container = document.createElement("div");
+  container.id = "toast-container";
   container.className = "toast-container";
   container.setAttribute("aria-live", "polite");
   container.setAttribute("aria-atomic", "true");
