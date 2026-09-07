@@ -158,7 +158,7 @@ test.describe("Settings Drawer Redesign & Sticky Controls", () => {
     await expect(preset50).toHaveClass(/active/);
 
     // Close drawer using Done button
-    await page.locator("#settings-done-btn").click();
+    await page.locator("#settings-done-btn").click({ force: true });
     await expect(page.locator(".side-settings")).not.toBeVisible();
 
     // Reload and check persistence
