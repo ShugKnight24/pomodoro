@@ -37,6 +37,16 @@ const STATIC_ASSETS = [
   "/manifest.json",
   "/icons/brand/pomidor_en.webp",
   "/icons/brand/\u043f\u043e\u043c\u0438\u0434\u043e\u0440_ru.webp",
+  "/icons/brand/pomidor_en.svg",
+  "/icons/brand/\u043f\u043e\u043c\u0438\u0434\u043e\u0440_ru.svg",
+  "/icons/brand/variants/pomidor_modern_en.svg",
+  "/icons/brand/variants/pomidor_modern_ru.svg",
+  "/icons/brand/variants/pomidor_soviet_en.svg",
+  "/icons/brand/variants/pomidor_soviet_ru.svg",
+  "/icons/brand/variants/pomidor_edgy_en.svg",
+  "/icons/brand/variants/pomidor_edgy_ru.svg",
+  "/icons/brand/variants/pomidor_lighthearted_en.svg",
+  "/icons/brand/variants/pomidor_lighthearted_ru.svg",
 ];
 
 // External resources to cache

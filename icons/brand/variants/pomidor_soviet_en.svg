@@ -1,0 +1,169 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 260" width="880" height="260" fill="none">
+  <defs>
+    <!-- Soviet Crimson & Gold Gradients -->
+    <linearGradient id="sov-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1c110e" />
+      <stop offset="50%" stop-color="#2a1210" />
+      <stop offset="100%" stop-color="#120a09" />
+    </linearGradient>
+
+    <linearGradient id="sov-red-beam" x1="0%" y1="0%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#dc2626" stop-opacity="0.35" />
+      <stop offset="60%" stop-color="#991b1b" stop-opacity="0.15" />
+      <stop offset="100%" stop-color="#7f1d1d" stop-opacity="0" />
+    </linearGradient>
+
+    <linearGradient id="sov-gold-beam" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.25" />
+      <stop offset="70%" stop-color="#d97706" stop-opacity="0.08" />
+      <stop offset="100%" stop-color="#b45309" stop-opacity="0" />
+    </linearGradient>
+
+    <linearGradient id="sov-tomato" x1="20%" y1="15%" x2="85%" y2="85%">
+      <stop offset="0%" stop-color="#ef4444" />
+      <stop offset="40%" stop-color="#dc2626" />
+      <stop offset="80%" stop-color="#991b1b" />
+      <stop offset="100%" stop-color="#7f1d1d" />
+    </linearGradient>
+
+    <linearGradient id="sov-gear-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24" />
+      <stop offset="50%" stop-color="#d97706" />
+      <stop offset="100%" stop-color="#78350f" />
+    </linearGradient>
+
+    <linearGradient id="sov-title-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fffbeb" />
+      <stop offset="30%" stop-color="#fef3c7" />
+      <stop offset="70%" stop-color="#fcd34d" />
+      <stop offset="100%" stop-color="#f59e0b" />
+    </linearGradient>
+
+    <linearGradient id="sov-star-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a" />
+      <stop offset="50%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#b45309" />
+    </linearGradient>
+  </defs>
+
+  <style>
+    .sov-title { font-family: "Impact", "Arial Black", "Trebuchet MS", "Inter", sans-serif; font-size: 64px; font-weight: 900; letter-spacing: 5px; fill: url(#sov-title-grad); }
+    .sov-eyebrow { font-family: "Arial Black", "Trebuchet MS", "Impact", sans-serif; font-size: 11px; font-weight: 900; letter-spacing: 3.5px; fill: #fef3c7; text-transform: uppercase; }
+    .sov-tagline { font-family: "Trebuchet MS", "Arial", sans-serif; font-size: 13.5px; font-weight: 700; letter-spacing: 1px; fill: #e5e7eb; }
+    .sov-pill-text { font-family: "Arial Black", "Trebuchet MS", sans-serif; font-size: 10px; font-weight: 900; letter-spacing: 1.2px; fill: #fef3c7; }
+  </style>
+
+  <!-- Base Plate Frame -->
+  <rect x="10" y="10" width="860" height="240" rx="4" fill="url(#sov-bg)" stroke="#78350f" stroke-width="2.5" />
+  <rect x="16" y="16" width="848" height="228" rx="2" fill="none" stroke="#d97706" stroke-width="1" stroke-dasharray="8 4" opacity="0.6" />
+
+  <!-- Constructivist Diagonal Dynamic Wedges -->
+  <polygon points="16,16 520,16 380,244 16,244" fill="url(#sov-red-beam)" />
+  <polygon points="460,16 864,16 864,120 320,244" fill="url(#sov-gold-beam)" />
+  <line x1="16" y1="244" x2="864" y2="40" stroke="#f59e0b" stroke-width="1.5" opacity="0.3" />
+  <line x1="16" y1="220" x2="864" y2="16" stroke="#ef4444" stroke-width="1" opacity="0.25" />
+
+  <!-- Corner Constructivist Star Accents -->
+  <polygon points="26,26 29,20 32,26 38,27 34,31 35,37 30,34 25,37 26,31 22,27" fill="#f59e0b" opacity="0.7" />
+  <polygon points="854,26 857,20 860,26 866,27 862,31 863,37 858,34 853,37 854,31 850,27" fill="#f59e0b" opacity="0.7" />
+  <polygon points="854,234 857,228 860,234 866,235 862,239 863,245 858,242 853,245 854,239 850,235" fill="#f59e0b" opacity="0.7" />
+  <polygon points="26,234 29,228 32,234 38,235 34,239 35,245 30,242 25,245 26,239 22,235" fill="#f59e0b" opacity="0.7" />
+
+  <!-- ════════ CONSTRUCTIVIST LOGOMARK ════════ -->
+  <g transform="translate(48, 38)">
+    <!-- Sunburst Constructivist Rays -->
+    <g opacity="0.4" stroke="#f59e0b" stroke-width="1.2">
+      <line x1="92" y1="92" x2="92" y2="10" />
+      <line x1="92" y1="92" x2="150" y2="34" />
+      <line x1="92" y1="92" x2="174" y2="92" />
+      <line x1="92" y1="92" x2="150" y2="150" />
+      <line x1="92" y1="92" x2="92" y2="174" />
+      <line x1="92" y1="92" x2="34" y2="150" />
+      <line x1="92" y1="92" x2="10" y2="92" />
+      <line x1="92" y1="92" x2="34" y2="34" />
+    </g>
+
+    <!-- Heavy Industrial Cog Chrono Dial -->
+    <circle cx="92" cy="92" r="80" stroke="url(#sov-gear-grad)" stroke-width="5" fill="none" opacity="0.85" />
+    <!-- Gear teeth around the dial -->
+    <g fill="#d97706" opacity="0.9">
+      <rect x="88" y="6" width="8" height="12" rx="1" />
+      <rect x="88" y="166" width="8" height="12" rx="1" />
+      <rect x="6" y="88" width="12" height="8" rx="1" />
+      <rect x="166" y="88" width="12" height="8" rx="1" />
+      <rect x="144" y="32" width="10" height="10" rx="1" transform="rotate(45 149 37)" />
+      <rect x="30" y="144" width="10" height="10" rx="1" transform="rotate(45 35 149)" />
+      <rect x="144" y="144" width="10" height="10" rx="1" transform="rotate(-45 149 149)" />
+      <rect x="30" y="32" width="10" height="10" rx="1" transform="rotate(-45 35 37)" />
+    </g>
+
+    <!-- Dial Minute Track & Cardinal Divisions -->
+    <circle cx="92" cy="92" r="70" stroke="rgba(254, 243, 199, 0.2)" stroke-width="1.5" fill="none" />
+    <circle cx="92" cy="92" r="70" stroke="#ef4444" stroke-width="3.5" stroke-dasharray="320 440" stroke-linecap="butt" fill="none" opacity="0.9" />
+
+    <!-- Tomato Body - Bold Constructivist Geometry -->
+    <path d="M92 160c-36 0-62-24-62-56 0-24 16-44 40-52 7-2 14-3 22-3 8 0 15 1 22 3 24 8 40 28 40 52 0 32-26 56-62 56z" fill="url(#sov-tomato)" stroke="#7f1d1d" stroke-width="2" filter="drop-shadow(0 6px 18px rgba(220, 38, 38, 0.4))" />
+
+    <!-- Angular Facet / Constructivist Chiseled Light -->
+    <polygon points="92,50 148,88 126,140 92,158" fill="rgba(255, 255, 255, 0.08)" />
+    <polygon points="92,50 36,88 58,140 92,158" fill="rgba(0, 0, 0, 0.18)" />
+    <path d="M52 76c10-14 24-20 38-18" stroke="#fef3c7" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.75" />
+
+    <!-- Constructivist Calyx / Leaves -->
+    <polygon points="92,52 68,36 78,50 56,48 76,58 64,68 84,62" fill="#047857" stroke="#065f46" stroke-width="1" />
+    <polygon points="92,52 116,36 106,50 128,48 108,58 120,68 100,62" fill="#047857" stroke="#065f46" stroke-width="1" />
+
+    <!-- Solid Soviet Red Star Crest at Stem -->
+    <polygon points="92,20 95,30 106,30 97,36 101,46 92,40 83,46 87,36 78,30 89,30" fill="url(#sov-star-grad)" stroke="#78350f" stroke-width="1" filter="drop-shadow(0 2px 6px rgba(245, 158, 11, 0.6))" />
+    <polygon points="92,24 94,31 99,31 95,34 97,41 92,37 87,41 89,34 85,31 90,31" fill="#dc2626" />
+  </g>
+
+  <!-- ════════ BRAND TYPOGRAPHY & SLOGANS ════════ -->
+  <g transform="translate(268, 50)">
+    <!-- Eyebrow Ribbon Banner -->
+    <g transform="translate(0, 0)">
+      <polygon points="0,0 274,0 262,24 0,24" fill="#dc2626" stroke="#f59e0b" stroke-width="1" />
+      <polygon points="274,0 286,12 274,24 262,24 274,12" fill="#b91c1c" />
+      <text x="14" y="16.5" class="sov-eyebrow">&#9733; DISCIPLINE &#8226; LABOR &#8226; PROGRESS &#9733;</text>
+    </g>
+
+    <!-- Wordmark - Heavy Constructivist Capitals -->
+    <text x="0" y="80" class="sov-title">POMIDOR</text>
+    <!-- Geometric Ruby Star over the I -->
+    <polygon points="214,28 217,36 226,36 218,41 221,49 214,44 207,49 210,41 202,36 211,36" fill="#ef4444" stroke="#f59e0b" stroke-width="1" />
+
+    <!-- Slogan / Subtitle -->
+    <text x="0" y="107" class="sov-tagline">Master of Time and Willpower &#8226; Relentless Daily Progress</text>
+
+    <!-- Constructivist Industrial Badges -->
+    <g transform="translate(0, 126)">
+      <!-- Badge 1: 25M Labor Sprint -->
+      <g transform="translate(0, 0)">
+        <rect x="0" y="0" width="132" height="26" fill="#261210" stroke="#dc2626" stroke-width="1.5" />
+        <rect x="4" y="4" width="6" height="18" fill="#dc2626" />
+        <text x="16" y="17" class="sov-pill-text">25M WORK SPRINT</text>
+      </g>
+
+      <!-- Badge 2: Iron Discipline -->
+      <g transform="translate(142, 0)">
+        <rect x="0" y="0" width="126" height="26" fill="#261210" stroke="#f59e0b" stroke-width="1.5" />
+        <rect x="4" y="4" width="6" height="18" fill="#f59e0b" />
+        <text x="16" y="17" class="sov-pill-text">IRON DISCIPLINE</text>
+      </g>
+
+      <!-- Badge 3: Squad Unity -->
+      <g transform="translate(278, 0)">
+        <rect x="0" y="0" width="128" height="26" fill="#261210" stroke="#d97706" stroke-width="1.5" />
+        <rect x="4" y="4" width="6" height="18" fill="#d97706" />
+        <text x="16" y="17" class="sov-pill-text">COMRADE SQUAD</text>
+      </g>
+
+      <!-- Badge 4: 100% Offline -->
+      <g transform="translate(416, 0)">
+        <rect x="0" y="0" width="112" height="26" fill="#261210" stroke="#ef4444" stroke-width="1.5" />
+        <rect x="4" y="4" width="6" height="18" fill="#ef4444" />
+        <text x="16" y="17" class="sov-pill-text">100% OFFLINE</text>
+      </g>
+    </g>
+  </g>
+</svg>

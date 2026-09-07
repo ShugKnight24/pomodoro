@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 260" width="880" height="260" fill="none">
+  <defs>
+    <!-- Warm Lighthearted & Playful Gradients -->
+    <radialGradient id="play-bg-glow" cx="22%" cy="50%" r="65%">
+      <stop offset="0%" stop-color="#ff4757" stop-opacity="0.18" />
+      <stop offset="50%" stop-color="#ffa502" stop-opacity="0.08" />
+      <stop offset="100%" stop-color="#191326" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Tomato Body Gradient -->
+    <radialGradient id="play-tomato-body" cx="36%" cy="32%" r="68%">
+      <stop offset="0%" stop-color="#ff6b81" />
+      <stop offset="45%" stop-color="#ff4757" />
+      <stop offset="85%" stop-color="#ee5253" />
+      <stop offset="100%" stop-color="#c23616" />
+    </radialGradient>
+
+    <!-- Playful Title Gradient -->
+    <linearGradient id="play-title-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="50%" stop-color="#ffeaa7" />
+      <stop offset="100%" stop-color="#ffbe76" />
+    </linearGradient>
+
+    <!-- Sprout Leaves Gradient -->
+    <linearGradient id="play-leaf-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2ed573" />
+      <stop offset="60%" stop-color="#10ac84" />
+      <stop offset="100%" stop-color="#1dd1a1" />
+    </linearGradient>
+
+    <!-- Playful Pill Border -->
+    <linearGradient id="play-border-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff6b81" stop-opacity="0.4" />
+      <stop offset="50%" stop-color="#ffa502" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#2ed573" stop-opacity="0.3" />
+    </linearGradient>
+  </defs>
+
+  <style>
+    .play-title { font-family: "Quicksand", "Nunito", "Happy Monkey", "Arial Rounded MT Bold", -apple-system, sans-serif; font-size: 60px; font-weight: 800; letter-spacing: 3px; fill: url(#play-title-grad); }
+    .play-eyebrow { font-family: "Quicksand", "Nunito", -apple-system, sans-serif; font-size: 11.5px; font-weight: 800; letter-spacing: 2.5px; fill: #ffbe76; text-transform: uppercase; }
+    .play-tagline { font-family: "Quicksand", "Nunito", -apple-system, sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 0.5px; fill: #e0e7ff; }
+    .play-pill-text { font-family: "Quicksand", "Nunito", -apple-system, sans-serif; font-size: 11px; font-weight: 800; letter-spacing: 0.8px; fill: #f1f2f6; }
+  </style>
+
+  <!-- Friendly Rounded Frame -->
+  <rect x="10" y="10" width="860" height="240" rx="36" fill="#151221" stroke="url(#play-border-grad)" stroke-width="2" />
+  <rect x="18" y="18" width="844" height="224" rx="28" fill="url(#play-bg-glow)" stroke="rgba(255, 255, 255, 0.06)" stroke-width="1" />
+
+  <!-- Floating Cheerful Sparkle Stars -->
+  <g fill="#ffa502" opacity="0.6">
+    <path d="M228 36 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2 z" />
+    <path d="M780 42 l2 4 4 2 -4 2 -2 4 -2 -4 -4 -2 4 -2 z" />
+    <path d="M820 180 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2 z" opacity="0.4" />
+    <path d="M246 220 l2 4 4 2 -4 2 -2 4 -2 -4 -4 -2 4 -2 z" opacity="0.5" />
+  </g>
+
+  <!-- ════════ KAWAII MASCOT LOGOMARK ════════ -->
+  <g transform="translate(48, 38)">
+    <!-- Cozy Soft Shadow -->
+    <ellipse cx="92" cy="164" rx="58" ry="12" fill="rgba(0,0,0,0.4)" filter="blur(6px)" />
+
+    <!-- Dotted Bouncy Countdown Track -->
+    <circle cx="92" cy="92" r="82" stroke="rgba(255, 255, 255, 0.08)" stroke-width="5" fill="none" />
+    <circle cx="92" cy="92" r="82" stroke="#ff6b81" stroke-width="5" stroke-dasharray="8 12" stroke-linecap="round" fill="none" opacity="0.85" />
+
+    <!-- Chubby Smiling Tomato Mascot Body -->
+    <path d="M92 162c-38 0-66-26-66-58 0-25 18-47 43-55 7-2 15-3 23-3 8 0 16 1 23 3 25 8 43 30 43 55 0 32-28 58-66 58z" fill="url(#play-tomato-body)" filter="drop-shadow(0 8px 20px rgba(255, 71, 87, 0.35))" />
+
+    <!-- Big Shiny Specular Highlight -->
+    <path d="M56 76c10-14 24-20 38-18" stroke="#ffffff" stroke-width="6" stroke-linecap="round" fill="none" opacity="0.8" />
+    <circle cx="52" cy="84" r="3" fill="#ffffff" opacity="0.9" />
+
+    <!-- Cheerful Eyes with Sparkles -->
+    <!-- Left Eye -->
+    <ellipse cx="70" cy="106" rx="6.5" ry="8.5" fill="#2d3436" />
+    <circle cx="68" cy="103" r="2.8" fill="#ffffff" />
+    <circle cx="72" cy="110" r="1.4" fill="#ffffff" />
+
+    <!-- Right Eye -->
+    <ellipse cx="114" cy="106" rx="6.5" ry="8.5" fill="#2d3436" />
+    <circle cx="112" cy="103" r="2.8" fill="#ffffff" />
+    <circle cx="116" cy="110" r="1.4" fill="#ffffff" />
+
+    <!-- Cute Rosy Blush Cheeks -->
+    <ellipse cx="58" cy="116" rx="8" ry="4.5" fill="#ff7675" opacity="0.75" />
+    <ellipse cx="126" cy="116" rx="8" ry="4.5" fill="#ff7675" opacity="0.75" />
+
+    <!-- Cute Smiling Mouth -->
+    <path d="M84 114 Q92 124 100 114" stroke="#2d3436" stroke-width="3" stroke-linecap="round" fill="none" />
+    <!-- Happy Tongue Accent -->
+    <path d="M88 118 Q92 125 96 118 Z" fill="#ff7675" />
+
+    <!-- Jaunty Leaf Sprout Crown -->
+    <path d="M92 50c-6-16-24-18-30-18 2 8 8 16 20 18-12-2-22 6-26 12 9 0 18-4 24-9-6 10-2 22 4 27 0-9 4-16 8-20z" fill="url(#play-leaf-grad)" />
+    <path d="M92 50c6-16 24-18 30-18-2 8-8 16-20 18 12-2 22 6 26 12-9 0-18-4-24-9 6 10 2 22-4 27 0-9-4-16-8-20z" fill="url(#play-leaf-grad)" />
+
+    <!-- Playful Little Waving Stem -->
+    <path d="M92 50c-1-14 6-24 14-26-2 7-1 16-6 24z" fill="#1dd1a1" />
+  </g>
+
+  <!-- ════════ BRAND TYPOGRAPHY & PLAYFUL COPY ════════ -->
+  <g transform="translate(268, 50)">
+    <!-- Subtitle Pill / Eyebrow -->
+    <g transform="translate(0, 0)">
+      <rect x="0" y="0" width="230" height="24" rx="12" fill="rgba(255, 190, 118, 0.15)" stroke="rgba(255, 190, 118, 0.4)" stroke-width="1" />
+      <circle cx="12" cy="12" r="4" fill="#ffbe76" />
+      <text x="24" y="16.5" class="play-eyebrow">ONE TOMATO AT A TIME</text>
+    </g>
+
+    <!-- Wordmark -->
+    <text x="0" y="80" class="play-title">POMIDOR</text>
+    <!-- Coral smile dot over the O -->
+    <circle cx="270" cy="54" r="5" fill="#ff4757" filter="drop-shadow(0 0 6px #ff4757)" />
+
+    <!-- Description / Tagline -->
+    <text x="0" y="107" class="play-tagline">Stay Fresh, Get Things Done &#8226; Happy Breaks &amp; Cozy Habits</text>
+
+    <!-- Playful Trust / Feature Badges -->
+    <g transform="translate(0, 126)">
+      <!-- Badge 1: Happy Breaks -->
+      <g transform="translate(0, 0)">
+        <rect x="0" y="0" width="124" height="26" rx="13" fill="rgba(255, 71, 87, 0.12)" stroke="rgba(255, 71, 87, 0.35)" stroke-width="1" />
+        <circle cx="14" cy="13" r="3.5" fill="#ff4757" />
+        <text x="24" y="17" class="play-pill-text">HAPPY BREAKS</text>
+      </g>
+
+      <!-- Badge 2: Sweet Streaks -->
+      <g transform="translate(134, 0)">
+        <rect x="0" y="0" width="124" height="26" rx="13" fill="rgba(255, 165, 2, 0.12)" stroke="rgba(255, 165, 2, 0.35)" stroke-width="1" />
+        <circle cx="14" cy="13" r="3.5" fill="#ffa502" />
+        <text x="24" y="17" class="play-pill-text">SWEET STREAKS</text>
+      </g>
+
+      <!-- Badge 3: Cozy Squad -->
+      <g transform="translate(268, 0)">
+        <rect x="0" y="0" width="114" height="26" rx="13" fill="rgba(46, 213, 115, 0.12)" stroke="rgba(46, 213, 115, 0.35)" stroke-width="1" />
+        <circle cx="14" cy="13" r="3.5" fill="#2ed573" />
+        <text x="24" y="17" class="play-pill-text">COZY SQUAD</text>
+      </g>
+
+      <!-- Badge 4: 100% Private -->
+      <g transform="translate(392, 0)">
+        <rect x="0" y="0" width="118" height="26" rx="13" fill="rgba(112, 161, 255, 0.12)" stroke="rgba(112, 161, 255, 0.35)" stroke-width="1" />
+        <circle cx="14" cy="13" r="3.5" fill="#70a1ff" />
+        <text x="24" y="17" class="play-pill-text">100% PRIVATE</text>
+      </g>
+    </g>
+  </g>
+</svg>
