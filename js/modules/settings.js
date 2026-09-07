@@ -15,12 +15,26 @@ import { showSuccess } from "./toast.js";
 const settingsPanel = document.querySelector(".side-settings");
 const openButton = document.querySelector(".open-settings");
 const closeButton = document.querySelector(".close-settings");
+const doneButton = document.getElementById("settings-done-btn");
+const backdrop = document.getElementById("settings-backdrop");
 const visualToggle = document.getElementById("visual-toggle");
 
 export function initSettings() {
-  // Panel toggle
-  openButton?.addEventListener("click", toggleSettingsPanel);
-  closeButton?.addEventListener("click", toggleSettingsPanel);
+  // Panel open / close / toggle
+  openButton?.addEventListener("click", openSettingsPanel);
+  closeButton?.addEventListener("click", closeSettingsPanel);
+  doneButton?.addEventListener("click", closeSettingsPanel);
+  backdrop?.addEventListener("click", closeSettingsPanel);
+
+  // Keyboard shortcut (Escape to close)
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && settingsPanel?.classList.contains("open")) {
+      closeSettingsPanel();
+    }
+  });
+
+  // Category filter tabs
+  initCategoryTabs();
 
   // Visual toggle
   const savedVisual = localStorage.getItem("timerVisual");
@@ -31,12 +45,69 @@ export function initSettings() {
 
   // Initialize new settings
   initThemeSelector();
+  initBrandLogoSelector();
   initTimerStyleSelector();
   initAnimationStyleSelector();
   initTimerPresets();
   initNotifications();
   initDataManagement();
   initMascotSettings();
+}
+
+export function openSettingsPanel() {
+  settingsPanel?.classList.add("open");
+  backdrop?.classList.add("open");
+  openButton?.setAttribute("aria-expanded", "true");
+  settingsPanel?.setAttribute("aria-hidden", "false");
+}
+
+export function closeSettingsPanel() {
+  settingsPanel?.classList.remove("open");
+  backdrop?.classList.remove("open");
+  openButton?.setAttribute("aria-expanded", "false");
+  settingsPanel?.setAttribute("aria-hidden", "true");
+}
+
+export function toggleSettingsPanel() {
+  if (settingsPanel?.classList.contains("open")) {
+    closeSettingsPanel();
+  } else {
+    openSettingsPanel();
+  }
+}
+
+function initCategoryTabs() {
+  const tabs = document.querySelectorAll(".settings-nav-tab");
+  const cards = document.querySelectorAll(".side-settings .setting-card");
+  const scrollBody = document.getElementById("settings-scroll-body");
+
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      const selectedCategory = tab.dataset.settingsTab;
+
+      // Update active states & ARIA
+      tabs.forEach((t) => {
+        const isActive = t === tab;
+        t.classList.toggle("active", isActive);
+        t.setAttribute("aria-selected", isActive ? "true" : "false");
+      });
+
+      // Filter cards
+      cards.forEach((card) => {
+        const cardCategory = card.dataset.category;
+        if (selectedCategory === "all" || cardCategory === selectedCategory) {
+          card.classList.remove("hidden-by-tab");
+        } else {
+          card.classList.add("hidden-by-tab");
+        }
+      });
+
+      // Scroll to top of settings list
+      if (scrollBody) {
+        scrollBody.scrollTop = 0;
+      }
+    });
+  });
 }
 
 function handleVisualToggle(event) {
@@ -50,10 +121,6 @@ function handleVisualToggle(event) {
     detail: { visualType },
   });
   document.dispatchEvent(indicatorEventChange);
-}
-
-function toggleSettingsPanel() {
-  settingsPanel?.classList.toggle("open");
 }
 
 // ===================================
@@ -79,6 +146,39 @@ function initThemeSelector() {
 
 function applyAppTheme(theme) {
   document.documentElement.setAttribute("data-app-theme", theme);
+}
+
+// ===================================
+// BRAND LOGO SELECTOR
+// ===================================
+
+export function initBrandLogoSelector() {
+  const brandSelect = document.getElementById("brand-logo-select");
+  if (!brandSelect) return;
+
+  // Load saved brand logo style
+  const savedStyle = localStorage.getItem("pomidor_brand_logo_style") || "modern";
+  brandSelect.value = savedStyle;
+  applyBrandLogoStyle(savedStyle);
+
+  // Listen for dropdown changes
+  brandSelect.addEventListener("change", (e) => {
+    const style = e.target.value;
+    applyBrandLogoStyle(style);
+    localStorage.setItem("pomidor_brand_logo_style", style);
+    window.dispatchEvent(new CustomEvent("brand-logo-changed", { detail: { style } }));
+  });
+
+  // Keep dropdown in sync if changed externally (e.g. hero banner cycle button)
+  window.addEventListener("brand-logo-changed", (e) => {
+    if (brandSelect && e.detail?.style && brandSelect.value !== e.detail.style) {
+      brandSelect.value = e.detail.style;
+    }
+  });
+}
+
+export function applyBrandLogoStyle(style) {
+  document.documentElement.setAttribute("data-brand-logo-style", style);
 }
 
 // ===================================
@@ -551,7 +651,7 @@ function initMascotSettings() {
       if (tool) {
         startTourForCurrentTool(tool);
         // Close settings panel so user can see the tour spotlight
-        document.querySelector(".side-settings")?.classList.remove("open");
+        closeSettingsPanel();
       }
     });
   });
