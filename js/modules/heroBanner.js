@@ -15,6 +15,9 @@ import { getIcon } from "../utils/icons.js";
 import { openInteractiveTutorial } from "./interactiveTutorial.js";
 import { openCompanionChoresModal, getSolvedChores } from "./mascot/companionChores.js";
 import { toggleHeatmapOverlay } from "./telemetry/telemetryUi.js";
+import { escapeHtml } from "../utils/sanitize.js";
+import { safeGet, safeSet } from "../utils/storage.js";
+import { getActiveTenant } from "./social/profileManager.js";
 
 const SHOWCASE_STORAGE_KEY = "pomidor.heroShowcase.dismissed";
 const MARKETING_STORAGE_KEY = "pomidor.marketingHero.dismissed";
@@ -23,13 +26,7 @@ const OUTPOST_MODE_KEY = "pomidor.outpost.viewMode";
 let focusEnergy = 25;
 let currentDioramaJob = "knight";
 let activeRealmIndex = 0;
-let outpostMode = "panoramic";
-
-try {
-  outpostMode = localStorage.getItem(OUTPOST_MODE_KEY) || "panoramic";
-} catch {
-  outpostMode = "panoramic";
-}
+let outpostMode = safeGet(OUTPOST_MODE_KEY, "panoramic");
 
 function playOutpostTone(freq = 440, type = "sine", duration = 0.15) {
   try {
@@ -56,7 +53,7 @@ function spawnFloatingToast(targetEl, text, color = "#ef4444") {
   toast.textContent = text;
   toast.style.color = color;
   targetEl.appendChild(toast);
-  setTimeout(() => toast.remove(), 1000);
+  setTimeout(() => toast.remove(), 2000);
 }
 
 export function initHeroBanner() {
@@ -78,6 +75,9 @@ export function initHeroBanner() {
     renderHeroBanner(container);
   });
   window.addEventListener("brand-logo-changed", () => {
+    renderHeroBanner(container);
+  });
+  window.addEventListener("tenant-switched", () => {
     renderHeroBanner(container);
   });
 }
@@ -114,31 +114,21 @@ function getTimeGreeting() {
 }
 
 function isShowcaseDismissed() {
-  try {
-    return localStorage.getItem(SHOWCASE_STORAGE_KEY) === "true";
-  } catch {
-    return false;
-  }
+  const val = safeGet(SHOWCASE_STORAGE_KEY, false);
+  return val === true || val === "true";
 }
 
 function setShowcaseDismissed(dismissed) {
-  try {
-    localStorage.setItem(SHOWCASE_STORAGE_KEY, dismissed ? "true" : "false");
-  } catch {}
+  safeSet(SHOWCASE_STORAGE_KEY, Boolean(dismissed));
 }
 
 function isMarketingDismissed() {
-  try {
-    return localStorage.getItem(MARKETING_STORAGE_KEY) === "true";
-  } catch {
-    return false;
-  }
+  const val = safeGet(MARKETING_STORAGE_KEY, false);
+  return val === true || val === "true";
 }
 
 function setMarketingDismissed(dismissed) {
-  try {
-    localStorage.setItem(MARKETING_STORAGE_KEY, dismissed ? "true" : "false");
-  } catch {}
+  safeSet(MARKETING_STORAGE_KEY, Boolean(dismissed));
 }
 
 export const REALM_DEFINITIONS = [
@@ -219,6 +209,8 @@ export function renderHeroBanner(container) {
   const isDismissed = isShowcaseDismissed();
   const isMarketingHidden = isMarketingDismissed();
   const choresSolved = getSolvedChores().length;
+  const currentTenant = typeof getActiveTenant === "function" ? getActiveTenant() : null;
+  const isAdmin = currentTenant?.role === "admin";
 
   const currentBrandStyle = localStorage.getItem("pomidor_brand_logo_style") || "modern";
   const brandLogoSrc = getBrandLogoPath(currentBrandStyle, currentLang);
@@ -312,9 +304,15 @@ export function renderHeroBanner(container) {
             ${getIcon("sparkles", { size: 13 })} <span>Expeditions [${choresSolved}/5]</span>
           </button>
 
+          ${
+            isAdmin
+              ? `
           <button class="hero-heatmap-badge-btn" id="hero-heatmap-badge-btn" title="Toggle Interaction Heatmap Overlay">
             ${getIcon("eye", { size: 13 })} <span>Heatmap HUD</span>
           </button>
+          `
+              : ""
+          }
 
           ${
             isMarketingHidden
@@ -1212,14 +1210,4 @@ export function openTechniqueGuideModal() {
   modal.addEventListener("click", (e) => {
     if (e.target === modal) modal.style.display = "none";
   });
-}
-
-function escapeHtml(str) {
-  if (!str) return "";
-  return String(str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
 }

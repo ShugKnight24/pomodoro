@@ -57,6 +57,10 @@ test.describe("Advanced Telemetry, Visual Heatmaps & Bot Differentiation", () =>
   test("heatmap visual overlay HUD toggles, renders canvas, and allows changing traffic filters", async ({
     page,
   }) => {
+    // Switch to admin persona to access heatmap HUD
+    const select = page.locator("#header-tenant-select");
+    await select.selectOption("tenant_admin");
+
     // Click heatmap HUD badge button in hero controls
     const hudBtn = page.locator("#hero-heatmap-badge-btn");
     await expect(hudBtn).toBeVisible();

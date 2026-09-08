@@ -22,6 +22,7 @@ import {
 } from "./telemetryManager.js";
 import { sendEvent } from "./gtagService.js";
 import { showSuccess, showInfo } from "../toast.js";
+import { getActiveTenant, getAllTenants } from "../social/profileManager.js";
 
 let overlayContainer = null;
 let overlayCanvas = null;
@@ -29,6 +30,7 @@ let isOverlayOpen = false;
 
 let overlayFilterTraffic = "all"; // 'all' | 'human' | 'bot'
 let overlayFilterView = "all";
+let overlayFilterTenant = "all"; // 'all' | tenantId
 let overlayRadius = 30;
 let overlayIntensity = 0.75;
 
@@ -44,10 +46,17 @@ export function toggleHeatmapOverlay() {
 }
 
 export function openHeatmapOverlay() {
+  const tenant = typeof getActiveTenant === "function" ? getActiveTenant() : null;
+  if (!tenant || tenant.role !== "admin") {
+    showInfo("Heatmap HUD is restricted to Administrators.");
+    return;
+  }
+
   ensureOverlayDom();
   isOverlayOpen = true;
   overlayContainer.classList.add("active");
   syncOverlayCanvasSize();
+  populateHudUserSelect();
   redrawOverlay();
   showInfo("Heatmap Overlay active. Click toolbar to change filters or exit.");
 }
@@ -108,6 +117,14 @@ function ensureOverlayDom() {
           </select>
         </div>
 
+        <!-- User Persona Filter -->
+        <div class="hud-control-group">
+          <label class="hud-control-label" for="hud-user-select">Filter by User</label>
+          <select class="hud-select" id="hud-user-select">
+            <option value="all">All Users Combined</option>
+          </select>
+        </div>
+
         <!-- Sliders -->
         <div class="hud-sliders-row">
           <div class="hud-slider-group">
@@ -163,6 +180,13 @@ function bindOverlayEvents() {
     redrawOverlay();
   });
 
+  // User Persona select
+  const userSelect = overlayContainer.querySelector("#hud-user-select");
+  userSelect?.addEventListener("change", (e) => {
+    overlayFilterTenant = e.target.value;
+    redrawOverlay();
+  });
+
   // Sliders
   const radSlider = overlayContainer.querySelector("#hud-radius-slider");
   radSlider?.addEventListener("input", (e) => {
@@ -200,6 +224,28 @@ function bindOverlayEvents() {
   });
 }
 
+function populateHudUserSelect() {
+  if (!overlayContainer) return;
+  const userSelect = overlayContainer.querySelector("#hud-user-select");
+  if (!userSelect) return;
+
+  const currentVal = overlayFilterTenant || "all";
+  const tenants = typeof getAllTenants === "function" ? getAllTenants() : [];
+
+  userSelect.innerHTML = `
+    <option value="all" ${currentVal === "all" ? "selected" : ""}>All Users Combined</option>
+    ${tenants
+      .map(
+        (t) => `
+      <option value="${t.id}" ${currentVal === t.id ? "selected" : ""}>
+        ${t.name} (${(t.role || "user").toUpperCase()})
+      </option>
+    `
+      )
+      .join("")}
+  `;
+}
+
 function syncOverlayCanvasSize() {
   if (!overlayCanvas) return;
   overlayCanvas.width = window.innerWidth;
@@ -212,6 +258,7 @@ function redrawOverlay() {
   const filter = {
     trafficType: overlayFilterTraffic,
     view: overlayFilterView === "all" ? null : overlayFilterView,
+    tenantId: overlayFilterTenant === "all" ? null : overlayFilterTenant,
   };
 
   const points = getHeatmapPoints(filter);
@@ -223,7 +270,10 @@ function redrawOverlay() {
 
   const counter = overlayContainer?.querySelector("#hud-points-count");
   if (counter) {
-    counter.textContent = `${points.length} Heat Points (${overlayFilterTraffic.toUpperCase()})`;
+    const tenants = typeof getAllTenants === "function" ? getAllTenants() : [];
+    const activeTenantObj = tenants.find((t) => t.id === overlayFilterTenant);
+    const userSuffix = activeTenantObj ? ` • ${activeTenantObj.name}` : " • All Users";
+    counter.textContent = `${points.length} Heat Points (${overlayFilterTraffic.toUpperCase()})${userSuffix}`;
   }
 }
 

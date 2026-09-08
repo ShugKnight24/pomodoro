@@ -6,6 +6,9 @@
 
 "use strict";
 
+import { safeGet, safeSet, safeRemove } from "../../utils/storage.js";
+import { getActiveTenant } from "../social/profileManager.js";
+
 const HEATMAP_STORAGE_KEY = "pomidor.telemetry.heatmaps";
 const MAX_HEATMAP_POINTS = 500;
 
@@ -15,7 +18,7 @@ let viewStartTime = Date.now();
 const maxScrollDepthByView = {};
 
 /**
- * Initialize heatmap tracker from localStorage
+ * Initialize heatmap tracker from storage
  */
 export function initHeatmapTracker() {
   loadHeatmapData();
@@ -23,23 +26,111 @@ export function initHeatmapTracker() {
 }
 
 function loadHeatmapData() {
-  try {
-    const raw = localStorage.getItem(HEATMAP_STORAGE_KEY);
-    if (raw) {
-      clickPoints = JSON.parse(raw);
-    }
-  } catch {
-    clickPoints = [];
+  const loaded = safeGet(HEATMAP_STORAGE_KEY, null);
+  if (Array.isArray(loaded) && loaded.length > 0) {
+    clickPoints = loaded;
+  } else {
+    clickPoints = generateSeedMultiUserPoints();
+    saveHeatmapData();
   }
 }
 
 function saveHeatmapData() {
-  try {
-    if (clickPoints.length > MAX_HEATMAP_POINTS) {
-      clickPoints = clickPoints.slice(-MAX_HEATMAP_POINTS);
-    }
-    localStorage.setItem(HEATMAP_STORAGE_KEY, JSON.stringify(clickPoints));
-  } catch {}
+  if (clickPoints.length > MAX_HEATMAP_POINTS) {
+    clickPoints = clickPoints.slice(-MAX_HEATMAP_POINTS);
+  }
+  safeSet(HEATMAP_STORAGE_KEY, clickPoints);
+}
+
+function generateSeedMultiUserPoints() {
+  const seeds = [];
+  const now = Date.now();
+
+  const personas = [
+    {
+      id: "tenant_admin",
+      name: "Alexander Wright",
+      role: "admin",
+      points: [
+        { x: 740, y: 140, relX: 0.74, relY: 0.175, docX: 740, docY: 140, view: "admin", selector: "#admin-open-heatmap-btn", label: "Launch Heatmap Overlay" },
+        { x: 280, y: 320, relX: 0.28, relY: 0.4, docX: 280, docY: 320, view: "admin", selector: ".tenant-card", label: "Elena Rostova" },
+        { x: 550, y: 180, relX: 0.55, relY: 0.225, docX: 550, docY: 180, view: "stats", selector: "#stats-export-telemetry-btn", label: "Export JSON" },
+        { x: 920, y: 45, relX: 0.92, relY: 0.056, docX: 920, docY: 45, view: "pomodoro", selector: "#theme-toggle", label: "Theme Switcher" },
+        { x: 450, y: 310, relX: 0.45, relY: 0.387, docX: 450, docY: 310, view: "admin", selector: ".impersonate-btn", label: "Impersonate" },
+      ],
+    },
+    {
+      id: "tenant_elena",
+      name: "Elena Rostova",
+      role: "staff_eng",
+      points: [
+        { x: 310, y: 220, relX: 0.31, relY: 0.275, docX: 310, docY: 220, view: "kanban", selector: ".kanban-column", label: "In Progress" },
+        { x: 420, y: 290, relX: 0.42, relY: 0.362, docX: 420, docY: 290, view: "kanban", selector: ".kanban-card", label: "Refactor Telemetry Service" },
+        { x: 180, y: 160, relX: 0.18, relY: 0.2, docX: 180, docY: 160, view: "kanban", selector: "#kanban-add-column", label: "Add Column" },
+        { x: 500, y: 400, relX: 0.5, relY: 0.5, docX: 500, docY: 400, view: "pomodoro", selector: "#start-stop-btn", label: "Start Timer" },
+        { x: 620, y: 180, relX: 0.62, relY: 0.225, docX: 620, docY: 180, view: "kanban", selector: ".kanban-board-tab", label: "Architecture Sprint" },
+      ],
+    },
+    {
+      id: "tenant_darius",
+      name: "Darius Vance",
+      role: "resident",
+      points: [
+        { x: 500, y: 400, relX: 0.5, relY: 0.5, docX: 500, docY: 400, view: "pomodoro", selector: "#start-stop-btn", label: "Start Timer" },
+        { x: 450, y: 480, relX: 0.45, relY: 0.6, docX: 450, docY: 480, view: "pomodoro", selector: "#reset-btn", label: "Reset" },
+        { x: 380, y: 210, relX: 0.38, relY: 0.262, docX: 380, docY: 210, view: "stats", selector: ".stats-metric-card", label: "Total Focus Hours" },
+        { x: 610, y: 250, relX: 0.61, relY: 0.312, docX: 610, docY: 250, view: "stats", selector: ".activity-chart", label: "Hourly Focus Velocity" },
+      ],
+    },
+    {
+      id: "tenant_aiko",
+      name: "Aiko Tanaka",
+      role: "design_lead",
+      points: [
+        { x: 340, y: 180, relX: 0.34, relY: 0.225, docX: 340, docY: 180, view: "hero", selector: ".hero-tab-btn", label: "Quests & Boss Arena" },
+        { x: 490, y: 350, relX: 0.49, relY: 0.437, docX: 490, docY: 350, view: "hero", selector: ".slot-item-card", label: "Main Weapon" },
+        { x: 520, y: 280, relX: 0.52, relY: 0.35, docX: 520, docY: 280, view: "tactics", selector: ".tactics-node", label: "Boss Chamber 1" },
+        { x: 260, y: 310, relX: 0.26, relY: 0.387, docX: 260, docY: 310, view: "todo", selector: ".energy-dot-btn", label: "High Energy" },
+      ],
+    },
+    {
+      id: "tenant_leo",
+      name: "Leo Sterling",
+      role: "founder",
+      points: [
+        { x: 190, y: 160, relX: 0.19, relY: 0.2, docX: 190, docY: 160, view: "vault", selector: "#vault-new-note", label: "New Note" },
+        { x: 320, y: 240, relX: 0.32, relY: 0.3, docX: 320, docY: 240, view: "vault", selector: ".vault-note-item", label: "Pitch Deck Outline" },
+        { x: 410, y: 300, relX: 0.41, relY: 0.375, docX: 410, docY: 300, view: "social", selector: ".room-join-btn", label: "Deep Work Sanctum" },
+        { x: 500, y: 400, relX: 0.5, relY: 0.5, docX: 500, docY: 400, view: "pomodoro", selector: "#start-stop-btn", label: "Start Timer" },
+      ],
+    },
+    {
+      id: "tenant_novice",
+      name: "You",
+      role: "user",
+      points: [
+        { x: 500, y: 400, relX: 0.5, relY: 0.5, docX: 500, docY: 400, view: "pomodoro", selector: "#start-stop-btn", label: "Start Timer" },
+        { x: 220, y: 290, relX: 0.22, relY: 0.362, docX: 220, docY: 290, view: "todo", selector: ".task-checkbox", label: "Complete tutorial" },
+        { x: 80, y: 550, relX: 0.08, relY: 0.687, docX: 80, docY: 550, view: "pomodoro", selector: "#companion-avatar-wrap", label: "Pomi Mascot" },
+      ],
+    },
+  ];
+
+  for (const p of personas) {
+    p.points.forEach((pt, idx) => {
+      seeds.push({
+        ...pt,
+        trafficType: "human",
+        botScore: 0,
+        tenantId: p.id,
+        tenantName: p.name,
+        tenantRole: p.role,
+        timestamp: now - (idx * 60000 + 1000),
+      });
+    });
+  }
+
+  return seeds;
 }
 
 /**
@@ -92,6 +183,18 @@ export function recordClick(e, trafficType = "human", botScore = 0) {
       .slice(0, 45);
   }
 
+  let tenantId = "tenant_novice";
+  let tenantName = "You";
+  let tenantRole = "user";
+  try {
+    const t = getActiveTenant();
+    if (t) {
+      tenantId = t.id || tenantId;
+      tenantName = t.name || tenantName;
+      tenantRole = t.role || tenantRole;
+    }
+  } catch {}
+
   const point = {
     x: Math.round(e.clientX),
     y: Math.round(e.clientY),
@@ -104,6 +207,9 @@ export function recordClick(e, trafficType = "human", botScore = 0) {
     label,
     trafficType,
     botScore,
+    tenantId,
+    tenantName,
+    tenantRole,
     timestamp: Date.now(),
   };
 
@@ -169,12 +275,15 @@ export function getHeatmapPoints(filter = {}) {
   if (filter.trafficType && filter.trafficType !== "all") {
     list = list.filter((p) => p.trafficType === filter.trafficType);
   }
+  if (filter.tenantId && filter.tenantId !== "all") {
+    list = list.filter((p) => p.tenantId === filter.tenantId);
+  }
   return list;
 }
 
 export function clearHeatmapPoints() {
   clickPoints = [];
-  localStorage.removeItem(HEATMAP_STORAGE_KEY);
+  safeRemove(HEATMAP_STORAGE_KEY);
   window.dispatchEvent(new CustomEvent("heatmap-data-updated"));
 }
 
