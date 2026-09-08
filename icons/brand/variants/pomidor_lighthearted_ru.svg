@@ -139,13 +139,6 @@
         <circle cx="14" cy="13" r="3.5" fill="#2ed573" />
         <text x="24" y="17" class="play-pill-text-ru">ДРУЖНЫЙ КЛУБ</text>
       </g>
-
-      <!-- Badge 4: 100% Private -->
-      <g transform="translate(410, 0)">
-        <rect x="0" y="0" width="124" height="26" rx="13" fill="rgba(112, 161, 255, 0.12)" stroke="rgba(112, 161, 255, 0.35)" stroke-width="1" />
-        <circle cx="14" cy="13" r="3.5" fill="#70a1ff" />
-        <text x="24" y="17" class="play-pill-text-ru">100% ПРИВАТНО</text>
-      </g>
     </g>
   </g>
 </svg>

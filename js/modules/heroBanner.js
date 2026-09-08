@@ -260,13 +260,13 @@ export function renderHeroBanner(container) {
             <div class="marketing-content-row">
               <div class="marketing-text-block">
                 <h2 class="marketing-main-headline">${escapeHtml(t("marketingHeadline", "Master Your Time. Command Your Focus."))}</h2>
-                <p class="marketing-subcopy">${escapeHtml(t("marketingSubcopy", "The bilingual personal productivity suite merging rhythmic Pomodoro focus, offline encrypted vaults, and tactical RPG companion progression. Zero cloud tracking. 100% private."))}</p>
+                <p class="marketing-subcopy">${escapeHtml(t("marketingSubcopy", "The bilingual personal productivity suite merging rhythmic Pomodoro focus, offline encrypted vaults, and tactical RPG companion progression. Zero cloud lock-in."))}</p>
               </div>
 
               <div class="marketing-trust-pills">
                 <div class="marketing-trust-pill">
                   ${getIcon("shield", { size: 13 })}
-                  <span>${escapeHtml(t("marketingBadgePrivate", "100% Client-Side Private"))}</span>
+                  <span>${escapeHtml(t("marketingBadgePrivate", "Offline-First PWA"))}</span>
                 </div>
                 <div class="marketing-trust-pill">
                   ${getIcon("play", { size: 13 })}
