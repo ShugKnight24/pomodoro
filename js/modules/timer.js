@@ -512,11 +512,40 @@ function showAllControls() {
   showElements(controlsToShow);
 }
 
-/* Play buzzer */
+/* Play buzzer with synthesized Web Audio fallback */
 function playBuzzer() {
-  elements.buzzer?.play().catch((error) => {
-    console.warn("Could not play buzzer:", error);
-  });
+  const played = elements.buzzer?.play();
+  if (played && typeof played.catch === "function") {
+    played.catch((error) => {
+      console.warn("Audio element blocked, playing synthesized chime:", error);
+      playSynthesizedChime();
+    });
+  } else if (!elements.buzzer) {
+    playSynthesizedChime();
+  }
+}
+
+function playSynthesizedChime() {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const now = ctx.currentTime;
+    [587.33, 880].forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq, now + idx * 0.12);
+      gain.gain.setValueAtTime(0.18, now + idx * 0.12);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.12 + 0.6);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now + idx * 0.12);
+      osc.stop(now + idx * 0.12 + 0.65);
+    });
+  } catch (e) {
+    console.warn("Web Audio chime failed:", e);
+  }
 }
 
 /**
