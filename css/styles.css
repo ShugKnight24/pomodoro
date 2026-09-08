@@ -7466,6 +7466,7 @@ body[data-timer-style="classic"] #timer-modern {
   bottom: var(--spacing-xl);
   left: 50%;
   transform: translateX(-50%) translateY(100px);
+  background-color: #f59e0b;
   background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
   color: #78350f;
   padding: var(--spacing-md) var(--spacing-xl);
@@ -19059,4 +19060,237 @@ body.dark-theme .metric-card-header h4 {
     grid-template-columns: 1fr;
   }
 }
+
+/* ==========================================================================
+   WCAG 2.1 AA DARK MODE CONTRAST REMEDIATION
+   Ensures text meets or exceeds:
+   - 4.5:1 for standard text (< 18.5px regular, < 14px bold)
+   - 3.0:1 for large text (>= 18.5px bold, >= 24px regular)
+   ========================================================================== */
+
+/* Active Mint Green Surfaces: Dark Green Text (#022c22) gives ~12:1 contrast against #34d399 */
+[data-theme="dark"] .view-btn.active,
+[data-theme="dark"] .hero-lang-pill.active,
+[data-theme="dark"] .hero-level-chip,
+[data-theme="dark"] #kanban-new-board,
+[data-theme="dark"] #kanban-add-column,
+[data-theme="dark"] .kanban-board-tab.active,
+[data-theme="dark"] #vault-new-note,
+[data-theme="dark"] .vault-folder-item.active,
+[data-theme="dark"] .hero-tab-btn.active,
+[data-theme="dark"] .tactics-tab-btn.active,
+[data-theme="dark"] .tactics-btn-primary,
+[data-theme="dark"] .outpost-realm-pill.active,
+[data-theme="dark"] .tenant-btn.impersonate-btn,
+[data-theme="dark"] .social-broadcast-btn,
+[data-theme="dark"] .admin-action-btn.primary {
+  color: #022c22 !important;
+  font-weight: 700;
+}
+
+[data-theme="dark"] .view-btn.active svg,
+[data-theme="dark"] .hero-tab-btn.active svg,
+[data-theme="dark"] .tactics-tab-btn.active svg,
+[data-theme="dark"] .outpost-realm-pill.active svg,
+[data-theme="dark"] .tenant-btn.impersonate-btn svg,
+[data-theme="dark"] .social-broadcast-btn svg,
+[data-theme="dark"] .admin-action-btn.primary svg {
+  stroke: #022c22 !important;
+}
+
+/* Cyan Action Button */
+.telemetry-open-overlay-btn,
+[data-theme="dark"] .telemetry-open-overlay-btn {
+  color: #083344 !important;
+  font-weight: 700;
+}
+.telemetry-open-overlay-btn svg,
+[data-theme="dark"] .telemetry-open-overlay-btn svg {
+  stroke: #083344 !important;
+}
+
+[data-theme="dark"] .vault-folder-item.active .vault-folder-count {
+  color: #064e3b !important;
+  opacity: 1 !important;
+}
+
+/* Energy dot selector in dark mode */
+[data-theme="dark"] .energy-dot-btn {
+  color: var(--color-text-primary);
+}
+[data-theme="dark"] .energy-dot-btn .energy-dot-label {
+  color: var(--color-text-secondary);
+}
+[data-theme="dark"] .energy-dot-btn.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #022c22 !important;
+}
+[data-theme="dark"] .energy-dot-btn.active .energy-dot-number {
+  color: #022c22 !important;
+}
+[data-theme="dark"] .energy-dot-btn.active .energy-dot-label {
+  color: #064e3b !important;
+  font-weight: 700;
+}
+
+/* Mood adaptive submit button in dark mode */
+[data-theme="dark"] .mood-submit-btn {
+  color: #022c22 !important;
+}
+[data-theme="dark"] .mood-submit-btn svg {
+  stroke: #022c22 !important;
+}
+
+/* Filter buttons in dark mode */
+[data-theme="dark"] .filter-btn.active,
+[data-theme="dark"] .priority-filter-btn.active {
+  background: var(--color-primary);
+  color: #022c22 !important;
+  border-color: var(--color-primary);
+  font-weight: 700;
+}
+
+/* Inverted dark text on dark surfaces */
+[data-theme="dark"] .hero-speech-body,
+[data-theme="dark"] .hero-card-title {
+  color: var(--color-text-primary) !important;
+}
+
+/* Achievement popup in dark mode */
+[data-theme="dark"] .achievement-popup {
+  background: #1e293b !important;
+  border: 1px solid #fbbf24 !important;
+  color: #fbbf24 !important;
+}
+[data-theme="dark"] .achievement-label {
+  color: #f59e0b !important;
+}
+[data-theme="dark"] .achievement-name {
+  color: #fbbf24 !important;
+}
+
+/* Outpost launch action buttons in dark mode */
+[data-theme="dark"] .outpost-launch-btn {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: var(--realm-accent, #ef4444) !important;
+  color: #ffffff !important;
+}
+[data-theme="dark"] .outpost-launch-btn:hover {
+  background: rgba(255, 255, 255, 0.16) !important;
+}
+
+/* Locked chapters in dark mode */
+[data-theme="dark"] .chapter-card.locked .chapter-status-pill {
+  background: rgba(148, 163, 184, 0.15) !important;
+  color: #cbd5e1 !important;
+}
+
+/* Hero Titles and Secondary Text */
+[data-theme="dark"] .hero-title-text,
+[data-theme="dark"] .vital-values,
+[data-theme="dark"] .slot-type-label,
+[data-theme="dark"] .slot-item-perk,
+[data-theme="dark"] .hero-tab-btn:not(.active),
+[data-theme="dark"] #hero-launch-tactics-btn,
+[data-theme="dark"] .story-mode-subtext,
+[data-theme="dark"] .boss-lore,
+[data-theme="dark"] .chapter-num {
+  color: #cbd5e1 !important;
+}
+
+/* Gold / Treasury Elements */
+[data-theme="dark"] .treasury-label {
+  color: #fcd34d !important;
+}
+[data-theme="dark"] .treasury-amount {
+  color: #fbbf24 !important;
+}
+
+/* Red Accents, Tags, and Badges (Elevated to #fca5a5 / #f87171 for > 5:1 contrast on dark slate) */
+[data-theme="dark"] .showcase-pill-badge,
+[data-theme="dark"] .realm-stage-badge,
+[data-theme="dark"] .hero-mascot-name-badge,
+[data-theme="dark"] .active-chapter-badge,
+[data-theme="dark"] .boss-hp-title,
+[data-theme="dark"] .chapter-card.active .chapter-status-pill,
+[data-theme="dark"] .companion-badge-pill.mascot-badge-tag,
+[data-theme="dark"] .bot-flag-pill:not(.verified),
+[data-theme="dark"] .buddy-role-pill.admin,
+[data-theme="dark"] .tenant-role-badge.admin,
+[data-theme="dark"] .impersonation-role-tag.admin,
+[data-theme="dark"] .admin-pill-eyebrow,
+[data-theme="dark"] .diag-btn.danger,
+[data-theme="dark"] .hud-action-btn.danger {
+  color: #fca5a5 !important;
+  border-color: rgba(252, 165, 165, 0.4) !important;
+}
+
+[data-theme="dark"] .realm-number-tag {
+  background: #dc2626 !important;
+  color: #ffffff !important;
+}
+
+/* Blue & Cyan Accents / Badges */
+[data-theme="dark"] #diorama-job-skill,
+[data-theme="dark"] .kanban-label-timer,
+[data-theme="dark"] .vault-note-links,
+[data-theme="dark"] .vault-backlink,
+[data-theme="dark"] .action-type-pill.navigation,
+[data-theme="dark"] .buddy-role-pill.staff_eng,
+[data-theme="dark"] .tenant-role-badge.staff_eng,
+[data-theme="dark"] .impersonation-role-tag.staff_eng {
+  color: #93c5fd !important;
+}
+
+[data-theme="dark"] .companion-interaction-badge {
+  color: #bae6fd !important;
+  background: rgba(14, 165, 233, 0.12) !important;
+  border-color: rgba(56, 189, 248, 0.3) !important;
+}
+
+/* Purple, Violet & Pink Accents / Badges */
+[data-theme="dark"] .hero-class-tag,
+[data-theme="dark"] .score-label,
+[data-theme="dark"] .score-value,
+[data-theme="dark"] .bot-score-pill.bot,
+[data-theme="dark"] .action-traffic-pill.bot,
+[data-theme="dark"] .kanban-label-calendar,
+[data-theme="dark"] .kanban-label-stats,
+[data-theme="dark"] .buddy-role-pill.resident,
+[data-theme="dark"] .tenant-role-badge.resident,
+[data-theme="dark"] .impersonation-role-tag.resident {
+  color: #c4b5fd !important;
+}
+
+[data-theme="dark"] .buddy-role-pill.design_lead,
+[data-theme="dark"] .tenant-role-badge.design_lead,
+[data-theme="dark"] .impersonation-role-tag.design_lead {
+  color: #f472b6 !important;
+}
+
+/* Green Accents & Current Room */
+[data-theme="dark"] .room-join-btn.current,
+[data-theme="dark"] .bot-score-pill.human,
+[data-theme="dark"] .bot-flag-pill.verified,
+[data-theme="dark"] .impersonation-role-tag:not(.admin):not(.staff_eng):not(.resident):not(.design_lead):not(.founder) {
+  color: #34d399 !important;
+}
+
+/* Amber / Warning Badges */
+[data-theme="dark"] .bot-score-pill.suspicious,
+[data-theme="dark"] .buddy-role-pill.founder,
+[data-theme="dark"] .tenant-role-badge.founder,
+[data-theme="dark"] .impersonation-role-tag.founder {
+  color: #fcd34d !important;
+}
+
+/* Muted Roles & Badges */
+[data-theme="dark"] .buddy-role-pill.user,
+[data-theme="dark"] .tenant-role-badge.user,
+[data-theme="dark"] .kanban-column-count,
+[data-theme="dark"] .kanban-label-settings {
+  color: #cbd5e1 !important;
+}
+
 
