@@ -1015,10 +1015,18 @@ input:checked + .slider:before {
 /* View Controls Container */
 .view-controls-container {
   width: 100%;
-  max-width: 800px;
+  max-width: 100%;
   margin: 0 auto var(--spacing-lg);
   display: flex;
   justify-content: center;
+  overflow-x: auto;
+  padding: 4px var(--spacing-sm);
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.view-controls-container::-webkit-scrollbar {
+  display: none;
 }
 
 .view-controls {
@@ -1032,6 +1040,15 @@ input:checked + .slider:before {
   display: flex;
   gap: var(--spacing-xs);
   transition: all var(--transition-base);
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.view-controls::-webkit-scrollbar {
+  display: none;
 }
 
 .view-controls:hover {
@@ -1051,6 +1068,8 @@ input:checked + .slider:before {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .view-btn:hover {
