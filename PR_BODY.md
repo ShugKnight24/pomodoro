@@ -15,6 +15,7 @@ This PR delivers a major expansion to **Pomidor**, introducing interactive compa
   - **Edgy & Dark (Tactical)**: Carbon fiber dark palette, tactical reticle lines, and razor-sharp accents.
   - **Lighthearted & Playful**: Warm rounded geometry, playful bounce, and friendly cheerful contours.
 - **Bilingual Offline Vectors**: All 4 styles crafted in both English (`pomidor`) and Russian (`помидор`) SVG vectors.
+- **3 Clean, Well-Spaced Badges**: Removed the cramped 4th "100% Private" badge across all SVGs, giving the remaining 3 badges (*25m Sprints*, *RPG Quests*, *Squad Accountable*) breathing room without horizontal compression.
 - **Pretentious Taglines Eliminated**: Removed all corny "precision focus sanctum" phrasing in favor of direct, impactful value propositions ("Master Your Time. Command Your Focus.").
 - **Zero Raw SVG Artifacts**: Removed visible "SVG Note" text elements from the UI.
 - **Interactive Switching**: Bidirectional sync between settings drawer selector and 1-click cycling by tapping the hero emblem.
@@ -73,20 +74,22 @@ This PR delivers a major expansion to **Pomidor**, introducing interactive compa
 Comprehensive automated test suite executed via Playwright covering all views, controls, and accessibility:
 
 ```bash
-# Run the newly added test suites
-npx playwright test tests/settings-drawer.spec.js tests/brand-variants.spec.js tests/living-hero-carousel.spec.js tests/telemetry-and-bot.spec.js tests/social-and-admin.spec.js tests/smoke.spec.js
+# Run the complete test suite (12 test suites, 99 tests)
+npx playwright test
 
-# All test suites pass cleanly across all viewport sizes
+# All 99 tests pass cleanly across desktop and mobile viewports
 ```
 
 ### Key Test Validations:
 - [x] **Sticky Close & Done Buttons**: Verified close button remains visible, pinned, and clickable when scrolled to the absolute bottom of the drawer (`tests/settings-drawer.spec.js`).
 - [x] **Category Filter Tabs**: Verified cards filter dynamically by `data-category` and scroll resets to top (`tests/settings-drawer.spec.js`).
-- [x] **Brand Logo Variants**: Verified all 8 SVGs exist, are valid XML, contain zero emojis, and cycle seamlessly (`tests/brand-variants.spec.js`).
+- [x] **Brand Logo Variants**: Verified all 8 SVGs exist, are valid XML, contain zero emojis, and cycle seamlessly with 3 balanced badges (`tests/brand-variants.spec.js`).
+- [x] **Mobile View Controls Scroll**: Verified smooth horizontal touch-scrolling without layout disruption (`tests/screenshots.spec.js`).
 - [x] **Living Outpost & Carousel**: Verified real-time character movement, station interactions, sound FX, and view toggling (`tests/living-hero-carousel.spec.js`).
 - [x] **Zero Modal Flickering**: Verified companion expedition updates occur in-place without backdrop reflow (`tests/living-hero-carousel.spec.js`).
 - [x] **Multi-Tenant Isolation**: Verified switching profiles properly partitions localStorage data without cloud leakage (`tests/social-and-admin.spec.js`).
 - [x] **Strict Zero-Emoji Policy**: Verified 100% vector SVG icons across all buttons, badges, tabs, and notifications (`tests/smoke.spec.js`).
+- [x] **Web Audio Fallback Chime**: Dual-tone synthesized chime fires when audio elements are blocked by autoplay policy (`js/modules/timer.js`).
 
 ---
 

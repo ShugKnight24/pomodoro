@@ -74,37 +74,58 @@
 pomidor/
 ├── index.html                      # Single-page application orchestrator
 ├── manifest.json                   # Progressive Web App manifest
-├── sw.js                           # Service worker with offline caching
+├── sw.js                           # Service worker with offline caching (v4)
 ├── css/
 │   ├── variables.css               # Design tokens & theme definitions
 │   ├── styles.css                  # Core component and layout styling
 │   └── futureVars.css              # Extended palette & typography variables
 ├── js/
 │   ├── app.js                      # Application root & view switcher
+│   ├── seedData.js                 # Multi-tenant partitioned seed datasets
 │   ├── modules/
-│   │   ├── timer.js                # High-precision timer engine
-│   │   ├── todo.js                 # Task manager with drag-and-drop
+│   │   ├── timer.js                # Timer engine with Web Audio fallback chime
+│   │   ├── modernTimer.js          # Modern timer UI with circular SVG progress ring
+│   │   ├── heroBanner.js           # Living Outpost diorama, carousel, and brand cycler
+│   │   ├── todo.js                 # Task manager with subtasks, notes, drag-and-drop
 │   │   ├── calendar.js             # Calendar views and day modals
-│   │   ├── stats.js                # Focus analytics and heatmaps
-│   │   ├── achievements.js         # Achievement unlock system
+│   │   ├── kanban.js               # Visual kanban task board
+│   │   ├── vault.js                # Markdown encrypted notes vault
+│   │   ├── habits.js               # Daily habits engine and completion tracking
+│   │   ├── mood.js                 # 5-stage SVG mood tracker and adaptive day plans
+│   │   ├── stats.js                # Focus analytics, heatmaps, and time accounting
+│   │   ├── achievements.js         # Achievement unlock system with audio fanfares
 │   │   ├── focusMode.js            # Fullscreen zen focus experience
-│   │   ├── telemetry.js            # Performance and event telemetry
-│   │   ├── botDetection.js         # Heuristic bot and automation scanner
-│   │   ├── social/
-│   │   │   ├── profileCatalog.js   # 6 custom pre-seeded tenant datasets
+│   │   ├── settings.js             # Sticky drawer with category filter tabs
+│   │   ├── theme.js                # Theme switcher (Dark, Light, Cyberpunk, Forest)
+│   │   ├── keyboard.js             # Global keyboard shortcuts
+│   │   ├── social/                 # Multi-tenant profile management & accountability lounge
+│   │   │   ├── profileCatalog.js   # 6 pre-seeded tenant datasets
 │   │   │   ├── profileManager.js   # Multi-tenant partition controller
-│   │   │   └── socialStudio.js     # Accountability Lounge UI & interactions
-│   │   ├── admin/
-│   │   │   └── adminStudio.js      # Admin Studio & telemetry command center
-│   │   ├── mascot/
-│   │   │   ├── mascotEngine.js     # Companion state machine & voice
-│   │   │   └── mascotSvgs.js       # Bespoke mascot SVG vector renderer
-│   │   ├── tactics/
+│   │   │   └── socialUi.js         # Accountability Lounge UI & interactions
+│   │   ├── admin/                  # Telemetry command center & partition directory
+│   │   │   └── adminDashboard.js   # Telemetry gauges, heap, and tenant switcher
+│   │   ├── telemetry/              # Telemetry, bot detection, and visual heatmap HUD
+│   │   │   ├── botDetector.js      # Heuristic automation scanner & scoring
+│   │   │   ├── heatmapTracker.js   # Coordinate click tracking and canvas overlay
+│   │   │   ├── telemetryManager.js # FPS, memory, and latency monitor
+│   │   │   └── gtagService.js      # GA4 measurement protocol client
+│   │   ├── mascot/                 # Companions, chores expeditions, and tours
+│   │   │   ├── companion.js        # Mascot companion state machine & cheers
+│   │   │   ├── companionChores.js  # Zero-flicker companion expeditions
+│   │   │   ├── mascotRegistry.js   # Mascot dialogue and lore catalog
+│   │   │   └── onboardingTour.js   # Step-by-step spotlight tours
+│   │   ├── gamification/           # Final Fantasy Tactics RPG engine
 │   │   │   ├── tacticsEngine.js    # 7x7 grid turn-based RPG battle engine
-│   │   │   └── tacticsUi.js        # Combat grid & dungeon HUD
-│   │   ├── tours/
-│   │   │   └── tourGuide.js        # Interactive spotlight tour engine
-│   │   └── i18n.js                 # Bilingual translation dictionaries (EN/RU)
+│   │   │   ├── tacticsUI.js        # Combat grid, CT timeline, and command HUD
+│   │   │   ├── hero.js             # Hero paper-doll stage and vital bars
+│   │   │   ├── party.js            # Tactics guild party recruitment tavern
+│   │   │   └── quests.js           # Chapter quests and boss arena battles
+│   │   ├── locales/                # Multilingual translation dictionaries
+│   │   │   ├── en.js               # English (default)
+│   │   │   ├── ru.js               # Russian (Русский)
+│   │   │   ├── az.js               # Azerbaijani (Azərbaycanca)
+│   │   │   └── he.js               # Hebrew (עברית)
+│   │   └── i18n.js                 # Bilingual/multilingual i18n engine
 │   ├── components/
 │   │   ├── progress-ring.js        # Custom progress ring Web Component
 │   │   └── hour-glass.js           # Custom animated hourglass Web Component
@@ -116,16 +137,20 @@ pomidor/
 │   ├── brand/
 │   │   ├── pomidor_en.svg          # Modern English vector emblem
 │   │   ├── помидор_ru.svg          # Modern Russian Cyrillic vector emblem
-│   │   ├── variants/               # Modern, Soviet, Edgy, and Lighthearted SVGs (EN/RU)
-│   │   └── legacy/                 # Archived original brand assets
+│   │   └── variants/               # Modern, Soviet, Edgy, and Lighthearted SVGs (EN/RU)
 │   └── legacy/                     # Archived original app icons
-└── tests/                          # Playwright end-to-end test suite
-    ├── social-and-admin.spec.js    # Multi-tenant & Admin Studio tests
-    ├── telemetry-and-bot.spec.js   # Telemetry & bot detection tests
-    ├── tactics-rpg-expansion.spec.js # Tactics RPG engine tests
-    ├── mascot-tactics.spec.js      # Mascot & tour engine tests
-    ├── localization-and-hero.spec.js # Bilingual & hero tests
-    └── smoke.spec.js               # Core app smoke suite
+└── tests/                          # 12 Playwright test suites (99 passing tests)
+    ├── smoke.spec.js               # Core app smoke suite (21 tests)
+    ├── settings-drawer.spec.js     # Sticky settings drawer & tabs
+    ├── brand-variants.spec.js      # 4 SVG brand variants & switcher
+    ├── living-hero-carousel.spec.js # Living Outpost & expeditions
+    ├── localization-and-hero.spec.js # Multilingual & hero tests
+    ├── mascot-tactics.spec.js      # Mascot & tactics tests
+    ├── social-and-admin.spec.js    # Multi-tenant & Admin Studio
+    ├── tactics-rpg-expansion.spec.js # Tactics RPG engine & combat
+    ├── telemetry-and-bot.spec.js   # Telemetry, bot detector, heatmap HUD
+    ├── screenshots.spec.js         # Full-page screenshot capture suite
+    └── capture-living-carousel.spec.js # Outpost diorama visual validation
 ```
 
 ---

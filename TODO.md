@@ -1,66 +1,57 @@
-# Pomodoro App - TODO List of Improvements
+# 🍅 Pomidor — Project Task Tracker
 
-Interactive Elements:
-Smooth page transitions
-Micro-interactions on button clicks
+## Completed & Shipped ✅
 
----
+### Core Timer & Audio
+- [x] **High-Precision Dual Timer Engines** — Classic hourglass SVG visualization + Modern circular SVG progress ring.
+- [x] **Dynamic Browser Tab Title** — Real-time countdown timer updates in tab title `(MM:SS) Mode — Pomidor`.
+- [x] **Custom Durations & Session Presets** — 25/5, 50/10, 90/20, or custom duration settings with instant persistence.
+- [x] **Web Audio API Chime Fallback** — Dual-tone synthesized chime handles browser autoplay restrictions gracefully.
+- [x] **Browser Notifications** — Web Notifications API triggers alerts upon interval completion.
+- [x] **Auto-Start Next Interval** — Settings toggle to chain focus and break sessions seamlessly.
 
-Functionality Enhancements:
-Timer improvements: custom durations, auto-start breaks
-Statistics: Track completed pomodoros per day/week, productivity charts
-Customization: Custom sounds, themes, session presets
-Data management: Export/import, cloud sync option
+### Tasks, Notes & Planning
+- [x] **Expandable Task Cards** — Clean default view with expandable metadata (due date, priority, pomodoros, subtasks, notes).
+- [x] **Subtasks & Notes Integration** — Nested subtask checklists and collapsible markdown notes per task item.
+- [x] **Categories & Priorities** — High/Medium/Low priority badges, task tagging, and search filtering.
+- [x] **Visual Kanban Board** — Drag-and-drop columns for Backlog, In Progress, and Completed tasks.
+- [x] **Encrypted Notes Vault** — Folder tree, note tagging, and client-side markdown note editor.
+- [x] **Interactive Calendar & Day Modal** — Month and week grid views with quick-add task modals.
 
----
+### Gamification & Living Outpost
+- [x] **Living Outpost Diorama** — 5 animated stations with real-time character locomotion and interactive tap loot.
+- [x] **Realm Focus Carousel & Panoramic Modes** — Smooth touch-swipe, navigation arrows, and snap scrolling.
+- [x] **Dignified Companion Expeditions** — Zero-flicker modal updating tasks and awarding the Chrono Sovereign Sigil.
+- [x] **Final Fantasy Tactics RPG Engine** — 7x7 grid turn-based combat, CT timeline, job classes, party recruitment tavern, and dungeon exploration.
 
-Technical Improvements:
-ES6 modules for better code organization
-State management pattern (simple reducer or state machine)
-Web Audio API instead of basic <audio> element
-Notifications API for desktop alerts
-Service Worker for offline support
+### Multi-Tenancy, Privacy & Administration
+- [x] **Partitioned Persona Architecture** — 6 preloaded tenant profiles isolated under `pomidor.tenant.<id>` keys.
+- [x] **Accountability Lounge** — Virtual co-working focus chambers, buddy squad cards, and real-time activity stream.
+- [x] **Admin Telemetry Command Center** — Live FPS, memory heap gauges, latency tracking, and partition directory inspection.
+- [x] **Client-Side Bot Differentiation** — Heuristic automation scanner scoring WebDriver and synthetic movements.
+- [x] **Visual Coordinate Heatmap HUD** — Canvas heatmap overlay with traffic type filters.
 
----
-
-todo improvements: Allow users to edit due dates and priorities after task creation
-
-🏷️ Categories/Tags (builds on priorities)
-Additional Suggestions:
-📊 Task completion stats (gamification)
-💾 Export/Import data (data portability)
-🌙 Dark mode toggle (accessibility)
-UNDO / REDO
-🗂️ Sub-tasks
-📝 Task descriptions / notes
-Calendar view integration
-Recurring tasks
-
----
-
-- Create a ticking sound per second
-
-  - Allow this to be replaced by another sound -> YT vid, etc
-
-- Refine Pomodoro tracking system
-
-  - Possible add a modal that opens and allows user to input number of Pomodoros completed today / take notes / create a history / track productivity & progress over time etc...
+### Design, Branding & PWA
+- [x] **4 Brand Logo Variants** — Sleek Modern, Soviet Constructivist, Edgy Tactical, Lighthearted Playful (EN/RU SVGs).
+- [x] **Strict Zero-Unicode-Emoji Policy** — 100% scalable SVG vector architecture across all views and components.
+- [x] **Modern Glassmorphic Settings Drawer** — Sticky header, category filter tabs (`All`, `Appearance`, `Timer`, `Companions`, `Data`), sticky footer with Esc key handling.
+- [x] **Multilingual Support (i18n)** — English, Russian, Azerbaijani, and Hebrew dictionaries.
+- [x] **Offline-First PWA (v4)** — Complete Service Worker caching of all 60+ modules and offline assets.
+- [x] **Automated Test Coverage** — 12 Playwright test suites with 99 tests passing 100%.
 
 ---
 
-1. Mobile Experience (High Priority) - continue to improve and refine this experience
+## Upcoming Backlog (v2.0 — Calendar Data Ownership) 🎯
 
-Expandable Task Cards: Instead of trying to cram all metadata (dates, priority, pomodoro count) into one line, hide them by default on mobile.
-Default view: Checkbox + Task Name.
-Click/Tap: Expands the card to show Due Date, Priority, Pomodoro controls, and Edit/Delete buttons.
-Benefit: Keeps the interface clean and focus-oriented.
+### Google Calendar Integration
+- [ ] **Read-Only OAuth2 Flow** — Google Calendar read-only scope (`calendar.readonly`) with zero write permissions.
+- [ ] **Calendar Event Layering** — Display Google Calendar schedule events alongside Pomidor tasks in calendar view.
+- [ ] **Time Block Audit** — Visual comparison of scheduled calendar commitments vs actual tracked focus pomodoros.
+- [ ] **Export Merged Schedule** — Export calendar sessions and completed pomodoros as standard `.ics` / `.csv`.
 
-- Dynamic Title: Update the browser tab title (e.g., (24:59) Pomodoro) so users can see the timer while in other tabs.
+### Sound & Ambient Audio Enhancements
+- [ ] **Ambient White Noise & Ticking** — Synthesized subtle mechanical clock ticking or rain/forest ambient soundscapes using Web Audio API nodes.
+- [ ] **Custom Audio Pack Loader** — Allow users to load custom audio chimes into IndexedDB.
 
-3. Core Timer Functionality
-   Your timer.js has TODO comments for features that are standard in most Pomodoro apps.
-
-Custom Durations: Replace the + / - 5-minute buttons with a modal or input field that lets users set exact times (e.g., 50/10 split).
-Auto-start Breaks/Pomodoros: Add a toggle in settings to automatically start the next timer. This reduces friction and keeps the user in the "flow." 4. Audio & Notifications
-Ticking Sound: Add a subtle ticking sound (white noise) that plays while the timer is running. This helps some users focus.
-Browser Notifications: Use the Notification API to alert users when a timer ends, even if the browser is minimized.
+### Mobile & Touch Polish
+- [ ] **PWA Standalone Display Polish** — iOS safe area notch padding and dynamic viewport height (`100dvh`) refinement.

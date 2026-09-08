@@ -19,25 +19,22 @@ The core pivot: Transform from a Pomodoro timer into a **personal productivity c
 
 ---
 
-## 🚀 Current Sprint: v1.5 — Rebrand & Polish
+## 🚀 Current Sprint: v1.5 — Rebrand, Living Outpost & Platform Polish
 
 ### Completed ✅
 
-- [x] **Rebrand to Pomidor (Помидор)** — New name, brand images, manifest
-- [x] **Bilingual Support (EN/RU)** — i18n module with `data-i18n` attribute system
-- [x] **Language Selector in Settings** — Persistent preference, live switching
-- [x] **Brand Assets** — Cropped, WebP, SVG, PWA icons (72-512px) from brand images
-- [x] **Open Source README** — Professional documentation with architecture, contributing guide
-- [x] **Service Worker v2** — Updated cache with all new assets
-
-### In Progress 🚧
-
-- [ ] **Apply `data-i18n` to all UI strings** — Complete the translation coverage
-- [ ] **MIT License file** — Create LICENSE
-- [ ] **CONTRIBUTING.md** — Translation guide, code style, PR process
-- [ ] **Code of Conduct** — Standard contributor covenant
-- [ ] **Remove Google Analytics** — Replace with privacy-respecting alternative or remove entirely
-- [ ] **Screenshots** — Generate desktop and mobile screenshots for manifest
+- [x] **Rebrand to Pomidor (Помидор)** — New identity, bilingual branding, manifest
+- [x] **Multilingual Core (EN/RU/AZ/HE)** — i18n engine with complete locale dictionaries
+- [x] **4 Brand Logo Variants** — Sleek Modern, Soviet Constructivist, Edgy Tactical, Lighthearted Playful (zero unicode emojis)
+- [x] **Living Character Outpost** — 5 dynamic stations with real-time locomotion & dual Panoramic / Carousel view modes
+- [x] **Dignified Companion Expeditions** — Zero-flicker modal updating tasks and awarding Chrono Sovereign Sigil
+- [x] **Modern Settings Drawer** — Sticky header, sticky footer with Esc dismissal, category tabs, and glassmorphic cards
+- [x] **Multi-Tenant Persona Partitioning** — 6 isolated profiles (`pomidor.tenant.<id>`), zero cloud leakage, impersonation bar
+- [x] **Accountability Lounge & Admin Telemetry** — Focus rooms, buddy squad cards, bot detection, coordinate heatmap HUD
+- [x] **Final Fantasy Tactics RPG Engine** — 7x7 turn-based arena, CT timeline, job classes, guild recruitment, dungeon exploration
+- [x] **Open Source Foundations** — MIT License, CONTRIBUTING.md, and Contributor Covenant Code of Conduct
+- [x] **Offline-First PWA (v4)** — Full asset caching in Service Worker v4 with synthesized Web Audio fallback chime
+- [x] **Automated Test Suite** — 12 Playwright test suites with 99 tests passing 100% and screenshot capture pipeline
 
 ---
 
