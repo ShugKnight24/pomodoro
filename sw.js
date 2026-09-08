@@ -3,13 +3,15 @@
  * Provides offline functionality and caching
  */
 
-const CACHE_NAME = "pomidor-v3";
+const CACHE_NAME = "pomidor-v4";
 const STATIC_ASSETS = [
   "/",
   "/index.html",
   "/css/styles.css",
   "/css/variables.css",
+  "/css/futureVars.css",
   "/js/app.js",
+  "/js/seedData.js",
   "/js/modules/timer.js",
   "/js/modules/todo.js",
   "/js/modules/calendar.js",
@@ -30,6 +32,41 @@ const STATIC_ASSETS = [
   "/js/modules/sceneAndNav.js",
   "/js/modules/vault.js",
   "/js/modules/kanban.js",
+  "/js/modules/heroBanner.js",
+  "/js/modules/habits.js",
+  "/js/modules/mood.js",
+  "/js/modules/interactiveTutorial.js",
+  "/js/modules/accordion.js",
+  "/js/modules/sampleData.js",
+  "/js/modules/locales/en.js",
+  "/js/modules/locales/ru.js",
+  "/js/modules/locales/az.js",
+  "/js/modules/locales/he.js",
+  "/js/modules/admin/adminDashboard.js",
+  "/js/modules/social/profileCatalog.js",
+  "/js/modules/social/profileManager.js",
+  "/js/modules/social/socialUi.js",
+  "/js/modules/gamification/catalog.js",
+  "/js/modules/gamification/characterSprites.js",
+  "/js/modules/gamification/hero.js",
+  "/js/modules/gamification/heroUI.js",
+  "/js/modules/gamification/jobs.js",
+  "/js/modules/gamification/party.js",
+  "/js/modules/gamification/pets.js",
+  "/js/modules/gamification/quests.js",
+  "/js/modules/gamification/tacticsEngine.js",
+  "/js/modules/gamification/tacticsExploration.js",
+  "/js/modules/gamification/tacticsUI.js",
+  "/js/modules/mascot/companion.js",
+  "/js/modules/mascot/companionChores.js",
+  "/js/modules/mascot/mascotRegistry.js",
+  "/js/modules/mascot/mascotSprites.js",
+  "/js/modules/mascot/onboardingTour.js",
+  "/js/modules/telemetry/botDetector.js",
+  "/js/modules/telemetry/gtagService.js",
+  "/js/modules/telemetry/heatmapTracker.js",
+  "/js/modules/telemetry/telemetryManager.js",
+  "/js/modules/telemetry/telemetryUi.js",
   "/js/components/progress-ring.js",
   "/js/components/hour-glass.js",
   "/js/utils/todoDragDrop.js",
@@ -52,7 +89,6 @@ const STATIC_ASSETS = [
 // External resources to cache
 const EXTERNAL_ASSETS = [
   "https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Happy+Monkey&display=swap",
-  "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css",
 ];
 
 /**
