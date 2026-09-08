@@ -7,6 +7,11 @@ import { setupTaskDragAndDrop } from "../utils/todoDragDrop.js";
 import { recordTaskCompleted } from "./stats.js";
 import { getIcon, renderPomodoroBadges } from "../utils/icons.js";
 import { renderHeroDashboard } from "./gamification/heroUI.js";
+import { renderTacticsContainer } from "./gamification/tacticsUI.js";
+import { renderSocialUi } from "./social/socialUi.js";
+import { notifyToolChange } from "./mascot/companion.js";
+import { escapeHtml } from "../utils/sanitize.js";
+import { safeGet, safeSet } from "../utils/storage.js";
 
 const archive = {
   ARCHIVE_LIST_ID: -1, // Special ID for archive list
@@ -24,6 +29,7 @@ export const elements = {
   filterButtons: null,
   statsContainer: null,
   heroContainer: null,
+  tacticsContainer: null,
   listsContainer: null,
   listCount: null,
   newListForm: null,
@@ -68,16 +74,6 @@ const state = {
 };
 
 const openSubtasks = new Set();
-
-function escapeHtml(str) {
-  if (!str) return "";
-  return String(str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
 
 export function initTodo() {
   initializeElements();
@@ -128,23 +124,22 @@ function initializeElements() {
   elements.taskCount = document.querySelector("[data-task-count]");
   elements.todoContainer = document.querySelector(".todo-container");
   elements.heroContainer = document.getElementById("hero-container");
+  elements.tacticsContainer = document.getElementById("tactics-container");
+  elements.socialContainer = document.getElementById("social-container");
+  elements.adminContainer = document.getElementById("admin-container");
   // Only get main view toggle buttons (list, calendar, stats), not calendar month/week toggle
   elements.viewToggleButtons = document.querySelectorAll(
     ".view-controls [data-view]",
   );
 }
 
-/* Load data from localStorage */
+/* Load data from localStorage using resilient safeGet */
 function loadFromStorage() {
-  state.archive =
-    JSON.parse(localStorage.getItem(STORAGE_KEYS.ARCHIVE)) || null;
-  state.listCounter =
-    JSON.parse(localStorage.getItem(STORAGE_KEYS.LIST_COUNTER)) || 0;
-  state.lists = JSON.parse(localStorage.getItem(STORAGE_KEYS.LISTS)) || [];
-  state.selectedListId =
-    JSON.parse(localStorage.getItem(STORAGE_KEYS.SELECTED_LIST_ID)) || null;
-  state.taskCounter =
-    JSON.parse(localStorage.getItem(STORAGE_KEYS.TASK_COUNTER)) || 0;
+  state.archive = safeGet(STORAGE_KEYS.ARCHIVE, null);
+  state.listCounter = safeGet(STORAGE_KEYS.LIST_COUNTER, 0);
+  state.lists = safeGet(STORAGE_KEYS.LISTS, []);
+  state.selectedListId = safeGet(STORAGE_KEYS.SELECTED_LIST_ID, null);
+  state.taskCounter = safeGet(STORAGE_KEYS.TASK_COUNTER, 0);
 }
 
 function createArchive() {
@@ -280,6 +275,12 @@ function setupEventListeners() {
     }
 
     saveAndRender();
+  });
+
+  // Listen for multi-tenant switches to reload active state
+  window.addEventListener("tenant-switched", () => {
+    loadFromStorage();
+    render();
   });
 }
 
@@ -665,11 +666,11 @@ function createTask(name, priority = "medium", dueDate = null, estimate = 0) {
 
 function save() {
   const { archive, listCounter, lists, selectedListId, taskCounter } = state;
-  localStorage.setItem(STORAGE_KEYS.ARCHIVE, JSON.stringify(archive));
-  localStorage.setItem(STORAGE_KEYS.LIST_COUNTER, listCounter);
-  localStorage.setItem(STORAGE_KEYS.LISTS, JSON.stringify(lists));
-  localStorage.setItem(STORAGE_KEYS.SELECTED_LIST_ID, selectedListId);
-  localStorage.setItem(STORAGE_KEYS.TASK_COUNTER, taskCounter);
+  safeSet(STORAGE_KEYS.ARCHIVE, archive);
+  safeSet(STORAGE_KEYS.LIST_COUNTER, listCounter);
+  safeSet(STORAGE_KEYS.LISTS, lists);
+  safeSet(STORAGE_KEYS.SELECTED_LIST_ID, selectedListId);
+  safeSet(STORAGE_KEYS.TASK_COUNTER, taskCounter);
 }
 
 function render() {
@@ -684,6 +685,12 @@ function render() {
   elements.kanbanContainer?.classList.add("hidden");
   elements.vaultContainer?.classList.add("hidden");
   elements.heroContainer?.classList.add("hidden");
+  elements.tacticsContainer?.classList.add("hidden");
+  elements.socialContainer?.classList.add("hidden");
+  elements.adminContainer?.classList.add("hidden");
+
+  // Notify companion of view context
+  notifyToolChange(state.view);
 
   if (state.view === "calendar") {
     elements.calendarContainer.classList.remove("hidden");
@@ -700,6 +707,15 @@ function render() {
   } else if (state.view === "hero") {
     elements.heroContainer?.classList.remove("hidden");
     renderHeroDashboard();
+  } else if (state.view === "tactics") {
+    elements.tacticsContainer?.classList.remove("hidden");
+    renderTacticsContainer();
+  } else if (state.view === "social") {
+    elements.socialContainer?.classList.remove("hidden");
+    renderSocialUi();
+  } else if (state.view === "admin") {
+    elements.adminContainer?.classList.remove("hidden");
+    renderAdminDashboard();
   } else {
     // List view (default)
     elements.todoContainer.classList.remove("hidden");
@@ -741,7 +757,7 @@ function buildListHTML(list) {
   // TODO: Break into atoms / render list input edit button... etc
   let listTemplate = `
     <li class="list-name ${isActive} ${archiveClass}" data-list-id="${id}">
-      <span class="list-name-text" data-list-text="${id}">${archiveIcon}${name}</span>
+      <span class="list-name-text" data-list-text="${id}">${archiveIcon}${escapeHtml(name)}</span>
       ${
         !archiveClass
           ? `<input
@@ -749,7 +765,7 @@ function buildListHTML(list) {
         class="list-name-input hidden" 
         data-list-input="${id}" 
         type="text" 
-        value="${name}"
+        value="${escapeHtml(name)}"
       />
       <button class="list-action-btn edit-list-btn" data-edit-list="${id}" title="Edit list name" aria-label="Edit list name">
         ${getIcon("edit", { size: 13 })}
@@ -891,7 +907,7 @@ function buildCustomCheckbox(task, completed, isArchive) {
     >
     <label for="${id}">
       <span class="custom-checkbox"></span>
-      <span class="task-name-text" data-task-text="${id}">${name}</span>
+      <span class="task-name-text" data-task-text="${id}">${escapeHtml(name)}</span>
     </label>
   `;
 }
@@ -906,7 +922,7 @@ function buildTaskInput(task, isArchive) {
         class="task-name-input"
         data-task-input="${id}"
         type="text"
-        value="${name}"
+        value="${escapeHtml(name)}"
       />
       <input 
         class="task-due-date-edit"

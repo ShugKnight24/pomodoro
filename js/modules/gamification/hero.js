@@ -224,7 +224,7 @@ export function gainXp(amount) {
     hero.maxXp = Math.round(100 * Math.pow(1.35, hero.level - 1));
     recalculateMaxHp();
     hero.hp = hero.maxHp; // Full heal on level up!
-    showSuccess(`🌟 LEVEL UP! You reached Level ${hero.level}! (+15 Max HP, Full Heal)`);
+    showSuccess(`LEVEL UP! You reached Level ${hero.level}! (+15 Max HP, Full Heal)`);
     document.dispatchEvent(new CustomEvent("hero-level-up", { detail: { level: hero.level } }));
   }
 
@@ -282,7 +282,7 @@ export function buyItem(itemId) {
   } else {
     hero.inventory.push(item.id);
     equipItem(item.id);
-    showSuccess(`Purchased & equipped ${item.name}! ⚔️`);
+    showSuccess(`Purchased & equipped ${item.name}!`);
   }
 
   saveHero();
@@ -308,11 +308,11 @@ export function equipItem(itemId) {
 export function useConsumable(item) {
   if (item.id === "p_willpower_elixir") {
     healHero(50);
-    showSuccess("Drank Elixir of Willpower: +50 HP Restored! 🧪");
+    showSuccess("Drank Elixir of Willpower: +50 HP Restored!");
   } else if (item.id === "p_focus_potion") {
-    showSuccess("Potion of Swift Focus active for your next Pomodoros! ⚡");
+    showSuccess("Potion of Swift Focus active for your next Pomodoros!");
   } else if (item.id === "p_streak_shield") {
-    showSuccess("Chrono-Shield Aegis active: habit streaks protected! 🛡️");
+    showSuccess("Chrono-Shield Aegis active: habit streaks protected!");
   }
 }
 
@@ -356,7 +356,7 @@ function setupEventListeners() {
     hero.stats.pomodorosCompleted += 1;
     saveHero();
 
-    triggerFloatingLoot(`+${xpGained} XP • +${goldGained} Gold • 💥 -${dmg} Boss HP!`, "pomodoro");
+    triggerFloatingLoot(`+${xpGained} XP • +${goldGained} Gold • -${dmg} Boss HP!`, "pomodoro");
   });
 
   // 2. Task Complete
@@ -368,7 +368,7 @@ function setupEventListeners() {
     hero.stats.tasksCompleted += 1;
     saveHero();
 
-    triggerFloatingLoot(`+${xpGained} XP • +${goldGained} Gold • ⚔️ -15 Boss HP`, "task");
+    triggerFloatingLoot(`+${xpGained} XP • +${goldGained} Gold • -15 Boss HP`, "task");
   });
 
   // 3. Subtask Complete
@@ -392,7 +392,7 @@ function setupEventListeners() {
     hero.stats.habitsCompleted += 1;
     saveHero();
 
-    triggerFloatingLoot(`+${xpGained} XP • +${goldGained} Gold • 🔥 ${streak}d Streak!`, "habit");
+    triggerFloatingLoot(`+${xpGained} XP • +${goldGained} Gold • ${streak}d Streak!`, "habit");
   });
 
   // 5. Daily Mood & Bandwidth Check-in
@@ -402,7 +402,7 @@ function setupEventListeners() {
     healHero(15);
     saveHero();
 
-    triggerFloatingLoot(`+${xpGained} XP • +${goldGained} Gold • 💖 +15 HP Restored`, "mood");
+    triggerFloatingLoot(`+${xpGained} XP • +${goldGained} Gold • +15 HP Restored`, "mood");
   });
 
   // 6. Quest Chapter Completed
@@ -416,7 +416,7 @@ function setupEventListeners() {
           hero.inventory.push(rewards.itemDrop);
           const dropItem = getItemById(rewards.itemDrop);
           if (dropItem) {
-            showSuccess(`Loot Drop! Received ${dropItem.name} 🎁`);
+            showSuccess(`Loot Drop! Received ${dropItem.name}`);
             equipItem(dropItem.id);
           }
         }

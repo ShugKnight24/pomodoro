@@ -60,6 +60,13 @@ const ACHIEVEMENTS = {
     iconKey: "monthMaster",
     requirement: { type: "streak", count: 30 },
   },
+  choreMaster: {
+    id: "choreMaster",
+    name: "Chrono Chore Champion",
+    description: "Help all 5 companions complete their chores in the workshop",
+    iconKey: "sparkles",
+    requirement: { type: "custom", count: 1 },
+  },
   perfectDay: {
     id: "perfectDay",
     name: "Perfect Day",
@@ -158,7 +165,7 @@ function saveAchievements() {
  * @param {string} achievementId - The achievement ID to check
  * @returns {boolean} - Whether the achievement was newly unlocked
  */
-function unlockAchievement(achievementId) {
+export function unlockAchievement(achievementId) {
   if (unlockedAchievements.has(achievementId)) {
     return false; // Already unlocked
   }

@@ -18,9 +18,27 @@ import { initHabits } from "./modules/habits.js";
 import { initMood } from "./modules/mood.js";
 import { initHero } from "./modules/gamification/hero.js";
 import { initHeroUI } from "./modules/gamification/heroUI.js";
+import { initCompanion } from "./modules/mascot/companion.js";
+import { initPets } from "./modules/gamification/pets.js";
+import { initExploration } from "./modules/gamification/tacticsExploration.js";
+import { initTacticsUI } from "./modules/gamification/tacticsUI.js";
+import { initHeroBanner } from "./modules/heroBanner.js";
+import { initSampleData } from "./modules/sampleData.js";
+import { initInteractiveTutorial } from "./modules/interactiveTutorial.js";
+import { initCompanionChores } from "./modules/mascot/companionChores.js";
+import { initTelemetry } from "./modules/telemetry/telemetryManager.js";
+import { initProfileManager } from "./modules/social/profileManager.js";
+import { initSocialUi } from "./modules/social/socialUi.js";
+import { initAdminDashboard } from "./modules/admin/adminDashboard.js";
 
 document.addEventListener("DOMContentLoaded", () => {
+  initProfileManager();
+  initTelemetry();
   initI18n();
+  initSampleData();
+  initHeroBanner();
+  initInteractiveTutorial();
+  initCompanionChores();
   initTheme();
   initStats();
   initCalendar();
@@ -40,4 +58,10 @@ document.addEventListener("DOMContentLoaded", () => {
   initKanban();
   initHero();
   initHeroUI();
+  initPets();
+  initExploration();
+  initTacticsUI();
+  initCompanion();
+  initSocialUi();
+  initAdminDashboard();
 });

@@ -196,7 +196,7 @@ function handleBossDefeat(chapter) {
     questState.completedChapters.push(chapter.id);
   }
 
-  showSuccess(`VICTORY! ${chapter.bossName} has been vanquished! 🏆`);
+  showSuccess(`VICTORY! ${chapter.bossName} has been vanquished!`);
 
   // Award rewards via hero event
   document.dispatchEvent(

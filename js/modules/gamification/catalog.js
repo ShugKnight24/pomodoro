@@ -497,6 +497,19 @@ export const CATALOG = [
     lore: "Wards your habits with a temporal bubble, granting grace when life interrupts.",
     spriteKey: "streak_shield",
   },
+  {
+    id: "o_chrono_sigil",
+    name: "Chrono Sovereign Sigil",
+    category: "offhand",
+    rarity: "legendary",
+    cost: 0,
+    perk: "+50 HP, +15% XP & Gold",
+    xpBonus: 0.15,
+    goldBonus: 0.15,
+    hpBonus: 50,
+    lore: "A radiant insignia forged from the gratitude of your 5 companions. Grants absolute mastery over personal time.",
+    spriteKey: "sigil_companions",
+  },
 ];
 
 export function getItemById(id) {

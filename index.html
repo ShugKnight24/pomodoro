@@ -39,8 +39,11 @@
     <link rel="manifest" href="manifest.json" />
 
     <!-- Favicon and Icons -->
-    <link href="/favicon.ico" rel="icon" type="image/x-icon" />
-    <link rel="apple-touch-icon" href="icons/icon-152.png" />
+    <link rel="icon" type="image/svg+xml" href="icons/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="96x96" href="icons/icon-96.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-72.png" />
+    <link rel="shortcut icon" href="favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-192.png" />
 
     <link
@@ -74,361 +77,420 @@
           </button>
         </div>
       </div>
-      <div class="side-settings">
-        <button aria-label="close settings panel" class="button close-settings">
-          <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-        <h2 class="settings-heading" data-i18n="settings">Settings</h2>
+      <!-- Settings Backdrop Overlay -->
+      <div class="settings-backdrop" id="settings-backdrop" aria-hidden="true"></div>
 
-        <!-- Language Selector -->
-        <div class="setting-group">
-          <h3 class="setting-label" data-i18n="language">Language / Язык</h3>
-          <select
-            id="language-select"
-            class="setting-select"
-            aria-label="Select language"
-          >
-            <option value="en">English</option>
-            <option value="ru">Русский</option>
-          </select>
-          <p class="setting-hint" data-i18n="moreLangsComing">
-            More languages coming soon / Больше языков скоро
-          </p>
-        </div>
-
-        <!-- App Theme Selector -->
-        <div class="setting-group">
-          <h3 class="setting-label">App Theme</h3>
-          <select
-            id="app-theme-select"
-            class="setting-select"
-            aria-label="Select app theme"
-          >
-            <option value="modern">Modern</option>
-            <option value="legal-pad">Legal Pad (Legacy)</option>
-            <option value="midnight">Midnight</option>
-            <option value="ocean">Ocean</option>
-          </select>
-        </div>
-
-        <!-- Timer Visual Toggle -->
-        <div class="setting-group">
-          <h3 class="setting-label">Timer Progress Indicator</h3>
-          <div class="toggle-wrapper">
-            <span class="toggle-label">Ring</span>
-            <label class="switch">
-              <input type="checkbox" id="visual-toggle" />
-              <span class="slider round"></span>
-            </label>
-            <span class="toggle-label">Hourglass</span>
-          </div>
-        </div>
-
-        <!-- Timer UI Style -->
-        <div class="setting-group">
-          <h3 class="setting-label">Timer Style</h3>
-          <select
-            id="timer-style-select"
-            class="setting-select"
-            aria-label="Select timer style"
-          >
-            <option value="classic">Classic (Side by Side)</option>
-            <option value="modern">Modern (Centered)</option>
-          </select>
-        </div>
-
-        <!-- Animation Style -->
-        <div class="setting-group">
-          <h3 class="setting-label">Focus Mode Background Animation</h3>
-          <select
-            id="animation-style-select"
-            class="setting-select"
-            aria-label="Select animation style"
-          >
-            <option value="none">None</option>
-            <option value="particles">Floating Particles</option>
-            <option value="ripples">Zen Ripples</option>
-            <option value="orbit">Orbiting Dots</option>
-            <option value="breathing">Breathing Glow</option>
-            <option value="all">All Effects</option>
-          </select>
-        </div>
-
-        <!-- Timer Presets -->
-        <div class="setting-group">
-          <h3 class="setting-label">Timer Presets</h3>
-          <div class="preset-buttons">
-            <button class="preset-btn" data-session="25" data-break="5">
-              25/5
-            </button>
-            <button class="preset-btn" data-session="50" data-break="10">
-              50/10
-            </button>
-            <button class="preset-btn" data-session="90" data-break="20">
-              90/20
-            </button>
-          </div>
-          <div class="custom-timer-inputs">
-            <h4 class="custom-timer-title">Custom Time</h4>
-            <div class="custom-timer-field">
-              <label for="custom-session">Session (min)</label>
-              <input
-                type="number"
-                id="custom-session"
-                min="1"
-                max="180"
-                value="25"
-              />
+      <!-- Settings Drawer -->
+      <aside class="side-settings" id="side-settings" role="dialog" aria-modal="true" aria-labelledby="settings-heading">
+        <!-- Sticky Header (Always Visible) -->
+        <header class="settings-header">
+          <div class="settings-header-title-wrap">
+            <div class="settings-header-icon" aria-hidden="true">
+              <svg class="svg-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
             </div>
-            <div class="custom-timer-field">
-              <label for="custom-break">Break (min)</label>
-              <input
-                type="number"
-                id="custom-break"
-                min="1"
-                max="60"
-                value="5"
-              />
-            </div>
-            <button class="button apply-custom-timer" id="apply-custom-timer">
-              <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> Apply
-            </button>
+            <h2 class="settings-heading" id="settings-heading" data-i18n="settings">Settings</h2>
           </div>
-        </div>
-
-        <!-- Notifications -->
-        <div class="setting-group">
-          <h3 class="setting-label">Notifications</h3>
-          <div class="toggle-wrapper">
-            <span class="toggle-label">Off</span>
-            <label class="switch">
-              <input type="checkbox" id="notifications-toggle" />
-              <span class="slider round"></span>
-            </label>
-            <span class="toggle-label">On</span>
-          </div>
-          <p class="setting-hint" id="notification-status">
-            Click to enable browser notifications
-          </p>
-        </div>
-
-        <!-- Volume Control -->
-        <div class="setting-group">
-          <h3 class="setting-label">Volume</h3>
-          <div class="volume-controls">
-            <button
-              aria-label="decrease buzzer volume by 10%"
-              class="button volume-btn"
-              id="volume-down"
-            >
-              <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            </button>
-            <input
-              id="update-volume"
-              aria-label="update buzzer volume"
-              type="range"
-              name="volume"
-              min="0"
-              max="100"
-              step="10"
-              value="100"
-            />
-            <button
-              aria-label="increase buzzer volume by 10%"
-              class="button volume-btn"
-              id="volume-up"
-            >
-              <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            </button>
-          </div>
-          <p class="setting-hint volume-display">100%</p>
-        </div>
-
-        <!-- Data Management -->
-        <div class="setting-group">
-          <h3 class="setting-label">Data Management</h3>
-          <div class="data-buttons">
-            <button class="button data-btn" id="export-data">
-              <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export
-            </button>
-            <button class="button data-btn" id="import-data">
-              <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Import
-            </button>
-            <input type="file" id="import-file" accept=".json" hidden />
-          </div>
-        </div>
-      </div>
-      <main class="timer-body">
-        <!-- Brand Banner -->
-        <div class="brand-banner">
-          <picture>
-            <source
-              srcset="icons/brand/pomidor_en.webp"
-              type="image/webp"
-              media="(min-width: 1px)"
-              data-lang="en"
-            />
-            <img
-              src="icons/brand/pomidor_en_clean.png"
-              alt="Pomidor — Own your time, own your data"
-              class="brand-hero"
-              data-lang="en"
-            />
-          </picture>
-          <picture class="brand-hero-ru" style="display: none">
-            <source
-              srcset="icons/brand/помидор_ru.webp"
-              type="image/webp"
-              media="(min-width: 1px)"
-            />
-            <img
-              src="icons/brand/помидор_ru_clean.png"
-              alt="Помидор — Владей своим временем, владей своими данными"
-              class="brand-hero"
-            />
-          </picture>
-        </div>
-        <div class="section-header">
-          <h1>Pomidor <span class="brand-subtitle">Помидор</span></h1>
-          <button
-            class="section-toggle"
-            data-section-toggle="pomodoro"
-            aria-label="Toggle Pomodoro section"
-          >
-            <svg class="section-toggle-icon svg-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="8 10 12 14 16 10"/></svg>
+          <button aria-label="close settings panel" class="button close-settings" id="close-settings-btn" title="Close settings (Esc)">
+            <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
+        </header>
+
+        <!-- Category Filter Tabs (Sticky below header) -->
+        <nav class="settings-nav-tabs" role="tablist" aria-label="Settings Categories">
+          <button class="settings-nav-tab active" data-settings-tab="all" role="tab" aria-selected="true">
+            <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            <span>All</span>
+          </button>
+          <button class="settings-nav-tab" data-settings-tab="appearance" role="tab" aria-selected="false">
+            <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+            <span>Appearance</span>
+          </button>
+          <button class="settings-nav-tab" data-settings-tab="timer" role="tab" aria-selected="false">
+            <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>Timer &amp; Sound</span>
+          </button>
+          <button class="settings-nav-tab" data-settings-tab="companions" role="tab" aria-selected="false">
+            <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <span>Companions</span>
+          </button>
+          <button class="settings-nav-tab" data-settings-tab="data" role="tab" aria-selected="false">
+            <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Data</span>
+          </button>
+        </nav>
+
+        <!-- Scrollable Settings Cards Area -->
+        <div class="settings-scroll-body" id="settings-scroll-body">
+          <!-- CATEGORY: Appearance & Brand -->
+          <!-- Language Selector -->
+          <div class="setting-card setting-group" data-category="appearance">
+            <div class="setting-card-header">
+              <div class="setting-card-title-wrap">
+                <span class="setting-card-icon" aria-hidden="true">
+                  <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                </span>
+                <h3 class="setting-label" data-i18n="language">Language</h3>
+              </div>
+            </div>
+            <select
+              id="language-select"
+              class="setting-select"
+              aria-label="Select language"
+            >
+              <option value="en">English (Pomidor)</option>
+              <option value="ru">Русский (Помидор)</option>
+              <option value="az">Azərbaycanca (Pomidor)</option>
+              <option value="he">עברית (עגבנייה)</option>
+            </select>
+          </div>
+
+          <!-- App Theme Selector -->
+          <div class="setting-card setting-group" data-category="appearance">
+            <div class="setting-card-header">
+              <div class="setting-card-title-wrap">
+                <span class="setting-card-icon" aria-hidden="true">
+                  <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                </span>
+                <h3 class="setting-label">App Theme</h3>
+              </div>
+            </div>
+            <select
+              id="app-theme-select"
+              class="setting-select"
+              aria-label="Select app theme"
+            >
+              <option value="modern">Modern</option>
+              <option value="legal-pad">Legal Pad (Legacy)</option>
+              <option value="midnight">Midnight</option>
+              <option value="ocean">Ocean</option>
+            </select>
+          </div>
+
+          <!-- Brand Logo Style Selector -->
+          <div class="setting-card setting-group" data-category="appearance">
+            <div class="setting-card-header">
+              <div class="setting-card-title-wrap">
+                <span class="setting-card-icon" aria-hidden="true">
+                  <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                </span>
+                <h3 class="setting-label" data-i18n="brandLogoStyle">Brand Logo Style</h3>
+              </div>
+            </div>
+            <select
+              id="brand-logo-select"
+              class="setting-select"
+              aria-label="Select brand logo style"
+            >
+              <option value="modern" data-i18n="brandStyleModern">Sleek Modern</option>
+              <option value="soviet" data-i18n="brandStyleSoviet">Soviet Constructivist</option>
+              <option value="edgy" data-i18n="brandStyleEdgy">Edgy &amp; Dark (Tactical)</option>
+              <option value="lighthearted" data-i18n="brandStyleLighthearted">Lighthearted &amp; Playful</option>
+            </select>
+          </div>
+
+          <!-- Animation Style -->
+          <div class="setting-card setting-group" data-category="appearance">
+            <div class="setting-card-header">
+              <div class="setting-card-title-wrap">
+                <span class="setting-card-icon" aria-hidden="true">
+                  <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+                </span>
+                <h3 class="setting-label">Focus Mode Background Animation</h3>
+              </div>
+            </div>
+            <select
+              id="animation-style-select"
+              class="setting-select"
+              aria-label="Select animation style"
+            >
+              <option value="none">None</option>
+              <option value="particles">Floating Particles</option>
+              <option value="ripples">Zen Ripples</option>
+              <option value="orbit">Orbiting Dots</option>
+              <option value="breathing">Breathing Glow</option>
+              <option value="all">All Effects</option>
+            </select>
+          </div>
+
+          <!-- CATEGORY: Timer & Sound -->
+          <!-- Timer Progress Indicator -->
+          <div class="setting-card setting-group" data-category="timer">
+            <div class="setting-card-header">
+              <div class="setting-card-title-wrap">
+                <span class="setting-card-icon" aria-hidden="true">
+                  <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                </span>
+                <h3 class="setting-label">Timer Progress Indicator</h3>
+              </div>
+            </div>
+            <div class="toggle-wrapper">
+              <span class="toggle-label">Ring</span>
+              <label class="switch">
+                <input type="checkbox" id="visual-toggle" />
+                <span class="slider round"></span>
+              </label>
+              <span class="toggle-label">Hourglass</span>
+            </div>
+          </div>
+
+          <!-- Timer UI Style -->
+          <div class="setting-card setting-group" data-category="timer">
+            <div class="setting-card-header">
+              <div class="setting-card-title-wrap">
+                <span class="setting-card-icon" aria-hidden="true">
+                  <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
+                </span>
+                <h3 class="setting-label">Timer Layout Style</h3>
+              </div>
+            </div>
+            <select
+              id="timer-style-select"
+              class="setting-select"
+              aria-label="Select timer style"
+            >
+              <option value="classic">Classic (Side by Side)</option>
+              <option value="modern">Modern (Centered)</option>
+            </select>
+          </div>
+
+          <!-- Timer Presets & Custom Time -->
+          <div class="setting-card setting-group" data-category="timer">
+            <div class="setting-card-header">
+              <div class="setting-card-title-wrap">
+                <span class="setting-card-icon" aria-hidden="true">
+                  <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/></svg>
+                </span>
+                <h3 class="setting-label">Timer Presets &amp; Custom Sprints</h3>
+              </div>
+            </div>
+            <div class="preset-buttons">
+              <button class="preset-btn" data-session="25" data-break="5">25/5</button>
+              <button class="preset-btn" data-session="50" data-break="10">50/10</button>
+              <button class="preset-btn" data-session="90" data-break="20">90/20</button>
+            </div>
+            <div class="custom-timer-inputs">
+              <h4 class="custom-timer-title">Custom Time</h4>
+              <div class="custom-timer-field">
+                <label for="custom-session">Session (min)</label>
+                <input
+                  type="number"
+                  id="custom-session"
+                  min="1"
+                  max="180"
+                  value="25"
+                />
+              </div>
+              <div class="custom-timer-field">
+                <label for="custom-break">Break (min)</label>
+                <input
+                  type="number"
+                  id="custom-break"
+                  min="1"
+                  max="60"
+                  value="5"
+                />
+              </div>
+              <button class="button apply-custom-timer" id="apply-custom-timer">
+                <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> Apply
+              </button>
+            </div>
+          </div>
+
+          <!-- Volume Control -->
+          <div class="setting-card setting-group" data-category="timer">
+            <div class="setting-card-header">
+              <div class="setting-card-title-wrap">
+                <span class="setting-card-icon" aria-hidden="true">
+                  <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                </span>
+                <h3 class="setting-label">Audio &amp; Buzzer Volume</h3>
+              </div>
+            </div>
+            <div class="volume-controls">
+              <button
+                aria-label="decrease buzzer volume by 10%"
+                class="button volume-btn"
+                id="volume-down"
+              >
+                <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </button>
+              <input
+                id="update-volume"
+                aria-label="update buzzer volume"
+                type="range"
+                name="volume"
+                min="0"
+                max="100"
+                step="10"
+                value="100"
+              />
+              <button
+                aria-label="increase buzzer volume by 10%"
+                class="button volume-btn"
+                id="volume-up"
+              >
+                <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </button>
+            </div>
+            <p class="setting-hint volume-display">100%</p>
+          </div>
+
+          <!-- CATEGORY: Companions -->
+          <!-- Mascot Companion Visibility -->
+          <div class="setting-card setting-group" data-category="companions">
+            <div class="setting-card-header">
+              <div class="setting-card-title-wrap">
+                <span class="setting-card-icon" aria-hidden="true">
+                  <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </span>
+                <h3 class="setting-label">Mascot Companion</h3>
+              </div>
+            </div>
+            <div class="toggle-wrapper">
+              <span class="toggle-label">Hidden</span>
+              <label class="switch">
+                <input type="checkbox" id="mascot-toggle" checked />
+                <span class="slider round"></span>
+              </label>
+              <span class="toggle-label">Visible</span>
+            </div>
+            <p class="setting-hint">Display your vector companion mentor on screen</p>
+          </div>
+
+          <!-- Companion Character Picker -->
+          <div class="setting-card setting-group" data-category="companions">
+            <div class="setting-card-header">
+              <div class="setting-card-title-wrap">
+                <span class="setting-card-icon" aria-hidden="true">
+                  <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a8.38 8.38 0 0 1 13 0"/></svg>
+                </span>
+                <h3 class="setting-label">Companion Character</h3>
+              </div>
+            </div>
+            <select id="mascot-select" class="setting-select" aria-label="Select mascot companion">
+              <option value="pomi">Pomi the Tomato (Pomidor Official)</option>
+              <option value="kip">Kip the Cyber-Cat (ByteCraft)</option>
+              <option value="chronos">Chronos the Time Owl (Aegis Time)</option>
+              <option value="pip">Pip the Penguin (ChillWork)</option>
+              <option value="bolt">Bolt the Clockwork Bot (Mechanica)</option>
+            </select>
+          </div>
+
+          <!-- Companion Mode -->
+          <div class="setting-card setting-group" data-category="companions">
+            <div class="setting-card-header">
+              <div class="setting-card-title-wrap">
+                <span class="setting-card-icon" aria-hidden="true">
+                  <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </span>
+                <h3 class="setting-label">Companion Mode</h3>
+              </div>
+            </div>
+            <select id="companion-mode-select" class="setting-select" aria-label="Select companion mode">
+              <option value="follow">Follow Me Across All Apps (One Mascot)</option>
+              <option value="specialist">Dedicated Specialists (Different Mascot per App)</option>
+            </select>
+            <p class="setting-hint">Specialists place Pomi on Timer, Kip on Tasks, Chronos on Calendar, Bolt on Stats &amp; Tactics!</p>
+            <button class="button data-btn" id="open-experience-assign-btn" style="width: 100%; justify-content: center; margin-top: 10px;">
+              <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Assign Companions to Experiences
+            </button>
+          </div>
+
+          <!-- App Onboarding Tours -->
+          <div class="setting-card setting-group" data-category="companions">
+            <div class="setting-card-header">
+              <div class="setting-card-title-wrap">
+                <span class="setting-card-icon" aria-hidden="true">
+                  <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                </span>
+                <h3 class="setting-label">Interactive Mascot Tours</h3>
+              </div>
+            </div>
+            <p class="setting-hint">Have your mascot guide you through each tool's features and superpowers.</p>
+            <div class="tour-quick-buttons" style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
+              <button class="button data-btn" id="restart-all-onboarding-btn" style="width: 100%; justify-content: center;">
+                <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg> Restart All Onboarding Tours
+              </button>
+              <button class="button data-btn" id="clear-all-tutorial-data-btn" style="width: 100%; justify-content: center;">
+                <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg> Clear Tutorial Sample Data
+              </button>
+              <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px;">
+                <button class="preset-btn tour-tool-btn" data-tour-tool="pomodoro">Timer Tour</button>
+                <button class="preset-btn tour-tool-btn" data-tour-tool="todo">Tasks Tour</button>
+                <button class="preset-btn tour-tool-btn" data-tour-tool="kanban">Kanban Tour</button>
+                <button class="preset-btn tour-tool-btn" data-tour-tool="vault">Vault Tour</button>
+                <button class="preset-btn tour-tool-btn" data-tour-tool="calendar">Calendar Tour</button>
+                <button class="preset-btn tour-tool-btn" data-tour-tool="stats">Stats Tour</button>
+                <button class="preset-btn tour-tool-btn" data-tour-tool="hero">Hero Tour</button>
+                <button class="preset-btn tour-tool-btn" data-tour-tool="tactics">Tactics Tour</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- CATEGORY: System & Data -->
+          <!-- Notifications -->
+          <div class="setting-card setting-group" data-category="data">
+            <div class="setting-card-header">
+              <div class="setting-card-title-wrap">
+                <span class="setting-card-icon" aria-hidden="true">
+                  <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                </span>
+                <h3 class="setting-label">Browser Notifications</h3>
+              </div>
+            </div>
+            <div class="toggle-wrapper">
+              <span class="toggle-label">Off</span>
+              <label class="switch">
+                <input type="checkbox" id="notifications-toggle" />
+                <span class="slider round"></span>
+              </label>
+              <span class="toggle-label">On</span>
+            </div>
+            <p class="setting-hint" id="notification-status">
+              Click to enable browser notifications
+            </p>
+          </div>
+
+          <!-- Data Management -->
+          <div class="setting-card setting-group" data-category="data">
+            <div class="setting-card-header">
+              <div class="setting-card-title-wrap">
+                <span class="setting-card-icon" aria-hidden="true">
+                  <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                </span>
+                <h3 class="setting-label">Backup &amp; Data Management</h3>
+              </div>
+            </div>
+            <div class="data-buttons" style="margin-top: 8px;">
+              <button class="button data-btn" id="export-data">
+                <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export
+              </button>
+              <button class="button data-btn" id="import-data">
+                <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Import
+              </button>
+              <input type="file" id="import-file" accept=".json" hidden />
+            </div>
+          </div>
         </div>
+
+        <!-- Sticky Footer (Always Visible) -->
+        <footer class="settings-footer">
+          <div class="settings-shortcut-hint">
+            <kbd style="padding: 2px 5px; border-radius: 4px; background: rgba(0,0,0,0.06); font-family: monospace; font-size: 0.7rem; border: 1px solid rgba(0,0,0,0.1);">Esc</kbd>
+            <span>to close</span>
+          </div>
+          <button class="button settings-done-btn" id="settings-done-btn">
+            <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Done</span>
+          </button>
+        </footer>
+      </aside>
+      <main class="timer-body">
+        <!-- Interactive Hero Stage -->
+        <div id="interactive-hero-container"></div>
+
         <div class="collapsible-section" data-section="pomodoro">
           <div class="section-content-wrapper">
-            <div class="accordion-wrapper">
-              <div class="accordion description-accordion">
-                <button
-                  aria-label="open description accordion"
-                  class="accordion-heading"
-                >
-                  What is the Pomodoro Technique?
-                  <span class="accordion-icon">+</span>
-                </button>
-              </div>
-              <div class="accordion-body">
-                <p>
-                  Do you find yourself regularly procrastinating your most
-                  important tasks?
-                </p>
-                <p>
-                  <a
-                    href="https://en.wikipedia.org/wiki/Pomodoro_Technique"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                    >The Pomodoro Technique</a
-                  >
-                  is a time management system created by
-                  <a
-                    href="https://francescocirillo.com"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                    >Francesco Cirillo</a
-                  >. It is a great method that you can use to overcome your
-                  procrastination / resistance and get things done. Breaking up
-                  your tasks into smaller more manageable chunks will allow you
-                  to work more effectively and productively.
-                </p>
-                <h2>Conquer time or time will conquer you</h2>
-              </div>
-            </div>
-            <div class="accordion-wrapper">
-              <div class="accordion how-to-accordion">
-                <button
-                  aria-label="open how to accordion"
-                  class="accordion-heading"
-                >
-                  How to Use the Pomodoro Technique?
-                  <span class="accordion-icon">+</span>
-                </button>
-              </div>
-              <div class="accordion-body">
-                <p>
-                  Choose a task you want to get done and set the timer for how
-                  long you estimate that task will take. This counts as a single
-                  "Pomodoro"
-                </p>
-                <p>
-                  Note: Traditional Pomodoros are 25 minutes long and allow you
-                  to break your tasks into more manageable chunks
-                </p>
-                <ol>
-                  <li>Set your first Pomodoro</li>
-                  <li>
-                    Focus and work solely on that task until the timer runs out
-                  </li>
-                  <li>
-                    After timer completion, put a checkmark on your to-do list
-                  </li>
-                  <li>Take a short break (typically 5 minutes)</li>
-                  <li>
-                    Keep working on your tasks until you've done four Pomodoros
-                  </li>
-                  <li>
-                    After four Pomodoros, take a longer break (typically 10
-                    minutes)
-                  </li>
-                  <li>Repeat step 1 until all of your tasks are done</li>
-                  <li>Kick back and relax!</li>
-                </ol>
-              </div>
-            </div>
-            <div class="accordion-wrapper">
-              <div class="accordion additional-info-accordion">
-                <button
-                  aria-label="open additional information accordion"
-                  class="accordion-heading"
-                >
-                  Additional Information
-                  <span class="accordion-icon">+</span>
-                </button>
-              </div>
-              <div class="accordion-body">
-                <p>
-                  Watch this video to get more information about The Pomodoro
-                  Technique from
-                  <a
-                    href="https://barbaraoakley.com/"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                    >Dr. Barbara Oakley</a
-                  >
-                  creator of
-                  <a
-                    href="https://www.coursera.org/learn/learning-how-to-learn"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                    >Learning How to Learn</a
-                  >, the most popular open online course in the world, which
-                  teaches students the techniques to learn in a more effective
-                  manner.
-                </p>
-                <div class="embeded-video-container">
-                  <iframe
-                    width="560"
-                    height="315"
-                    src="https://www.youtube-nocookie.com/embed/dTQDaUQ9MAU?si=JI44Y5eX-faXKZGs"
-                    title="Brain Training to Beat Procrastination with the World's Easiest Learning Technique | Barbara Oakley"
-                    frameborder="0"
-                    allow="
-                      accelerometer;
-                      autoplay;
-                      clipboard-write;
-                      encrypted-media;
-                      gyroscope;
-                      picture-in-picture;
-                      web-share;
-                    "
-                    referrerpolicy="strict-origin-when-cross-origin"
-                    allowfullscreen
-                  ></iframe>
-                </div>
-              </div>
-            </div>
             <div class="time-container" id="timer-classic">
               <div class="container">
                 <div class="session-div">
@@ -911,6 +973,15 @@
           </button>
           <button class="view-btn" data-view="hero">
             <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/></svg> Hero
+          </button>
+          <button class="view-btn" data-view="tactics" id="view-btn-tactics">
+            <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Tactics &amp; Pets
+          </button>
+          <button class="view-btn" data-view="social" id="view-btn-social">
+            <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Accountability
+          </button>
+          <button class="view-btn" data-view="admin" id="view-btn-admin">
+            <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg> Admin Studio
           </button>
         </div>
       </div>
@@ -1664,13 +1735,51 @@
 
       <!-- Hero & Quests Dashboard -->
       <div class="hero-container hidden" id="hero-container"></div>
+      <!-- Tactics Arena & Exploration Dashboard -->
+      <div class="tactics-container hidden" id="tactics-container"></div>
+      <!-- Social Lounge & Accountability Dashboard -->
+      <div class="social-container hidden" id="social-container"></div>
+      <!-- Admin Console & Telemetry Dashboard -->
+      <div class="admin-container hidden" id="admin-container"></div>
       <!-- Floating Loot Container -->
       <div class="floating-loot-container" id="floating-loot-container"></div>
 
-      <div class="tomato-footer">
-        Pomodoro® and Pomodoro Technique® are registered trademarks of Francesco
-        Cirillo. This site is not affiliated with Francesco Cirillo.
+      <!-- Decorative Tomato HR Divider -->
+      <div class="tomato-divider" role="separator" aria-label="Section divider">
+        <span class="tomato-divider-line left" aria-hidden="true"></span>
+        <div class="tomato-divider-badge" aria-hidden="true">
+          <svg class="tomato-leaf-icon left" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 4 13C4 6 11 3 20 3c0 9-3 16-9 17Z"/><path d="M4 13c7 0 12-4 12-4"/></svg>
+          <svg class="svg-icon svg-icon-tomato tomato-divider-tomato" width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 21.5c-4.694 0-8.5-3.358-8.5-7.5 0-3.23 2.327-5.97 5.6-7.05.74-.245 1.54-.385 2.37-.42.27-.012.55-.018.83-.018.3 0 .6.007.89.02.83.036 1.63.178 2.37.423 3.27 1.08 5.6 3.82 5.6 7.045 0 4.142-3.806 7.5-8.5 7.5z" fill="#ef4444"/>
+            <path d="M7 11c1.5-2 3.5-3 5-3" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M12 6.5V2.5m-2.5 3L8 3.5m6.5 2L16 3.5m-6 3.5l-2.5-.5m9.5.5l2.5-.5" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <svg class="tomato-leaf-icon right" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 4 13C4 6 11 3 20 3c0 9-3 16-9 17Z"/><path d="M4 13c7 0 12-4 12-4"/></svg>
+        </div>
+        <span class="tomato-divider-line right" aria-hidden="true"></span>
       </div>
+
+      <footer class="tomato-footer" role="contentinfo">
+        <div class="tomato-footer-inner">
+          <span class="tomato-footer-flank left" aria-hidden="true">
+            <svg class="svg-icon svg-icon-tomato footer-flank-svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M12 21.5c-4.694 0-8.5-3.358-8.5-7.5 0-3.23 2.327-5.97 5.6-7.05.74-.245 1.54-.385 2.37-.42.27-.012.55-.018.83-.018.3 0 .6.007.89.02.83.036 1.63.178 2.37.423 3.27 1.08 5.6 3.82 5.6 7.045 0 4.142-3.806 7.5-8.5 7.5z" fill="#ef4444"/>
+              <path d="M7 11c1.5-2 3.5-3 5-3" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M12 6.5V2.5m-2.5 3L8 3.5m6.5 2L16 3.5m-6 3.5l-2.5-.5m9.5.5l2.5-.5" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <p class="tomato-footer-text">
+            Pomodoro® and Pomodoro Technique® are registered trademarks of Francesco Cirillo. This site is not affiliated with Francesco Cirillo.
+          </p>
+          <span class="tomato-footer-flank right" aria-hidden="true">
+            <svg class="svg-icon svg-icon-tomato footer-flank-svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M12 21.5c-4.694 0-8.5-3.358-8.5-7.5 0-3.23 2.327-5.97 5.6-7.05.74-.245 1.54-.385 2.37-.42.27-.012.55-.018.83-.018.3 0 .6.007.89.02.83.036 1.63.178 2.37.423 3.27 1.08 5.6 3.82 5.6 7.045 0 4.142-3.806 7.5-8.5 7.5z" fill="#ef4444"/>
+              <path d="M7 11c1.5-2 3.5-3 5-3" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M12 6.5V2.5m-2.5 3L8 3.5m6.5 2L16 3.5m-6 3.5l-2.5-.5m9.5.5l2.5-.5" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </div>
+      </footer>
     </div>
 
     <!-- Back to Top Tomato Button -->

@@ -154,7 +154,7 @@ test.describe("Screenshot Capture — All Views", () => {
 
     test("stats — mobile", async ({ page }) => {
       await page.goto("/");
-      await page.locator("[data-view='stats']").click();
+      await page.locator("[data-view='stats']").dispatchEvent("click");
       await page.waitForTimeout(500);
       await page.screenshot({
         path: `${SCREENSHOT_DIR}/13-stats-mobile.png`,
@@ -164,7 +164,7 @@ test.describe("Screenshot Capture — All Views", () => {
 
     test("kanban — mobile", async ({ page }) => {
       await page.goto("/");
-      await page.locator("[data-view='kanban']").click();
+      await page.locator("[data-view='kanban']").dispatchEvent("click");
       await page.waitForTimeout(500);
       await page.screenshot({
         path: `${SCREENSHOT_DIR}/14-kanban-mobile.png`,

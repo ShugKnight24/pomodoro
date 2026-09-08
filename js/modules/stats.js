@@ -4,6 +4,7 @@
  */
 
 import { getIcon } from "../utils/icons.js";
+import { renderTelemetryDashboard } from "./telemetry/telemetryUi.js";
 
 const STATS_STORAGE_KEY = "pomodoro-stats";
 
@@ -442,6 +443,9 @@ function renderStats() {
 
   // Render mood & energy history
   renderMoodHistory();
+
+  // Render client-side telemetry & bot audit dashboard
+  renderTelemetryDashboard();
 }
 
 /**
@@ -823,6 +827,13 @@ export function resetStats() {
  * Setup event listeners
  */
 function setupEventListeners() {
+  // Re-render when switching to stats view
+  document.querySelectorAll('[data-view="stats"]').forEach((btn) => {
+    btn.addEventListener("click", () => {
+      renderStats();
+    });
+  });
+
   // Daily goal input
   const goalInput = document.getElementById("daily-goal-input");
   if (goalInput) {

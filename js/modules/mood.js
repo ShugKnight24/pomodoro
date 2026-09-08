@@ -8,6 +8,8 @@
 
 import { getIcon } from "../utils/icons.js";
 import { showSuccess } from "./toast.js";
+import { escapeHtml } from "../utils/sanitize.js";
+import { safeGet, safeSet } from "../utils/storage.js";
 
 const STORAGE_KEY = "pomidor.moods";
 
@@ -129,21 +131,11 @@ function getTodayKey() {
 }
 
 export function getMoodHistory() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch (e) {
-    console.error("Failed to read mood history:", e);
-    return [];
-  }
+  return safeGet(STORAGE_KEY, []);
 }
 
 export function saveMoodHistory(history) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-  } catch (e) {
-    console.error("Failed to save mood history:", e);
-  }
+  safeSet(STORAGE_KEY, history);
 }
 
 export function getTodayMood() {
@@ -503,11 +495,3 @@ function renderAdaptivePlan(container, entry) {
   }
 }
 
-function escapeHtml(str) {
-  return String(str || "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}

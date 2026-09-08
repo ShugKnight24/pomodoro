@@ -538,3 +538,139 @@ export function renderNPCPortrait(options = { size: 64 }) {
     </svg>
   `;
 }
+
+/* ─── Final Fantasy Tactics Job Class Sprites ──────────────── */
+export function renderJobSprite(jobId, options = { size: 40, facing: "E" }) {
+  const size = options.size || 40;
+  const facing = options.facing || "E";
+  const rotMap = { N: 180, E: 270, S: 0, W: 90 };
+  const arrowRot = rotMap[facing] || 270;
+
+  switch (jobId) {
+    case "black_mage":
+      return `
+        <svg class="job-unit-svg job-black-mage facing-${facing}" width="${size}" height="${size}" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Shadow ground -->
+          <ellipse cx="25" cy="45" rx="15" ry="4" fill="rgba(0,0,0,0.3)"/>
+          <!-- Direction Indicator Arrow -->
+          <polygon points="25,2 29,8 21,8" fill="#c084fc" transform="rotate(${arrowRot} 25 25)"/>
+          <!-- Blue Robe -->
+          <path d="M15 44 L20 22 L30 22 L35 44 Z" fill="#2563eb" stroke="#1d4ed8" stroke-width="1.5"/>
+          <rect x="21" y="24" width="8" height="18" fill="#1e40af"/>
+          <!-- Shadow Face -->
+          <circle cx="25" cy="18" r="8" fill="#0f172a"/>
+          <!-- Glowing Yellow Eyes -->
+          <circle cx="22" cy="18" r="2" fill="#fde047"/>
+          <circle cx="28" cy="18" r="2" fill="#fde047"/>
+          <!-- Pointed Straw Wizard Hat -->
+          <polygon points="25,2 37,16 13,16" fill="#d97706" stroke="#b45309" stroke-width="1.5"/>
+          <ellipse cx="25" cy="16" rx="14" ry="4" fill="#f59e0b" stroke="#d97706" stroke-width="1"/>
+          <!-- Staff with crystal -->
+          <line x1="36" y1="12" x2="36" y2="44" stroke="#78350f" stroke-width="2"/>
+          <circle cx="36" cy="10" r="3.5" fill="#38bdf8" stroke="#0284c7" stroke-width="1"/>
+        </svg>
+      `;
+
+    case "white_mage":
+      return `
+        <svg class="job-unit-svg job-white-mage facing-${facing}" width="${size}" height="${size}" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="25" cy="45" rx="15" ry="4" fill="rgba(0,0,0,0.3)"/>
+          <polygon points="25,2 29,8 21,8" fill="#34d399" transform="rotate(${arrowRot} 25 25)"/>
+          <!-- White Robe -->
+          <path d="M15 44 L21 20 L29 20 L35 44 Z" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
+          <!-- Iconic Red Sawtooth Triangles -->
+          <polygon points="17,44 19,38 21,44" fill="#ef4444"/>
+          <polygon points="21,44 23,38 25,44" fill="#ef4444"/>
+          <polygon points="25,44 27,38 29,44" fill="#ef4444"/>
+          <polygon points="29,44 31,38 33,44" fill="#ef4444"/>
+          <!-- Hood & Head -->
+          <circle cx="25" cy="17" r="7" fill="#fcd34d"/>
+          <path d="M17 18 C17 10 33 10 33 18 L31 22 L19 22 Z" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+          <circle cx="23" cy="17" r="1.5" fill="#0f172a"/>
+          <circle cx="27" cy="17" r="1.5" fill="#0f172a"/>
+          <!-- Healing Rod -->
+          <line x1="13" y1="14" x2="13" y2="44" stroke="#d97706" stroke-width="2"/>
+          <circle cx="13" cy="12" r="4" fill="none" stroke="#10b981" stroke-width="1.5"/>
+        </svg>
+      `;
+
+    case "dragoon":
+      return `
+        <svg class="job-unit-svg job-dragoon facing-${facing}" width="${size}" height="${size}" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="25" cy="45" rx="15" ry="4" fill="rgba(0,0,0,0.3)"/>
+          <polygon points="25,2 29,8 21,8" fill="#38bdf8" transform="rotate(${arrowRot} 25 25)"/>
+          <!-- Blue Dragon Scale Armor -->
+          <path d="M16 44 L20 22 L30 22 L34 44 Z" fill="#1e3a8a" stroke="#172554" stroke-width="1.5"/>
+          <path d="M18 26 L25 34 L32 26" fill="none" stroke="#38bdf8" stroke-width="1.5"/>
+          <!-- Dragon Horned Helm -->
+          <rect x="20" y="12" width="10" height="10" rx="3" fill="#334155"/>
+          <line x1="21" y1="16" x2="29" y2="16" stroke="#38bdf8" stroke-width="2"/>
+          <!-- Winged Helm Horns -->
+          <path d="M18 14 L12 4 L19 9 Z" fill="#1d4ed8"/>
+          <path d="M32 14 L38 4 L31 9 Z" fill="#1d4ed8"/>
+          <!-- Dragon Spear / Lance -->
+          <line x1="37" y1="2" x2="37" y2="44" stroke="#94a3b8" stroke-width="2"/>
+          <polygon points="37,0 40,8 34,8" fill="#f8fafc"/>
+        </svg>
+      `;
+
+    case "time_mage":
+      return `
+        <svg class="job-unit-svg job-time-mage facing-${facing}" width="${size}" height="${size}" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="25" cy="45" rx="15" ry="4" fill="rgba(0,0,0,0.3)"/>
+          <polygon points="25,2 29,8 21,8" fill="#f43f5e" transform="rotate(${arrowRot} 25 25)"/>
+          <!-- Deep Violet Robe -->
+          <path d="M15 44 L20 22 L30 22 L35 44 Z" fill="#4c1d95" stroke="#3b0764" stroke-width="1.5"/>
+          <circle cx="25" cy="30" r="3" fill="#fcd34d"/>
+          <!-- Head -->
+          <circle cx="25" cy="18" r="6" fill="#fcd34d"/>
+          <!-- Starry Clock Cone Hat -->
+          <polygon points="25,2 35,16 15,16" fill="#701a75" stroke="#581c87" stroke-width="1.5"/>
+          <circle cx="25" cy="10" r="2" fill="#fbbf24"/>
+          <!-- Hourglass Staff -->
+          <line x1="36" y1="12" x2="36" y2="44" stroke="#d97706" stroke-width="2"/>
+          <polygon points="33,8 39,8 36,12" fill="#38bdf8"/>
+          <polygon points="33,16 39,16 36,12" fill="#38bdf8"/>
+        </svg>
+      `;
+
+    case "thief":
+      return `
+        <svg class="job-unit-svg job-thief facing-${facing}" width="${size}" height="${size}" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="25" cy="45" rx="15" ry="4" fill="rgba(0,0,0,0.3)"/>
+          <polygon points="25,2 29,8 21,8" fill="#f59e0b" transform="rotate(${arrowRot} 25 25)"/>
+          <!-- Green/Brown Leather Jerkin -->
+          <path d="M16 44 L20 22 L30 22 L34 44 Z" fill="#78350f" stroke="#451a03" stroke-width="1.5"/>
+          <rect x="20" y="24" width="10" height="4" fill="#f59e0b"/>
+          <!-- Hood & Mask -->
+          <circle cx="25" cy="17" r="7" fill="#15803d"/>
+          <rect x="20" y="16" width="10" height="4" fill="#0f172a"/>
+          <circle cx="23" cy="16" r="1" fill="#ffffff"/>
+          <circle cx="27" cy="16" r="1" fill="#ffffff"/>
+          <!-- Dual Daggers -->
+          <line x1="12" y1="26" x2="16" y2="34" stroke="#94a3b8" stroke-width="2.5"/>
+          <line x1="38" y1="26" x2="34" y2="34" stroke="#94a3b8" stroke-width="2.5"/>
+        </svg>
+      `;
+
+    case "knight":
+    default:
+      return `
+        <svg class="job-unit-svg job-knight facing-${facing}" width="${size}" height="${size}" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="25" cy="45" rx="15" ry="4" fill="rgba(0,0,0,0.3)"/>
+          <polygon points="25,2 29,8 21,8" fill="#60a5fa" transform="rotate(${arrowRot} 25 25)"/>
+          <!-- Steel Plate Body -->
+          <path d="M17 44 L20 22 L30 22 L33 44 Z" fill="#64748b" stroke="#334155" stroke-width="1.5"/>
+          <!-- Knight Helm with Red Plume -->
+          <rect x="20" y="11" width="10" height="10" rx="3" fill="#94a3b8" stroke="#475569" stroke-width="1"/>
+          <line x1="21" y1="15" x2="29" y2="15" stroke="#0f172a" stroke-width="2"/>
+          <path d="M25,11 Q22,4 18,6 Q25,7 25,11" fill="#ef4444"/>
+          <!-- Broadsword & Shield -->
+          <line x1="36" y1="16" x2="36" y2="40" stroke="#cbd5e1" stroke-width="2.5"/>
+          <line x1="33" y1="22" x2="39" y2="22" stroke="#eab308" stroke-width="2"/>
+          <path d="M12 24 Q16 22 20 24 L20 34 Q16 38 12 34 Z" fill="#2563eb" stroke="#fbbf24" stroke-width="1.5"/>
+        </svg>
+      `;
+  }
+}
+

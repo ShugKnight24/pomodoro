@@ -39,6 +39,9 @@ export function initTheme() {
 
 function applyTheme(theme) {
   document.documentElement.setAttribute("data-theme", theme);
+  if (document.body) {
+    document.body.classList.toggle("dark-theme", theme === "dark");
+  }
 
   // Update theme toggle icon
   const themeToggle = document.getElementById("theme-toggle");

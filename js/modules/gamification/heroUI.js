@@ -25,12 +25,9 @@ import {
   getQuestState,
   setStoryMode,
 } from "./quests.js";
-import {
-  renderHeroPaperDoll,
-  renderBossSprite,
-  renderNPCPortrait,
-} from "./characterSprites.js";
+import { renderHeroPaperDoll, renderBossSprite, renderNPCPortrait } from "./characterSprites.js";
 import { getIcon } from "../../utils/icons.js";
+import { escapeHtml } from "../../utils/sanitize.js";
 
 const RANDOM_NAMES = [
   "Kaelen Timeweaver",
@@ -157,6 +154,9 @@ export function renderHeroDashboard() {
           </button>
           <button class="hero-tab-btn ${activeTab === "inventory" ? "active" : ""}" data-hero-tab="inventory">
             ${getIcon("archive", { size: 16 })} Inventory (${hero.inventory.length})
+          </button>
+          <button class="hero-tab-btn" id="hero-launch-tactics-btn" style="background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(59,130,246,0.15)); border-color: rgba(16,185,129,0.4);">
+            ${getIcon("sword", { size: 16 })} Tactics &amp; Pets Arena
           </button>
         </div>
 
@@ -493,7 +493,7 @@ export function openCharacterCreator() {
           ${renderHeroPaperDoll(tempHero, { size: 180 })}
         </div>
         <button class="button random-name-btn" id="creator-random-name-btn">
-          🎲 Random Name
+          ${getIcon("refresh", { size: 14 })} Random Name
         </button>
       </div>
 
@@ -620,6 +620,10 @@ function bindTabButtons() {
       renderHeroDashboard();
     });
   });
+
+  container.querySelector("#hero-launch-tactics-btn")?.addEventListener("click", () => {
+    document.querySelector(".view-controls [data-view='tactics']")?.click();
+  });
 }
 
 function bindSlotButtons() {
@@ -702,11 +706,3 @@ function setupUIEventListeners() {
   });
 }
 
-function escapeHtml(str) {
-  return String(str || "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}

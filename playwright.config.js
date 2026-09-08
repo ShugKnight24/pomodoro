@@ -9,7 +9,7 @@ export default defineConfig({
   retries: 0,
   reporter: [["html", { open: "never" }], ["list"]],
   use: {
-    baseURL: "http://localhost:3030",
+    baseURL: "http://127.0.0.1:3099",
     screenshot: "only-on-failure",
     trace: "on-first-retry",
     viewport: { width: 1280, height: 800 },
@@ -21,8 +21,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "npx serve . -l 3030 -s",
-    port: 3030,
+    command: "npx serve . -l 3099 -s",
+    url: "http://127.0.0.1:3099",
     reuseExistingServer: !process.env.CI,
+    timeout: 30000,
   },
 });

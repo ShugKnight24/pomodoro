@@ -4,6 +4,8 @@
 
 import { showSuccess } from "./toast.js";
 import { getIcon } from "../utils/icons.js";
+import { escapeHtml } from "../utils/sanitize.js";
+import { safeGet, safeSet } from "../utils/storage.js";
 
 const STORAGE_KEY = "pomidor.kanban";
 const TUTORIAL_KEY = "pomidor.kanban.tutorialDone";
@@ -103,20 +105,16 @@ let state = {
 // ─── Persistence ───────────────────────────────────────────
 
 function loadState() {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      Object.assign(state, JSON.parse(saved));
-    }
-  } catch {
-    // Fresh start
+  const saved = safeGet(STORAGE_KEY, null);
+  if (saved) {
+    Object.assign(state, saved);
   }
 
   // Add tutorial board if first visit
-  if (!localStorage.getItem(TUTORIAL_KEY) && state.boards.length === 0) {
+  if (!safeGet(TUTORIAL_KEY, null) && state.boards.length === 0) {
     state.boards.push(JSON.parse(JSON.stringify(TUTORIAL_BOARD)));
     state.activeBoardId = "tutorial";
-    localStorage.setItem(TUTORIAL_KEY, "shown");
+    safeSet(TUTORIAL_KEY, "shown");
   }
 
   if (!state.activeBoardId && state.boards.length > 0) {
@@ -125,7 +123,7 @@ function loadState() {
 }
 
 function saveState() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  safeSet(STORAGE_KEY, state);
 }
 
 // ─── Board CRUD ────────────────────────────────────────────
@@ -616,14 +614,6 @@ function setupToolbar() {
       showSuccess("Column added");
     }
   });
-}
-
-// ─── Helpers ───────────────────────────────────────────────
-
-function escapeHtml(str) {
-  const div = document.createElement("div");
-  div.textContent = str || "";
-  return div.innerHTML;
 }
 
 // ─── Data Export ───────────────────────────────────────────

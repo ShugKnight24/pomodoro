@@ -7,6 +7,8 @@
 
 import { getIcon } from "../utils/icons.js";
 import { showSuccess } from "./toast.js";
+import { escapeHtml } from "../utils/sanitize.js";
+import { safeGet, safeSet } from "../utils/storage.js";
 
 const STORAGE_KEY = "pomidor.habits";
 
@@ -60,26 +62,11 @@ function getTodayKey() {
 }
 
 function loadHabits() {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      habits = JSON.parse(saved);
-    } else {
-      habits = [...DEFAULT_HABITS];
-      saveHabits();
-    }
-  } catch (e) {
-    console.error("Failed to load habits:", e);
-    habits = [...DEFAULT_HABITS];
-  }
+  habits = safeGet(STORAGE_KEY, [...DEFAULT_HABITS]);
 }
 
 function saveHabits() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(habits));
-  } catch (e) {
-    console.error("Failed to save habits:", e);
-  }
+  safeSet(STORAGE_KEY, habits);
 }
 
 /**
@@ -171,7 +158,7 @@ export function toggleHabitToday(id) {
 
   if (nextCompleted) {
     const streak = calculateHabitStreak(habit);
-    showSuccess(`Habit "${habit.title}" completed! 🔥 ${streak} day streak`);
+    showSuccess(`Habit "${habit.title}" completed! ${streak} day streak`);
     document.dispatchEvent(
       new CustomEvent("habit-completed", {
         detail: { habit, streak },
@@ -400,11 +387,3 @@ export function renderHabitsList() {
   });
 }
 
-function escapeHtml(str) {
-  return String(str || "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}

@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none">
+  <defs>
+    <!-- Tomato 3D sphere gradient -->
+    <radialGradient id="fav-tomato" cx="38%" cy="32%" r="68%">
+      <stop offset="0%" stop-color="#ff6b6b" />
+      <stop offset="45%" stop-color="#ef4444" />
+      <stop offset="85%" stop-color="#b91c1c" />
+      <stop offset="100%" stop-color="#7f1d1d" />
+    </radialGradient>
+
+    <!-- Calyx/Leaves gradient -->
+    <linearGradient id="fav-leaf" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="50%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#047857" />
+    </linearGradient>
+
+    <!-- Specular shine -->
+    <linearGradient id="fav-shine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.85" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+    </linearGradient>
+
+    <!-- Concentric timer ring -->
+    <linearGradient id="fav-ring" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#ef4444" />
+    </linearGradient>
+  </defs>
+
+  <!-- Dark Bezel Background Squircle -->
+  <rect x="2" y="2" width="60" height="60" rx="15" fill="#0b0f19" stroke="rgba(255, 255, 255, 0.12)" stroke-width="1.5" />
+
+  <!-- Outer Focus Ring -->
+  <circle cx="32" cy="34" r="24" stroke="url(#fav-ring)" stroke-width="2.2" stroke-dasharray="110 150" stroke-linecap="round" fill="none" opacity="0.8" />
+
+  <!-- Tomato Body -->
+  <path d="M32 54c-13.5 0-23.5-9.2-23.5-20.5 0-8.9 6.4-16.7 15.3-19.5 2.5-.7 5.3-1.1 8.2-1.1s5.7.4 8.2 1.1c8.9 2.8 15.3 10.6 15.3 19.5C55.5 44.8 45.5 54 32 54z" fill="url(#fav-tomato)" filter="drop-shadow(0 2px 8px rgba(239, 68, 68, 0.45))" />
+
+  <!-- Specular Reflection -->
+  <path d="M19 24c4.2-5.6 9.8-7.7 15.4-7" stroke="url(#fav-shine)" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.9" />
+  <circle cx="17.5" cy="26.5" r="1.2" fill="#ffffff" opacity="0.95" />
+
+  <!-- Tomato Crown Leaves -->
+  <path d="M32 14c-2.1-4.9-7.7-6.3-9.8-6.3.7 2.8 2.8 5.6 6.3 6.6-4.2-.7-7.7 1.4-9.1 3.5 3.1.3 6.3-.7 8.4-2.4-2.1 3.5-1.4 7.7.7 9.8 0-3.1 1.4-5.6 3.5-7.3z" fill="url(#fav-leaf)" />
+  <path d="M32 14c2.1-4.9 7.7-6.3 9.8-6.3-.7 2.8-2.8 5.6-6.3 6.6 4.2-.7 7.7 1.4 9.1 3.5-3.1.3-6.3-.7-8.4-2.4 2.1 3.5 1.4 7.7-.7 9.8 0-3.1-1.4-5.6-3.5-7.3z" fill="url(#fav-leaf)" />
+
+  <!-- Small Stem -->
+  <path d="M32 14.7c-.7-4.2 1.4-8.4 3.5-9.8.7 2.1 0 5.6-1.4 8.4z" fill="#059669" />
+</svg>
