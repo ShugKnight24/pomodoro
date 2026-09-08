@@ -41,6 +41,7 @@ import {
 } from "./tacticsExploration.js";
 import { showSuccess, showInfo, showError } from "../toast.js";
 import { getIcon } from "../../utils/icons.js";
+import { escapeHtml } from "../../utils/sanitize.js";
 
 let currentBattle = null;
 let selectedTile = null; // { x, y }
@@ -1386,10 +1387,3 @@ function setupTacticsEventListeners() {
   });
 }
 
-function escapeHtml(str) {
-  if (!str) return "";
-  return String(str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-}

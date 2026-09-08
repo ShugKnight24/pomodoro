@@ -25,12 +25,9 @@ import {
   getQuestState,
   setStoryMode,
 } from "./quests.js";
-import {
-  renderHeroPaperDoll,
-  renderBossSprite,
-  renderNPCPortrait,
-} from "./characterSprites.js";
+import { renderHeroPaperDoll, renderBossSprite, renderNPCPortrait } from "./characterSprites.js";
 import { getIcon } from "../../utils/icons.js";
+import { escapeHtml } from "../../utils/sanitize.js";
 
 const RANDOM_NAMES = [
   "Kaelen Timeweaver",
@@ -709,11 +706,3 @@ function setupUIEventListeners() {
   });
 }
 
-function escapeHtml(str) {
-  return String(str || "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}

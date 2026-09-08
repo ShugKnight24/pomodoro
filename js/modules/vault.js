@@ -4,6 +4,8 @@
 
 import { showSuccess } from "./toast.js";
 import { getIcon } from "../utils/icons.js";
+import { escapeHtml } from "../utils/sanitize.js";
+import { safeGet, safeSet } from "../utils/storage.js";
 
 const STORAGE_KEY = "pomidor.vault";
 
@@ -22,19 +24,14 @@ let state = {
 // ─── Persistence ───────────────────────────────────────────
 
 function loadState() {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      Object.assign(state, parsed);
-    }
-  } catch {
-    // Start fresh
+  const saved = safeGet(STORAGE_KEY, null);
+  if (saved && typeof saved === "object") {
+    Object.assign(state, saved);
   }
 }
 
 function saveState() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  safeSet(STORAGE_KEY, state);
 }
 
 // ─── Note CRUD ─────────────────────────────────────────────
@@ -493,12 +490,6 @@ function timeAgo(isoString) {
   const days = Math.floor(hrs / 24);
   if (days < 7) return `${days}d ago`;
   return new Date(isoString).toLocaleDateString();
-}
-
-function escapeHtml(str) {
-  const div = document.createElement("div");
-  div.textContent = str;
-  return div.innerHTML;
 }
 
 // ─── Toolbar Handlers ──────────────────────────────────────

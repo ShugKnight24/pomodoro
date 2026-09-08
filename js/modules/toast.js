@@ -1,4 +1,5 @@
 import { getIcon } from "../utils/icons.js";
+import { escapeHtml } from "../utils/sanitize.js";
 
 let toastContainer = null;
 
@@ -44,7 +45,7 @@ export function showToast(message, type = "info", duration = 3000) {
 
   toast.innerHTML = `
     <span class="toast-icon">${icons[type] || icons.info}</span>
-    <span class="toast-message">${message}</span>
+    <span class="toast-message">${escapeHtml(message)}</span>
   `;
 
   toastContainer.appendChild(toast);

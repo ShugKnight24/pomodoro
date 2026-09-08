@@ -8,6 +8,7 @@
 
 import { TENANT_PERSONAS } from "./profileCatalog.js";
 import { showSuccess, showInfo } from "../toast.js";
+import { safeGet, safeSet, safeRemove } from "../../utils/storage.js";
 
 const ACTIVE_TENANT_KEY = "pomidor.activeTenantId";
 const TENANT_STORAGE_PREFIX = "pomidor.tenant.";
@@ -91,53 +92,43 @@ function ensureSeedTenants() {
         vaultNotes: persona.vaultNotes,
         stats: persona.stats,
       };
-      localStorage.setItem(key, JSON.stringify(tenantSnapshot));
+      safeSet(key, tenantSnapshot);
     }
   }
 }
 
 function loadSocialActivity() {
-  try {
-    const raw = localStorage.getItem(SOCIAL_ACTIVITY_KEY);
-    if (raw) {
-      activityFeed = JSON.parse(raw);
-    } else {
-      // Seed initial realistic social events
-      activityFeed = [
-        { id: "act_1", user: "Elena Rostova", action: "finished a 25m sprint on Raft consensus", time: Date.now() - 1000 * 60 * 14, mascot: "kip" },
-        { id: "act_2", user: "Dr. Darius Vance", action: "reached a 32-day streak in Spaced Repetition", time: Date.now() - 1000 * 60 * 45, mascot: "bolt" },
-        { id: "act_3", user: "Aiko Tanaka", action: "joined the Design Sprint Lab room", time: Date.now() - 1000 * 60 * 120, mascot: "pip" },
-        { id: "act_4", user: "Leo Morales", action: "completed 3 product launch tasks", time: Date.now() - 1000 * 60 * 240, mascot: "pomi" },
-      ];
-      saveSocialActivity();
-    }
-  } catch {
-    activityFeed = [];
+  const stored = safeGet(SOCIAL_ACTIVITY_KEY, null);
+  if (Array.isArray(stored)) {
+    activityFeed = stored;
+  } else {
+    // Seed initial realistic social events
+    activityFeed = [
+      { id: "act_1", user: "Elena Rostova", action: "finished a 25m sprint on Raft consensus", time: Date.now() - 1000 * 60 * 14, mascot: "kip" },
+      { id: "act_2", user: "Dr. Darius Vance", action: "reached a 32-day streak in Spaced Repetition", time: Date.now() - 1000 * 60 * 45, mascot: "bolt" },
+      { id: "act_3", user: "Aiko Tanaka", action: "joined the Design Sprint Lab room", time: Date.now() - 1000 * 60 * 120, mascot: "pip" },
+      { id: "act_4", user: "Leo Morales", action: "completed 3 product launch tasks", time: Date.now() - 1000 * 60 * 240, mascot: "pomi" },
+    ];
+    saveSocialActivity();
   }
 }
 
 function saveSocialActivity() {
-  try {
-    localStorage.setItem(SOCIAL_ACTIVITY_KEY, JSON.stringify(activityFeed.slice(0, 50)));
-  } catch {}
+  safeSet(SOCIAL_ACTIVITY_KEY, activityFeed.slice(0, 50));
 }
 
 export function getActiveTenant() {
   const key = `${TENANT_STORAGE_PREFIX}${activeTenantId}`;
-  try {
-    const snapshot = JSON.parse(localStorage.getItem(key));
-    if (snapshot?.profile) return snapshot.profile;
-  } catch {}
+  const snapshot = safeGet(key, null);
+  if (snapshot?.profile) return snapshot.profile;
   return TENANT_PERSONAS[activeTenantId] || TENANT_PERSONAS.tenant_novice || TENANT_PERSONAS.tenant_admin;
 }
 
 export function getAllTenants() {
   return Object.keys(TENANT_PERSONAS).map((id) => {
     const key = `${TENANT_STORAGE_PREFIX}${id}`;
-    try {
-      const snap = JSON.parse(localStorage.getItem(key));
-      if (snap?.profile) return snap.profile;
-    } catch {}
+    const snap = safeGet(key, null);
+    if (snap?.profile) return snap.profile;
     return TENANT_PERSONAS[id];
   });
 }
@@ -197,20 +188,18 @@ export function switchTenant(targetTenantId) {
 function saveCurrentStateToTenant(tenantId) {
   try {
     const key = `${TENANT_STORAGE_PREFIX}${tenantId}`;
-    let existing = {};
-    const raw = localStorage.getItem(key);
-    if (raw) existing = JSON.parse(raw);
+    const existing = safeGet(key, {});
 
     const snapshot = {
       ...existing,
-      hero: JSON.parse(localStorage.getItem("pomidor.hero") || "{}"),
-      lists: JSON.parse(localStorage.getItem("pomodoro-lists") || "[]"),
-      habits: JSON.parse(localStorage.getItem("pomodoro-habits") || "[]"),
-      vaultNotes: JSON.parse(localStorage.getItem("pomodoro-vault-notes") || "[]"),
-      stats: JSON.parse(localStorage.getItem("pomodoro-stats") || "{}"),
+      hero: safeGet("pomidor.hero", {}),
+      lists: safeGet("pomodoro-lists", []),
+      habits: safeGet("pomodoro-habits", []),
+      vaultNotes: safeGet("pomodoro-vault-notes", []),
+      stats: safeGet("pomodoro-stats", {}),
     };
 
-    localStorage.setItem(key, JSON.stringify(snapshot));
+    safeSet(key, snapshot);
   } catch (e) {
     console.warn("Failed to snapshot tenant state:", e);
   }
@@ -222,18 +211,19 @@ function saveCurrentStateToTenant(tenantId) {
 function hydrateTenantToState(tenantId) {
   try {
     const key = `${TENANT_STORAGE_PREFIX}${tenantId}`;
-    const raw = localStorage.getItem(key);
-    if (!raw) return;
+    const snap = safeGet(key, null);
+    if (!snap) return;
 
-    const snap = JSON.parse(raw);
-    if (snap.hero) localStorage.setItem("pomidor.hero", JSON.stringify(snap.hero));
-    if (snap.lists) localStorage.setItem("pomodoro-lists", JSON.stringify(snap.lists));
-    if (snap.habits) localStorage.setItem("pomodoro-habits", JSON.stringify(snap.habits));
-    if (snap.vaultNotes) localStorage.setItem("pomodoro-vault-notes", JSON.stringify(snap.vaultNotes));
-    if (snap.stats) localStorage.setItem("pomodoro-stats", JSON.stringify(snap.stats));
+    if (snap.hero) safeSet("pomidor.hero", snap.hero);
+    if (snap.lists) safeSet("pomodoro-lists", snap.lists);
+    if (snap.habits) safeSet("pomodoro-habits", snap.habits);
+    if (snap.vaultNotes) safeSet("pomodoro-vault-notes", snap.vaultNotes);
+    if (snap.stats) safeSet("pomodoro-stats", snap.stats);
 
     if (snap.profile?.avatarMascot) {
-      localStorage.setItem("pomidor.activeMascot", snap.profile.avatarMascot);
+      try {
+        localStorage.setItem("pomidor.activeMascot", snap.profile.avatarMascot);
+      } catch {}
     }
   } catch (e) {
     console.warn("Failed to hydrate tenant state:", e);
@@ -248,7 +238,7 @@ export function resetTenantState(tenantId) {
   if (!seed) return;
 
   const key = `${TENANT_STORAGE_PREFIX}${tenantId}`;
-  localStorage.removeItem(key);
+  safeRemove(key);
   ensureSeedTenants();
 
   if (activeTenantId === tenantId) {
@@ -322,13 +312,11 @@ export function joinFocusRoom(roomName) {
 
   // Persist updated room in snapshot
   const key = `${TENANT_STORAGE_PREFIX}${tenant.id}`;
-  try {
-    const snap = JSON.parse(localStorage.getItem(key) || "{}");
-    if (snap.profile) {
-      snap.profile.room = roomName;
-      localStorage.setItem(key, JSON.stringify(snap));
-    }
-  } catch {}
+  const snap = safeGet(key, {});
+  if (snap.profile) {
+    snap.profile.room = roomName;
+    safeSet(key, snap);
+  }
 
   playSocialChime(640);
 
@@ -350,13 +338,11 @@ export function updateFocusStatus(newStatus) {
   tenant.status = newStatus;
 
   const key = `${TENANT_STORAGE_PREFIX}${tenant.id}`;
-  try {
-    const snap = JSON.parse(localStorage.getItem(key) || "{}");
-    if (snap.profile) {
-      snap.profile.status = newStatus;
-      localStorage.setItem(key, JSON.stringify(snap));
-    }
-  } catch {}
+  const snap = safeGet(key, {});
+  if (snap.profile) {
+    snap.profile.status = newStatus;
+    safeSet(key, snap);
+  }
 
   showSuccess("Focus status updated across accountability squad.");
   window.dispatchEvent(new CustomEvent("social-activity-updated"));
@@ -368,13 +354,11 @@ export function updatePrivacySetting(settingKey, value) {
   tenant.privacySettings[settingKey] = value;
 
   const key = `${TENANT_STORAGE_PREFIX}${tenant.id}`;
-  try {
-    const snap = JSON.parse(localStorage.getItem(key) || "{}");
-    if (snap.profile) {
-      snap.profile.privacySettings = tenant.privacySettings;
-      localStorage.setItem(key, JSON.stringify(snap));
-    }
-  } catch {}
+  const snap = safeGet(key, {});
+  if (snap.profile) {
+    snap.profile.privacySettings = tenant.privacySettings;
+    safeSet(key, snap);
+  }
 
   showInfo(`Privacy setting updated: ${settingKey} = ${value}`);
   window.dispatchEvent(new CustomEvent("social-activity-updated"));

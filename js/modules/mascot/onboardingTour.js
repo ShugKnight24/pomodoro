@@ -8,6 +8,7 @@
 import { renderMascotSvg } from "./mascotSprites.js";
 import { getIcon } from "../../utils/icons.js";
 import { showSuccess } from "../toast.js";
+import { escapeHtml } from "../../utils/sanitize.js";
 
 const TOURS = {
   pomodoro: {
@@ -338,12 +339,3 @@ function finishTour() {
   }
 }
 
-function escapeHtml(str) {
-  if (!str) return "";
-  return String(str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}

@@ -23,6 +23,8 @@ import {
 import { openHeatmapOverlay } from "../telemetry/telemetryUi.js";
 import { sendEvent } from "../telemetry/gtagService.js";
 import { showSuccess, showInfo } from "../toast.js";
+import { escapeHtml } from "../../utils/sanitize.js";
+import { safeGet } from "../../utils/storage.js";
 
 const TENANT_STORAGE_PREFIX = "pomidor.tenant.";
 
@@ -430,18 +432,13 @@ function bindAdminEvents(container) {
 }
 
 function getTenantStorageStats(tenantId) {
-  try {
-    const key = `${TENANT_STORAGE_PREFIX}${tenantId}`;
-    const raw = localStorage.getItem(key);
-    if (!raw) return { tasks: 0, habits: 0, notes: 0 };
-    const snap = JSON.parse(raw);
-    const tasksCount = (snap.lists || []).reduce((acc, l) => acc + (l.tasks?.length || 0), 0);
-    const habitsCount = (snap.habits || []).length;
-    const notesCount = (snap.vaultNotes || []).length;
-    return { tasks: tasksCount, habits: habitsCount, notes: notesCount };
-  } catch {
-    return { tasks: 0, habits: 0, notes: 0 };
-  }
+  const key = `${TENANT_STORAGE_PREFIX}${tenantId}`;
+  const snap = safeGet(key, null);
+  if (!snap) return { tasks: 0, habits: 0, notes: 0 };
+  const tasksCount = (snap.lists || []).reduce((acc, l) => acc + (l.tasks?.length || 0), 0);
+  const habitsCount = (snap.habits || []).length;
+  const notesCount = (snap.vaultNotes || []).length;
+  return { tasks: tasksCount, habits: habitsCount, notes: notesCount };
 }
 
 function formatTimeAgo(timestamp) {
@@ -451,14 +448,4 @@ function formatTimeAgo(timestamp) {
   const diffMin = Math.floor(diffSec / 60);
   if (diffMin < 60) return `${diffMin}m ago`;
   return `${Math.floor(diffMin / 60)}h ago`;
-}
-
-function escapeHtml(str) {
-  if (!str) return "";
-  return String(str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
 }

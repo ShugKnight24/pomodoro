@@ -19,6 +19,7 @@ import {
   switchTenant,
 } from "./profileManager.js";
 import { showSuccess } from "../toast.js";
+import { escapeHtml } from "../../utils/sanitize.js";
 
 const FOCUS_ROOMS = [
   { id: "room_deep_code", name: "Deep Code Chamber", desc: "Systems engineering, algorithms, compiler builds", mascot: "kip" },
@@ -396,12 +397,3 @@ function formatActivityTime(timestamp) {
   return `${Math.floor(diffMin / 60)}h ago`;
 }
 
-function escapeHtml(str) {
-  if (!str) return "";
-  return String(str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}

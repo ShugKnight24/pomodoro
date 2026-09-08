@@ -15,6 +15,8 @@ import {
 import { renderMascotSvg } from "./mascotSprites.js";
 import { startTourForCurrentTool } from "./onboardingTour.js";
 import { getIcon } from "../../utils/icons.js";
+import { escapeHtml } from "../../utils/sanitize.js";
+import { safeGet, safeSet } from "../../utils/storage.js";
 
 const STORAGE_KEY = "pomidor.mascot.settings";
 
@@ -43,31 +45,17 @@ export function initCompanion() {
 }
 
 function loadSettings() {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      state = { ...state, ...parsed };
-    }
-  } catch (e) {
-    console.warn("Error loading companion settings:", e);
-  }
+  const saved = safeGet(STORAGE_KEY, {});
+  state = { ...state, ...saved };
 }
 
 function saveSettings() {
-  try {
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({
-        enabled: state.enabled,
-        mode: state.mode,
-        selectedMascotId: state.selectedMascotId,
-        minimized: state.minimized,
-      }),
-    );
-  } catch (e) {
-    console.warn("Error saving companion settings:", e);
-  }
+  safeSet(STORAGE_KEY, {
+    enabled: state.enabled,
+    mode: state.mode,
+    selectedMascotId: state.selectedMascotId,
+    minimized: state.minimized,
+  });
 }
 
 export function getCompanionSettings() {
@@ -246,6 +234,13 @@ export function triggerCustomInteraction(targetMascot = null) {
     fxType: "tomato-sparkle",
   };
 
+  // Restoring chat bubble if closed or minimized
+  if (state.minimized) {
+    state.minimized = false;
+    saveSettings();
+    updateCompanionView();
+  }
+
   setAnimState("cheer", 2200);
   spawnCustomParticles(interaction.fxType);
   speak(interaction.speech, 4500);
@@ -304,10 +299,20 @@ export function setAnimState(newState, durationMs = 2000) {
 }
 
 export function speak(text, duration = 4000) {
-  const speechBubble = document.getElementById("companion-speech-bubble");
-  const speechText = document.getElementById("companion-speech-text");
+  let speechBubble = document.getElementById("companion-speech-bubble");
+  let speechText = document.getElementById("companion-speech-text");
+
+  if (state.minimized || (speechBubble && speechBubble.classList.contains("hidden"))) {
+    state.minimized = false;
+    saveSettings();
+    updateCompanionView();
+    speechBubble = document.getElementById("companion-speech-bubble");
+    speechText = document.getElementById("companion-speech-text");
+  }
+
   if (!speechBubble || !speechText) return;
 
+  speechBubble.classList.remove("hidden");
   speechText.textContent = text;
   speechBubble.classList.add("highlight-speech");
 
@@ -501,12 +506,3 @@ function setupEventListeners() {
   });
 }
 
-function escapeHtml(str) {
-  if (!str) return "";
-  return String(str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
